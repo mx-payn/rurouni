@@ -20,6 +20,10 @@ target_include_directories(rurouni PUBLIC
 include(GenerateExportHeader)
 generate_export_header( rurouni BASE_NAME rr)
 
+# Use precompiled header file
+target_precompile_headers( rurouni
+        PRIVATE ../include/rr_pch.h )
+
 # All users of this library will need at least C++11
 target_compile_features(rurouni PUBLIC cxx_std_11)
 

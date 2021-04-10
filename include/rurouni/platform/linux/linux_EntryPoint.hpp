@@ -7,7 +7,7 @@
 // only, so there is also no need for a forward-declaration
 // as it will not be compiled into an .obj file.
 // Pretty neat.
-#include <iostream>
+#include "rr_pch.h"
 
 int main()
 {

@@ -1,6 +1,7 @@
 #ifndef RUROUNI_WIN_ENTRYPOINT_HPP
 #define RUROUNI_WIN_ENTRYPOINT_HPP
 
+#include "rr_pch.h"
 #include <windows.h>
 
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,

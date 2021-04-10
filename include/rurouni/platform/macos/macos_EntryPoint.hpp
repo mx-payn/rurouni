@@ -1,7 +1,7 @@
 #ifndef RUROUNI_MACOS_ENTRYPOINT_HPP
 #define RUROUNI_MACOS_ENTRYPOINT_HPP
 
-#include <iostream>
+#include "rr_pch.h"
 
 int main()
 {
