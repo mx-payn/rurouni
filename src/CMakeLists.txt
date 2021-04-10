@@ -85,16 +85,16 @@ endif()
 # setting general compiler options/definitions
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # using Visual Studio C++
-    target_compile_options( rurouni PRIVATE /Wall /WX  )
+    target_compile_options( rurouni PRIVATE /Wall  )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
-    target_compile_options( rurouni PRIVATE -W -Wall -Werror )
+    target_compile_options( rurouni PRIVATE -Wall -Werror )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     # using AppleClang
-    target_compile_options( rurouni PRIVATE -W -Wall -Werror )
+    target_compile_options( rurouni PRIVATE -Wall -Werror )
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
-    target_compile_options( rurouni PRIVATE -W -Wall -Werror )
+    target_compile_options( rurouni PRIVATE -Wall -Werror )
 else()
     message("Unhandled compiler!!!")
 endif()
