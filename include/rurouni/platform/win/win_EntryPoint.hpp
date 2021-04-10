@@ -7,7 +7,9 @@
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         PSTR lpCmdLine, INT nCmdShow)
 {
-    std::cout << "Hello from windows_entry!" << std::endl;
+    RR_LOG_INIT(argc, argv)
+    RR_LOG_SCOPE_FUNCTION(2)
+    RR_LOG_DEBUG("you are entering through the WINDOWS entrypoint")
 
     auto game = Rurouni::CreateGame();
 
@@ -18,6 +20,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     delete game;
 
+    RR_LOG_DEBUG("all went well! shutting down gracefully")
     return 0;
 }
 

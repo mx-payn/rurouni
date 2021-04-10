@@ -1,12 +1,13 @@
 # Note that headers are optional, and do not affect add_library, but they will not
 # show up in IDEs unless they are listed in add_library.
-
-# Optionally glob, but only for CMake 3.12 or later:
-# file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${ModernCMakeExample_SOURCE_DIR}/include/modern/*.hpp")
 set(HEADER_LIST "${Rurouni_SOURCE_DIR}/include/Rurouni.hpp")
 
+
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(rurouni Game.cpp ../external/loguru/loguru.cpp ${HEADER_LIST})
+add_library(rurouni ${RUROUNI_LIB_TYPE}
+        Game.cpp
+        ${Rurouni_SOURCE_DIR}/external/loguru/loguru.cpp
+        ${HEADER_LIST} )
 
 # We need this directory, and users of our library will need it too
 target_include_directories(rurouni PUBLIC
@@ -53,6 +54,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_compile_definitions( rurouni
             PUBLIC RR_PLATFORM_MACOS )
 
+endif()
+
+# loguru needs Rurouni export definition when we build a shared library
+if(RUROUNI_SHARED)
+    target_compile_options(rurouni PRIVATE "-DLOGURU_EXPORT=RR_EXPORT")
 endif()
 
 ## setting single/multi config compiler options/definitions

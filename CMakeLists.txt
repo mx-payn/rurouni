@@ -8,6 +8,19 @@ project(
   HOMEPAGE_URL "https://mx-payn.github.io/rurouni/"
   LANGUAGES CXX)
 
+# exporting compile commands for auto suggestion/completion features
+# produces a compile-commands.json with all compile option information
+# e.g. for emacs
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+
+# should we build static libs?
+set(RUROUNI_SHARED YES)
+if (RUROUNI_SHARED)
+  set(RUROUNI_LIB_TYPE SHARED)
+else ()
+  set(RUROUNI_LIB_TYPE STATIC)
+endif ()
+
 # Only do these if this is the main project, and not if it is included through add_subdirectory
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
@@ -27,6 +40,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+  # change default visibility of exposed classes and functions to hidden
+  # only relevant for SHARED lib builds. This is default on Windows, but not on UNIX systems
+  set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+  # change visibility of inlined code (including templates) to hidden
+  set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
   # Testing only available if this is the main app
   # Note this needs to be done in the main CMakeLists
