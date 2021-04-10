@@ -9,6 +9,15 @@ Rurouni is developed by me as a practice and learning experience for my universi
 * Doxygen (optional)
 
 # Building
+Rurouni has dependencies added as git submodules, so be sure to clone recursively:
+
+``` bash
+git clone --recurse-submodules https://github.com/mx-payn/rurouni.git
+cd rurouni
+```
+
+For git version 2.8+ you can add the `-j8` flag, which fetches up to 8 submodules at a time in parallel.
+
 To configure:
 
 ```bash
