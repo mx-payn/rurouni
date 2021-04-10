@@ -17,5 +17,6 @@
 
 //  --== Tools ==--
 #include "rurouni/tools/Logger.hpp"
+#include "rurouni/tools/Assertion.hpp"
 
 #endif //RUROUNI_RR_PCH_H

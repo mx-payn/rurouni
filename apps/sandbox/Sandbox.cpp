@@ -26,7 +26,7 @@ public:
     {
         RR_LOG_SCOPE_FUNCTION(INFO)
 
-        return false;
+        return true;
     }
 };
 

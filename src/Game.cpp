@@ -16,14 +16,14 @@ namespace Rurouni
     {
         RR_LOG_SCOPE_FUNCTION(INFO)
 
-        return false;
+        return true;
     }
 
     bool Game::Run()
     {
         RR_LOG_TRACE("Engine Game Run()")
 
-        return false;
+        return true;
     }
 
     bool Game::Shutdown()
