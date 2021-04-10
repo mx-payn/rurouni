@@ -8,7 +8,7 @@
 
 // --==> Entry Point
 //      !!  ALWAYS LAST INCLUDE  !!
-#include "rurouni/platform/EntryPoint.hpp"
+#include "rurouni/core/EntryPoint.hpp"
 // <==--
 
 #endif //RUROUNI_RUROUNI_HPP

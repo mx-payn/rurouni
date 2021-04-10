@@ -2,7 +2,6 @@
 # show up in IDEs unless they are listed in add_library.
 set(HEADER_LIST "${Rurouni_SOURCE_DIR}/include/Rurouni.hpp")
 
-
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(rurouni ${RUROUNI_LIB_TYPE}
         Game.cpp
@@ -15,8 +14,9 @@ target_include_directories(rurouni PUBLIC
         ${CMAKE_CURRENT_BINARY_DIR}/
         ${Rurouni_SOURCE_DIR}/external/loguru)
 
-# This depends on (header only) boost
-target_link_libraries(rurouni PRIVATE pthread dl )
+# These are the libraries we link against IN GENERAL
+# There are platform and compiler specific libraries linked further below
+#target_link_libraries(rurouni PRIVATE )
 
 # Generate export headers
 include(GenerateExportHeader)
@@ -43,6 +43,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # platform is LINUX
     target_compile_definitions( rurouni
             PUBLIC RR_PLATFORM_LINUX )
+
+    target_link_libraries(rurouni PRIVATE pthread dl )
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # platform is WINDOWS
@@ -78,4 +80,21 @@ else()
                 RR_ENABLE_ASSERT
                 RR_ENABLE_PROFILE )
     endif()
+endif()
+
+# setting general compiler options/definitions
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # using Visual Studio C++
+    target_compile_options( rurouni PRIVATE /Wall /WX  )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # using Clang
+    target_compile_options( rurouni PRIVATE -W -Wall -Werror )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    # using AppleClang
+    target_compile_options( rurouni PRIVATE -W -Wall -Werror )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # using GCC
+    target_compile_options( rurouni PRIVATE -W -Wall -Werror )
+else()
+    message("Unhandled compiler!!!")
 endif()

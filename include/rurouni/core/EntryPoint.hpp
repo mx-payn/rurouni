@@ -1,5 +1,5 @@
-#ifndef RUROUNI_LINUX_ENTRYPOINT_HPP
-#define RUROUNI_LINUX_ENTRYPOINT_HPP
+#ifndef RUROUNI_ENTRYPOINT_HPP
+#define RUROUNI_ENTRYPOINT_HPP
 
 // We actually don't need to #import Game.hpp here, as
 // EntryPoint is always listed BELOW Game.hpp inside the
@@ -30,4 +30,4 @@ int main(int argc, char** argv)
     return 0;
 }
 
-#endif //RUROUNI_LINUX_ENTRYPOINT_HPP
+#endif //RUROUNI_ENTRYPOINT_HPP

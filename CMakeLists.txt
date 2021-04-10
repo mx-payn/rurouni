@@ -14,10 +14,11 @@ project(
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 # should we build static libs?
-set(RUROUNI_SHARED YES)
 if (RUROUNI_SHARED)
+  message("building SHARED library...")
   set(RUROUNI_LIB_TYPE SHARED)
 else ()
+  message("building STATIC library...")
   set(RUROUNI_LIB_TYPE STATIC)
 endif ()
 
