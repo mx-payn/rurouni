@@ -1,23 +1,32 @@
-# Works with 3.11 and tested through 3.20
-cmake_minimum_required(VERSION 3.11...3.20)
+cmake_minimum_required(VERSION 3.17)
 
 # Project name and a few useful settings. Other commands can pick up the results
 project(
-  ModernCMakeExample
-  VERSION 0.1
-  DESCRIPTION "An example project with CMake"
+  Rurouni
+  VERSION 0.0.0
+  DESCRIPTION "A 2D ASCII game-engine for educational games on programming languages."
+  HOMEPAGE_URL "https://mx-payn.github.io/rurouni/"
   LANGUAGES CXX)
 
 # Only do these if this is the main project, and not if it is included through add_subdirectory
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
   # Optionally set things like CMAKE_CXX_STANDARD, CMAKE_POSITION_INDEPENDENT_CODE here
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
   # Let's ensure -std=c++xx instead of -std=g++xx
   set(CMAKE_CXX_EXTENSIONS OFF)
 
   # Let's nicely support folders in IDEs
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+  ## setting custom output directories outside the current target subdir to find shared libraries easier
+  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
   # Testing only available if this is the main app
   # Note this needs to be done in the main CMakeLists
@@ -41,24 +50,14 @@ if(${CMAKE_VERSION} VERSION_LESS 3.14)
   include(cmake/add_FetchContent_MakeAvailable.cmake)
 endif()
 
-# Accumulator library
-# This is header only, so could be replaced with git submodules or FetchContent
-find_package(Boost REQUIRED)
-# Adds Boost::boost
-
-# Formatting library
-FetchContent_Declare(
-  fmtlib
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 5.3.0)
-FetchContent_MakeAvailable(fmtlib)
-# Adds fmt::fmt
-
+###################################################################
+########################  SUBDIRECTORIES  #########################
+###################################################################
 # The compiled library code is here
 add_subdirectory(src)
 
 # The executable code is here
-add_subdirectory(apps)
+add_subdirectory(apps/sandbox)
 
 # Testing only available if this is the main app
 # Emergency override MODERN_CMAKE_BUILD_TESTING provided as well
