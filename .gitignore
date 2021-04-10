@@ -1,0 +1,7 @@
+*build*
+
+.dir-locals.el
+
+.idea
+*.log
+tmp/
