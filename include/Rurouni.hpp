@@ -1,7 +1,7 @@
 #ifndef RUROUNI_RUROUNI_HPP
 #define RUROUNI_RUROUNI_HPP
 
-//  --== Application ==--
+//  --== Usable by Client ==--
 #include "rurouni/Game.hpp"
 
 // ------------- Entry Point ---------------------
