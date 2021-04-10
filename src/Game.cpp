@@ -4,31 +4,31 @@ namespace Rurouni
 {
     Game::Game()
     {
-        std::cout << "Engine Game Constructor()" << std::endl;
+        RR_LOG_TRACE("Engine Game Constructor()")
     }
 
     Game::~Game()
     {
-        std::cout << "Engine Game Destructor()" << std::endl;
+        RR_LOG_TRACE("Engine Game Destructor()")
     }
 
     bool Game::InternalSetup()
     {
-        std::cout << "Engine Game InternalSetup()" << std::endl;
+        RR_LOG_SCOPE_FUNCTION(INFO)
 
         return false;
     }
 
     bool Game::Run()
     {
-        std::cout << "Engine Game Run()" << std::endl;
+        RR_LOG_TRACE("Engine Game Run()")
 
         return false;
     }
 
     bool Game::Shutdown()
     {
-        std::cout << "Engine Game Shutdown()" << std::endl;
+        RR_LOG_SCOPE_FUNCTION(INFO)
 
         return false;
     }

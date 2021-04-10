@@ -1,5 +1,4 @@
 //  --== Includes ==--
-#include <iostream>
 #include <Rurouni.hpp>
 
 /*!
@@ -15,17 +14,17 @@ class Sandbox : public Rurouni::Game
 public:
     Sandbox()
     {
-        std::cout << "Client Game Constructor()" << std::endl;
+        RR_LOG_TRACE("Client Game Constructor()")
     }
 
     virtual ~Sandbox()
     {
-        std::cout << "Client Game Destructor()" << std::endl;
+        RR_LOG_TRACE("Client Game Destructor()")
     }
 
     virtual bool ExternalSetup()
     {
-        std::cout << "Client Game ExternalSetup()" << std::endl;
+        RR_LOG_SCOPE_FUNCTION(INFO)
 
         return false;
     }

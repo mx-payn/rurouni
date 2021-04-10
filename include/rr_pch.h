@@ -15,8 +15,7 @@
 #include <thread>
 #include <vector>
 
-
-//  -- TEMPORARY: Replace when Logger ready
-#include <iostream>
+//  --== Tools ==--
+#include "rurouni/tools/Logger.hpp"
 
 #endif //RUROUNI_RR_PCH_H

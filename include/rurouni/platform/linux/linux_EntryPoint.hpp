@@ -9,9 +9,11 @@
 // Pretty neat.
 #include "rr_pch.h"
 
-int main()
+int main(int argc, char** argv)
 {
-    std::cout << "Hello from linux_entry!" << std::endl;
+    RR_LOG_INIT(argc, argv)
+    RR_LOG_SCOPE_FUNCTION(2)
+    RR_LOG_DEBUG("you are entering through the LINUX entrypoint")
 
     auto game = Rurouni::CreateGame();
 
@@ -24,6 +26,7 @@ int main()
 
     delete game;
 
+    RR_LOG_DEBUG("all went well! shutting down gracefully")
     return 0;
 }
 
