@@ -3,6 +3,7 @@
 
 //  --== Includes ==--
 #include <iostream>
+#include "rr_export.h"
 
 namespace Rurouni {
 
@@ -12,7 +13,7 @@ namespace Rurouni {
      * and non client conserving functionalities.
      * The client is to implement custom functionalities by using the pure virtual functions.
      */
-    class Game
+    class RR_EXPORT Game
     {
     public:
 //  --== Construction / Destruction ==--

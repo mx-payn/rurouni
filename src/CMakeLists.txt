@@ -9,10 +9,16 @@ set(HEADER_LIST "${Rurouni_SOURCE_DIR}/include/Rurouni.hpp")
 add_library(rurouni Game.cpp ${HEADER_LIST})
 
 # We need this directory, and users of our library will need it too
-target_include_directories(rurouni PUBLIC ../include)
+target_include_directories(rurouni PUBLIC
+        ../include/
+        ${CMAKE_CURRENT_BINARY_DIR}/ )
 
 # This depends on (header only) boost
 #target_link_libraries(rurouni PRIVATE Boost::boost)
+
+# Generate export headers
+include(GenerateExportHeader)
+generate_export_header( rurouni BASE_NAME rr)
 
 # All users of this library will need at least C++11
 target_compile_features(rurouni PUBLIC cxx_std_11)
