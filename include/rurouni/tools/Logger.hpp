@@ -2,6 +2,7 @@
 #define RUROUNI_LOGGER_HPP
 
 #include "rr_export.h"
+#include "rurouni/platform/platform_macros.hpp"
 #include "loguru.hpp"
 
 namespace Rurouni {
@@ -47,7 +48,7 @@ namespace Rurouni {
 #   define RR_LOG_DEBUG(...) LOG_F(1, __VA_ARGS__);
 #   define RR_LOG_TRACE(...) LOG_F(2, __VA_ARGS__);
 
-#   define RR_LOG_SCOPE_F(...) LOG_SCOPE_F(__VA_ARGS__);
+#   define RR_LOG_SCOPE_F(v) LOG_SCOPE_F(v, RR_FUNC_SIG);
 #   define RR_LOG_SCOPE_FUNCTION(v) LOG_SCOPE_FUNCTION(v);
 #else
 #   define RR_LOG_INIT(...)

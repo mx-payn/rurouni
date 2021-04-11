@@ -14,7 +14,7 @@ namespace Rurouni
 
     bool Game::InternalSetup()
     {
-        RR_LOG_SCOPE_FUNCTION(INFO)
+        RR_LOG_SCOPE_F(INFO)
 
         return true;
     }
@@ -28,7 +28,7 @@ namespace Rurouni
 
     bool Game::Shutdown()
     {
-        RR_LOG_SCOPE_FUNCTION(INFO)
+        RR_LOG_SCOPE_F(INFO)
 
         return false;
     }

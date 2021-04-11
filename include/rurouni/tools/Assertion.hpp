@@ -20,7 +20,7 @@ namespace Rurouni {
          * @param file  the filePath of the assertion function
          * @return  True if provided expression is true, False if expression is false
          */
-        static bool AssertFn(bool exp, std::string desc, int line, std::string file)
+        static bool AssertFn(bool exp, const std::string& desc, int line, const std::string& file)
         {
             if (exp)
                 return true;
@@ -69,7 +69,10 @@ namespace Rurouni {
                       __FILE__))           \
         { RR_DEBUG_BREAK }
 #else
-#    define RR_ASSERT(exp, description)
+#    define RR_ASSERT_TRUE(exp, description)
+#    define RR_ASSERT_FALSE(exp, description)
+#    define RR_ASSERT_EQ(exp, description)
+#    define RR_ASSERT_NOT_EQ(exp, description)
 #endif
 
 #endif //RUROUNI_ASSERTION_HPP

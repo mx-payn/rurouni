@@ -11,7 +11,7 @@
 
 int main(int argc, char** argv)
 {
-    RR_LOG_INIT(argc, argv)
+    RR_LOG_INIT(argc, argv, "everything.log")
     RR_LOG_SCOPE_FUNCTION(2)
     RR_LOG_DEBUG("you are entering through the LINUX entrypoint")
 

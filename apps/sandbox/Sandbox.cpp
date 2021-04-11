@@ -17,14 +17,14 @@ public:
         RR_LOG_TRACE("Client Game Constructor()")
     }
 
-    virtual ~Sandbox()
+    ~Sandbox() override
     {
         RR_LOG_TRACE("Client Game Destructor()")
     }
 
-    virtual bool ExternalSetup()
+    bool ExternalSetup() override
     {
-        RR_LOG_SCOPE_FUNCTION(INFO)
+        RR_LOG_SCOPE_F(INFO)
 
         return true;
     }

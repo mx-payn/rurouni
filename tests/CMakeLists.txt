@@ -7,7 +7,11 @@ FetchContent_MakeAvailable(catch)
 # Adds Catch2::Catch2
 
 # Tests need to be added as executables first
-add_executable(rurouni_test test_game.cpp)
+add_executable(rurouni_test
+        main.cpp
+        #test_game.cpp
+        #test_assertion.cpp
+        )
 
 # I'm using C++17 in the test
 target_compile_features(rurouni_test PRIVATE cxx_std_17)
