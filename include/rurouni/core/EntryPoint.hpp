@@ -13,7 +13,6 @@ int main(int argc, char** argv)
 {
     RR_LOG_INIT(argc, argv, "everything.log")
     RR_LOG_SCOPE_FUNCTION(2)
-    RR_LOG_DEBUG("you are entering through the LINUX entrypoint")
 
     auto game = Rurouni::CreateGame();
 
@@ -26,7 +25,7 @@ int main(int argc, char** argv)
 
     delete game;
 
-    RR_LOG_DEBUG("all went well! shutting down gracefully")
+    RR_LOG_DEBUG("all went well! shutting down gracefully...")
     return 0;
 }
 

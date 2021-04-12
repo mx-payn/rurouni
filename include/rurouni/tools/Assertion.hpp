@@ -35,6 +35,9 @@ namespace Rurouni {
             RR_LOG_ERROR("ASSERTION FAILED -- \"%s\" -- in line [%d] in file [%s]", desc.c_str(), line, file.c_str())
             return false;
         }
+
+    private:
+        Assertion() = default;
     };
 
 }
@@ -46,7 +49,7 @@ namespace Rurouni {
                       description,         \
                       __LINE__,            \
                       __FILE__))           \
-        { RR_DEBUG_BREAK }
+        { RR_DEBUG_BREAK; }
 #    define RR_ASSERT_FALSE(exp, description)    \
     if(!::Rurouni::Assertion::AssertFn(     \
                       (int)(!(exp)),          \

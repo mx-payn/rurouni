@@ -1,4 +1,5 @@
 #include <rurouni/tools/Assertion.hpp>
+#include <catch2/catch.hpp>
 
 TEST_CASE( "assertion function on different expressions", "[AssertFn]" ) {
 

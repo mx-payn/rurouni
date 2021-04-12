@@ -4,6 +4,7 @@
 #include "rr_export.h"
 #include "rurouni/platform/platform_macros.hpp"
 #include "loguru.hpp"
+#include <string>
 
 namespace Rurouni {
 

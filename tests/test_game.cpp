@@ -1,4 +1,6 @@
+#define CATCH_CONFIG_MAIN
 #include <rurouni/Game.hpp>
+#include <catch2/catch.hpp>
 
 TEST_CASE( "Quick check", "[test_addition]" ) {
     int a = 3;
