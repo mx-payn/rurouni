@@ -33,6 +33,7 @@ add_library(${PROJECT_NAME} STATIC
     src/event/event_system.cpp
     # system
     src/system/filesystem.cpp
+    src/system/command.cpp
     # types
     src/types/uuid.cpp
 )
