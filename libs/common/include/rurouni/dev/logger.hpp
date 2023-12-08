@@ -9,9 +9,24 @@
 #include <spdlog/spdlog.h>
 
 // std
+#include <experimental/source_location>
 #include <memory>
 #include <string>
 #include <vector>
+
+/** Cross platform macros for debug breaking. */
+#if (defined(__debugbreak) || (_MSC_VER))
+#define RR_DEBUG_BREAK __debugbreak()
+#elif (defined(__breakpoint) || (__ARMCC_VERSION))
+#define RR_DEBUGBREAK __breakpoint(42)
+#else
+#include <signal.h>
+#if (defined(SIGTRAP))
+#define RR_DEBUG_BREAK raise(SIGTRAP)
+#else
+#define RR_DEBUG_BREAK raise(SIGABRT)
+#endif
+#endif
 
 namespace rr::dev {
 
@@ -19,7 +34,7 @@ namespace rr::dev {
 enum class LogLevel { Trace, Debug, Info, Warn, Error, Critical, Off };
 
 /** logging behaviour variables.
- *  
+ *
  *  only used once when initializing the logger class. log sinks
  *  and logger instances get initialized according to the initially
  *  passed LoggerSpecification.
@@ -43,15 +58,15 @@ struct LoggerSpecification {
  */
 class Logger {
    public:
-       /** constructs a new logger object based on the static state.
-        *  
-        *  \param name the logger name displayed in each message.
-        */
+    /** constructs a new logger object based on the static state.
+     *
+     *  \param name the logger name displayed in each message.
+     */
     Logger(const std::string& name);
     ~Logger() = default;
 
     /** initializes the static construction state.
-     * 
+     *
      *  pushes log_sinks and sets levels according to the given
      *  LoggerSpecification to the static construction state.
      *
@@ -88,6 +103,22 @@ class Logger {
     template <class... Args>
     void critical(fmt::format_string<Args...> fmt, Args&&... args) {
         m_Logger.critical(fmt, std::forward<Args>(args)...);
+    }
+
+    /** debug breaks and prints location on assertion failure */
+    template <typename T>
+    void require(T&& assertion,
+                 const std::string_view msg,
+                 const std::experimental::source_location location =
+                     std::experimental::source_location::current()) {
+        if (!assertion) {
+            m_Logger.critical("{}:{} -> {} *** assertion failed",
+                              location.file_name(), location.line(),
+                              location.function_name());
+            m_Logger.critical("{}", msg);
+
+            RR_DEBUG_BREAK;
+        }
     }
 
     /** sets the instances level threshold. */
