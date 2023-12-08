@@ -1,10 +1,9 @@
-// rurouni
-#include "rurouni/dev/logger.hpp"
+// editor
 #include "rurouni/editor/config.h"
 #include "rurouni/editor/logger.hpp"
-#include "rurouni/math/mat.hpp"
-#include "rurouni/math/quaternion.hpp"
-#include "rurouni/math/vec.hpp"
+
+// rurouni
+#include "rurouni/dev/logger.hpp"
 
 // std
 #include <memory>
