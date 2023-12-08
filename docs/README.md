@@ -16,7 +16,7 @@ Currently supported:
 
 - CMake
 
-rurouni::lib libraries link to some external libraries, which may have
+rurouni::libs libraries link to some external libraries, which may have
 additional dependencies, e.g. glfw needs some x11 libraries installed when
 creating windows on a x-server. See the next section for those libraries.
 
@@ -30,6 +30,7 @@ development.
 
 - [cereal](https://github.com/USCiLab/cereal)
 - [entt](https://github.com/skypjack/entt)
+- [fmt](https://github.com/fmtlib/fmt)
 - [glad](https://github.com/Dav1dde/glad)
 - [glfw](https://github.com/glfw/glfw)
 - [glm](https://github.com/g-truc/glm)

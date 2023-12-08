@@ -9,19 +9,14 @@ All targets provide an ALIAS in form `rurouni::<target-name>`
     ├── audio
     ├── common
     ├── core
-    ├── dev
-    ├── ecs
-    ├── event
     ├── graphics
-    ├── math
     ├── scripting
-    ├── system
     └── ui
 ```
 
 ## editor
 > Type: `executable`  
-> Target: `editor`  
+> Target: `rurouni-editor`  
 > Alias: `rurouni::editor`  
 > Dependencies:
 > - rurouni::libs
@@ -33,7 +28,7 @@ rurouni's project system.
 
 ## runtime
 > Type: `executable`  
-> Target: `runtime`  
+> Target: `rurouni-runtime`  
 > Alias: `rurouni::runtime`  
 > Dependencies:
 > - rurouni::libs
@@ -43,7 +38,7 @@ scripts.
 
 ## libs
 > Type: `interface`  
-> Target: `libs`  
+> Target: `rurouni-libs`  
 > Alias: `rurouni::libs`  
 
 Interface target to all library targets inside sub directories. See 
