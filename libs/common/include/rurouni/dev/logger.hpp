@@ -135,6 +135,8 @@ class Logger {
     static LogLevel s_FlushLevel;
 };
 
+static std::unique_ptr<dev::Logger> LOG = nullptr;
+
 }  // namespace rr::dev
 
 #endif  // !RR_LIBS_COMMON_DEV_LOGGER_H

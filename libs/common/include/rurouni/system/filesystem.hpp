@@ -36,4 +36,17 @@ void copy(const Path& from, const Path& to, copy_options options);
 
 }  // namespace rr::system
 
+/////////////////////////////////////////////////////////////////
+/////////////////////  fmt format  //////////////////////////////
+/////////////////////////////////////////////////////////////////
+#include <fmt/format.h>
+
+template <>
+struct fmt::formatter<rr::system::Path> : fmt::formatter<std::string> {
+    auto format(rr::system::Path path, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", path.string());
+    }
+};
+
 #endif  // !RR_LIBS_COMMON_SYSTEM_FILESYSTEM_H

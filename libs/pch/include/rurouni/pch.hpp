@@ -17,4 +17,7 @@
 #include <unordered_map>
 #include <vector>
 
+// fmt
+#include <fmt/format.h>
+
 #endif  // !RR_LIBS_PCH_H

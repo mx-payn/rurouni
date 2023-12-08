@@ -25,6 +25,7 @@ include(cmake/dependencies.cmake)
 #       libraries, to make decoupling easier?
 add_subdirectory(pch)
 add_subdirectory(common)
+add_subdirectory(graphics)
 
 #############################################################
 ####################  INTERFACE  ############################
@@ -34,5 +35,6 @@ add_library(rurouni::libs ALIAS ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} 
     INTERFACE   rurouni::common
+                rurouni::graphics
     )
 

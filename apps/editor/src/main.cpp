@@ -15,6 +15,8 @@ int main() {
     loggerSpec.LogStdOut = true;
     rr::dev::Logger::init(loggerSpec);
 
+    rr::dev::LOG = std::make_unique<rr::dev::Logger>("engine");
+
     rr::runtime::LOG = std::make_unique<rr::dev::Logger>("editor");
     rr::runtime::LOG->info("bin dir ......... : {}", RR_EDITOR_BIN_DIR);
     rr::runtime::LOG->info("lib dir ......... : {}", RR_EDITOR_LIB_DIR);
