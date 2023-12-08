@@ -29,6 +29,8 @@ add_library(${PROJECT_NAME} STATIC
     src/math.cpp
     # dev
     src/dev/logger.cpp 
+    # event
+    src/event/event_system.cpp
     # system
     src/system/filesystem.cpp
     # types
