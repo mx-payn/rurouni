@@ -22,3 +22,4 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 
 # interface to rurouni libraries
 add_subdirectory(libs ${CMAKE_BINARY_DIR}/rurouni-libs)
+add_subdirectory(apps/runtime ${CMAKE_BINARY_DIR}/rurouni-runtime)
