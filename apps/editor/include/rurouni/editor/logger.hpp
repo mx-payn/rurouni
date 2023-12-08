@@ -9,4 +9,4 @@ static std::unique_ptr<dev::Logger> LOG = nullptr;
 
 }
 
-#endif // !RR_RUNTIME_LOGGER_H
+#endif  // !RR_RUNTIME_LOGGER_H

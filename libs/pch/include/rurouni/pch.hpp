@@ -1,11 +1,11 @@
 #ifndef RR_LIBS_PCH_H
 #define RR_LIBS_PCH_H
 
-// std 
+// std
 #include <algorithm>
 #include <cstdint>
-#include <functional>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <mutex>
 #include <numeric>

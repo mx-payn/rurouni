@@ -57,11 +57,9 @@ void Logger::init(const LoggerSpecification& spec) {
 }
 
 Logger::Logger(const std::string& name)
-: m_Logger(name, s_LogSinks.begin(), s_LogSinks.end()) {
-    m_Logger.set_level(
-        static_cast<spdlog::level::level_enum>(s_LogLevel));
-    m_Logger.flush_on(
-        static_cast<spdlog::level::level_enum>(s_FlushLevel));
+    : m_Logger(name, s_LogSinks.begin(), s_LogSinks.end()) {
+    m_Logger.set_level(static_cast<spdlog::level::level_enum>(s_LogLevel));
+    m_Logger.flush_on(static_cast<spdlog::level::level_enum>(s_FlushLevel));
 }
 
 void Logger::set_log_level(LogLevel level) {

@@ -1,7 +1,7 @@
 // rurouni
 #include "rurouni/dev/logger.hpp"
-#include "rurouni/editor/logger.hpp"
 #include "rurouni/editor/config.h"
+#include "rurouni/editor/logger.hpp"
 
 // std
 #include <memory>
@@ -18,9 +18,12 @@ int main() {
     rr::runtime::LOG->info("lib dir ......... : {}", RR_EDITOR_LIB_DIR);
     rr::runtime::LOG->info("archive dir ..... : {}", RR_EDITOR_ARCHIVE_DIR);
     rr::runtime::LOG->info("shared data dir . : {}", RR_EDITOR_SHARED_DATA_DIR);
-    rr::runtime::LOG->info("shared config dir : {}", RR_EDITOR_SHARED_CONFIG_DIR);
+    rr::runtime::LOG->info("shared config dir : {}",
+                           RR_EDITOR_SHARED_CONFIG_DIR);
     rr::runtime::LOG->info("user data dir ... : {}", RR_EDITOR_USER_DATA_DIR);
     rr::runtime::LOG->info("user config dir . : {}", RR_EDITOR_USER_CONFIG_DIR);
+
+    rr::runtime::LOG->require(false, "false assertion");
 
     return 0;
 }

@@ -59,4 +59,4 @@ void copy(const Path& from, const Path& to, copy_options options) {
     return std::filesystem::copy(from, to, options);
 }
 
-}  // namespace rr::filesystem
+}  // namespace rr::system
