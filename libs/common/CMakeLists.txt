@@ -27,6 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PROJECT_NAME} STATIC 
     # collections
     src/math.cpp
+    src/time.cpp
     # dev
     src/dev/logger.cpp 
     # event
