@@ -38,7 +38,8 @@ target_include_directories(
 )
 
 target_link_libraries(${PROJECT_NAME} 
-    PUBLIC  fmt::fmt
+    PUBLIC  cereal::cereal
+            fmt::fmt
             spdlog::spdlog 
             stduuid
     PRIVATE rurouni::pch
