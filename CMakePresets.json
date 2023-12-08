@@ -1,0 +1,27 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 27,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+        "name": "build",
+      "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+            "RR_INSTALL_BUILD": "OFF"
+        }
+    },
+    {
+        "name": "install",
+      "binaryDir": "${sourceDir}/build",
+      "environment": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+        "cacheVariables": {
+            "RR_INSTALL_BUILD": "ON"
+        }
+    }
+  ]
+}
