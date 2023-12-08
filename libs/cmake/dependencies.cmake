@@ -15,7 +15,14 @@ FetchContent_Declare(
     GIT_TAG v1.12.0
     )
 
+# stduuid
+FetchContent_Declare(
+  stduuid
+  GIT_REPOSITORY https://github.com/mariusbancila/stduuid.git
+  GIT_TAG v1.2.3)
+
 FetchContent_MakeAvailable(
     fmt
     spdlog
+    stduuid
     )

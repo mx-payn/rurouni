@@ -27,6 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PROJECT_NAME} STATIC 
     src/dev/logger.cpp 
     src/system/filesystem.cpp
+    src/types/uuid.cpp
 )
 add_library(rurouni::common ALIAS ${PROJECT_NAME})
 
@@ -39,6 +40,7 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC  fmt::fmt
             spdlog::spdlog 
+            stduuid
     PRIVATE rurouni::pch
 )
 
