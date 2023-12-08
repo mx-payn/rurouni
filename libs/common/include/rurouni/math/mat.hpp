@@ -14,6 +14,36 @@ typedef glm::mat4 mat4;
 }  // namespace rr::math
 
 /////////////////////////////////////////////////////////////////
+///////////////////  string format  /////////////////////////////
+/////////////////////////////////////////////////////////////////
+#include <fmt/format.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
+template <>
+struct fmt::formatter<rr::math::mat2> : fmt::formatter<std::string> {
+    auto format(rr::math::mat2 mat, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(mat));
+    }
+};
+template <>
+struct fmt::formatter<rr::math::mat3> : fmt::formatter<std::string> {
+    auto format(rr::math::mat3 mat, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(mat));
+    }
+};
+
+template <>
+struct fmt::formatter<rr::math::mat4> : fmt::formatter<std::string> {
+    auto format(rr::math::mat4 mat, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(mat));
+    }
+};
+
+/////////////////////////////////////////////////////////////////
 ///////////////////  serialization  /////////////////////////////
 /////////////////////////////////////////////////////////////////
 #include <cereal/cereal.hpp>

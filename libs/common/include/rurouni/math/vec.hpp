@@ -18,6 +18,37 @@ typedef glm::ivec4 ivec4;
 }  // namespace rr::math
 
 /////////////////////////////////////////////////////////////////
+///////////////////  string format  /////////////////////////////
+/////////////////////////////////////////////////////////////////
+#include <fmt/format.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
+template <>
+struct fmt::formatter<rr::math::vec2> : fmt::formatter<std::string> {
+    auto format(rr::math::vec2 vec, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(vec));
+    }
+};
+
+template <>
+struct fmt::formatter<rr::math::vec3> : fmt::formatter<std::string> {
+    auto format(rr::math::vec3 vec, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(vec));
+    }
+};
+
+template <>
+struct fmt::formatter<rr::math::vec4> : fmt::formatter<std::string> {
+    auto format(rr::math::vec4 vec, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(vec));
+    }
+};
+
+/////////////////////////////////////////////////////////////////
 ///////////////////  serialization  /////////////////////////////
 /////////////////////////////////////////////////////////////////
 #include <cereal/cereal.hpp>

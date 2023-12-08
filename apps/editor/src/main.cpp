@@ -2,6 +2,9 @@
 #include "rurouni/dev/logger.hpp"
 #include "rurouni/editor/config.h"
 #include "rurouni/editor/logger.hpp"
+#include "rurouni/math/mat.hpp"
+#include "rurouni/math/quaternion.hpp"
+#include "rurouni/math/vec.hpp"
 
 // std
 #include <memory>
@@ -22,8 +25,6 @@ int main() {
                            RR_EDITOR_SHARED_CONFIG_DIR);
     rr::runtime::LOG->info("user data dir ... : {}", RR_EDITOR_USER_DATA_DIR);
     rr::runtime::LOG->info("user config dir . : {}", RR_EDITOR_USER_CONFIG_DIR);
-
-    rr::runtime::LOG->require(false, "false assertion");
 
     return 0;
 }
