@@ -1,6 +1,7 @@
 #ifndef RR_LIB_GRAPHICS_BATCH_RENDERER_H
 #define RR_LIB_GRAPHICS_BATCH_RENDERER_H
 
+// rurouni
 #include "rurouni/graphics/index_buffer.hpp"
 #include "rurouni/graphics/shader.hpp"
 #include "rurouni/graphics/text.hpp"
@@ -9,13 +10,29 @@
 #include "rurouni/graphics/vertex_buffer.hpp"
 #include "rurouni/math.hpp"
 
+// std
 #include <cstdint>
 #include <memory>
 
 namespace rr::graphics {
 
+static const BufferLayout QUAD_SHADER_BUFFER_LAYOUT = {
+    {ShaderDataType::Float3, "a_Position"},
+    {ShaderDataType::Float4, "a_Color"},
+    {ShaderDataType::Float2, "a_TexCoord"},
+    {ShaderDataType::Float, "a_TexIndex"},
+    {ShaderDataType::Int, "a_EntityID"}};
+
+static const BufferLayout TEXT_SHADER_BUFFER_LAYOUT = {
+    {ShaderDataType::Float3, "a_Position"},
+    {ShaderDataType::Float4, "a_Color"},
+    {ShaderDataType::Float2, "a_TexCoord"},
+    {ShaderDataType::Float, "a_TexIndex"},
+    {ShaderDataType::Int, "a_EntityID"}};
+
 class BatchRenderer {
    public:
+    BatchRenderer();
     BatchRenderer(std::shared_ptr<Shader> quadShader,
                   std::shared_ptr<Shader> textShader);
     ~BatchRenderer();

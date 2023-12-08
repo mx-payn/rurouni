@@ -1,14 +1,25 @@
 // pch
+#include "rurouni/graphics/shader.hpp"
 #include "rurouni/pch.hpp"
 //-----------------------
 
 // rurouni
+#include "default/shader.hpp"
 #include "rurouni/dev/logger.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/math.hpp"
 
 namespace rr::graphics {
+
+BatchRenderer::BatchRenderer() {
+    auto quadShader = std::make_shared<Shader>(
+        DEFAULT_QUAD_SHADER_VERTEX_SRC, DEFAULT_QUAD_SHADER_FRAGMENT_SRC);
+    auto textShader = std::make_shared<Shader>(
+        DEFAULT_TEXT_SHADER_VERTEX_SRC, DEFAULT_TEXT_SHADER_FRAGMENT_SRC);
+
+    BatchRenderer(quadShader, textShader);
+}
 
 BatchRenderer::BatchRenderer(std::shared_ptr<Shader> quadShader,
                              std::shared_ptr<Shader> textShader)
@@ -220,12 +231,7 @@ void BatchRenderer::generate_quad_va() {
 
     m_QuadVertexBuffer =
         std::make_shared<VertexBuffer>(MAX_VERTICES * sizeof(QuadVertex));
-    BufferLayout layout = {{ShaderDataType::Float3, "a_Position"},
-                           {ShaderDataType::Float4, "a_Color"},
-                           {ShaderDataType::Float2, "a_TexCoord"},
-                           {ShaderDataType::Float, "a_TexIndex"},
-                           {ShaderDataType::Int, "a_EntityId"}};
-    m_QuadVertexBuffer->set_layout(layout);
+    m_QuadVertexBuffer->set_layout(QUAD_SHADER_BUFFER_LAYOUT);
     m_QuadVertexArray->add_vertex_buffer(m_QuadVertexBuffer);
     m_QuadVertexArray->set_index_buffer(m_QuadIndexBuffer);
 
@@ -242,12 +248,7 @@ void BatchRenderer::generate_text_va() {
 
     m_TextVertexBuffer =
         std::make_shared<VertexBuffer>(MAX_VERTICES * sizeof(TextVertex));
-    BufferLayout layout = {{ShaderDataType::Float3, "a_Position"},
-                           {ShaderDataType::Float4, "a_Color"},
-                           {ShaderDataType::Float2, "a_TexCoord"},
-                           {ShaderDataType::Float, "a_TexIndex"},
-                           {ShaderDataType::Int, "a_EntityID"}};
-    m_TextVertexBuffer->set_layout(layout);
+    m_TextVertexBuffer->set_layout(TEXT_SHADER_BUFFER_LAYOUT);
     m_TextVertexArray->add_vertex_buffer(m_TextVertexBuffer);
     m_TextVertexArray->set_index_buffer(m_QuadIndexBuffer);
 
