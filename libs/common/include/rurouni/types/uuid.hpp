@@ -70,6 +70,9 @@ class UUID {
 
 }  // namespace rr
 
+/////////////////////////////////////////////////////////////////
+///////////////////  std extension  /////////////////////////////
+/////////////////////////////////////////////////////////////////
 /** defining std::hash behaviour for usage as map/unordered_map key */
 template <>
 struct std::hash<rr::UUID> {
@@ -78,5 +81,24 @@ struct std::hash<rr::UUID> {
         return hasher(k.m_UUID);
     }
 };
+
+/////////////////////////////////////////////////////////////////
+///////////////////  serialization  /////////////////////////////
+/////////////////////////////////////////////////////////////////
+#include <cereal/cereal.hpp>
+
+namespace rr {
+
+template <class Archive>
+std::string save_minimal(Archive const&, rr::UUID const& md) {
+    return md.to_string();
+}
+
+template <class Archive>
+void load_minimal(Archive const&, rr::UUID& md, std::string const& value) {
+    md.from_string(value);
+}
+
+}  // namespace rr
 
 #endif  // !RR_LIBS_COMMON_TYPES_UUID_H
