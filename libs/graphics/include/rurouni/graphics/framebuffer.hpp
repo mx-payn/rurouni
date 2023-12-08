@@ -1,9 +1,11 @@
 #ifndef RR_LIB_GRPAHICS_FRAMEBUFFER_H
 #define RR_LIB_GRPAHICS_FRAMEBUFFER_H
 
+// rurouni
 #include "rurouni/graphics/vertex_array.hpp"
 #include "rurouni/math.hpp"
 
+// std
 #include <memory>
 #include <vector>
 
@@ -15,6 +17,9 @@ enum class FramebufferTextureFormat {
     // Color
     RGBA8,
     RED_INTEGER,
+
+    // data
+    ENTITY_ID,
 
     // Depth
     DEPTH24STENCIL8,
@@ -64,11 +69,13 @@ class Framebuffer {
     const math::ivec2& get_size() const { return m_Specification.size; }
 
     void resize(const math::ivec2& size);
-    int read_pixel(uint32_t attachementIndex, const math::ivec2& position);
     void clear_attachement(uint32_t attachementIndex, int value);
 
     void generate_screen_va();
     void draw_color_attachement(uint32_t index = 0);
+
+    template <typename T>
+    T read_pixel_data(uint32_t attachementIndex, const math::ivec2& position);
 
    private:
     void cleanup();

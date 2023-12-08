@@ -25,10 +25,9 @@ static GLenum rurouni_fb_texture_format_to_gl(FramebufferTextureFormat format) {
     switch (format) {
         case FramebufferTextureFormat::RGBA8:
             return GL_RGBA8;
-
+        case FramebufferTextureFormat::ENTITY_ID:
         case FramebufferTextureFormat::RED_INTEGER:
             return GL_RED_INTEGER;
-
         default:
             dev::LOG->require(false, "Unknown FramebufferTextureFormat!");
             return 0;
@@ -174,6 +173,11 @@ void Framebuffer::invalidate() {
                         m_ColorAttachements[i], m_Specification.samples,
                         GL_R32I, GL_RED_INTEGER, m_Specification.size, i);
                     break;
+                case FramebufferTextureFormat::ENTITY_ID:
+                    attach_color_texture(
+                        m_ColorAttachements[i], m_Specification.samples,
+                        GL_R32UI, GL_RED_INTEGER, m_Specification.size, i);
+                    break;
                 default:
                     break;
             }
@@ -233,13 +237,39 @@ void Framebuffer::resize(const math::ivec2& size) {
     invalidate();
 }
 
-int Framebuffer::read_pixel(uint32_t attachementIndex,
-                            const math::ivec2& position) {
+template <>
+int32_t Framebuffer::read_pixel_data<int32_t>(uint32_t attachementIndex,
+                                              const math::ivec2& position) {
     dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
-    int pixelData;
+    int32_t pixelData;
     glReadPixels(position.x, position.y, 1, 1, GL_RED_INTEGER, GL_INT,
                  &pixelData);
+
+    return pixelData;
+}
+
+template <>
+uint32_t Framebuffer::read_pixel_data<uint32_t>(uint32_t attachementIndex,
+                                                const math::ivec2& position) {
+    dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
+    uint32_t pixelData;
+    glReadPixels(position.x, position.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT,
+                 &pixelData);
+
+    return pixelData;
+}
+
+template <>
+math::vec4 Framebuffer::read_pixel_data<math::vec4>(
+    uint32_t attachementIndex,
+    const math::ivec2& position) {
+    dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
+    math::vec4 pixelData;
+    glReadPixels(position.x, position.y, 1, 1, GL_RGBA, GL_FLOAT,
+                 math::value_ptr(pixelData));
 
     return pixelData;
 }

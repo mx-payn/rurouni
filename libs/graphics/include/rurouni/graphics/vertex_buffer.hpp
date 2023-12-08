@@ -19,6 +19,7 @@ enum class ShaderDataType {
     Float4,
     Mat3,
     Mat4,
+    UInt,
     Int,
     Int2,
     Int3,
@@ -26,32 +27,29 @@ enum class ShaderDataType {
     Bool
 };
 
-static int32_t ShaderDataTypeSize(ShaderDataType type) {
+static int32_t shader_data_type_size(ShaderDataType type) {
     switch (type) {
+        case ShaderDataType::UInt:
+        case ShaderDataType::Int:
         case ShaderDataType::Float:
             return 4;
+        case ShaderDataType::Int2:
         case ShaderDataType::Float2:
             return 4 * 2;
+        case ShaderDataType::Int3:
         case ShaderDataType::Float3:
             return 4 * 3;
+        case ShaderDataType::Int4:
         case ShaderDataType::Float4:
             return 4 * 4;
         case ShaderDataType::Mat3:
             return 4 * 3 * 3;
         case ShaderDataType::Mat4:
             return 4 * 4 * 4;
-        case ShaderDataType::Int:
-            return 4;
-        case ShaderDataType::Int2:
-            return 4 * 2;
-        case ShaderDataType::Int3:
-            return 4 * 3;
-        case ShaderDataType::Int4:
-            return 4 * 4;
         case ShaderDataType::Bool:
             return 1;
         default:
-            dev::LOG->require(false, "Unknown ShaderDataType!");
+            dev::LOG->require(false, "unknown ShaderDataType!");
             return 0;
     }
 }
@@ -70,27 +68,24 @@ struct BufferElement {
                   bool normalized = false)
         : Type(type),
           Name(name),
-          Size(ShaderDataTypeSize(type)),
+          Size(shader_data_type_size(type)),
           Offset(0),
           Normalized(normalized) {}
 
     int32_t GetComponentCount() const {
         switch (Type) {
+            case ShaderDataType::UInt:
+            case ShaderDataType::Int:
             case ShaderDataType::Float:
                 return 1;
+            case ShaderDataType::Int2:
             case ShaderDataType::Float2:
                 return 2;
+            case ShaderDataType::Int3:
             case ShaderDataType::Float3:
                 return 3;
-            case ShaderDataType::Float4:
-                return 4;
-            case ShaderDataType::Int:
-                return 1;
-            case ShaderDataType::Int2:
-                return 2;
-            case ShaderDataType::Int3:
-                return 3;
             case ShaderDataType::Int4:
+            case ShaderDataType::Float4:
                 return 4;
             case ShaderDataType::Mat3:
                 return 3 * 3;
@@ -99,7 +94,7 @@ struct BufferElement {
             case ShaderDataType::Bool:
                 return 1;
             default:
-                dev::LOG->require(false, "Unknown ShaderDataType!");
+                dev::LOG->require(false, "unknown ShaderDataType!");
                 return 0;
         }
     }

@@ -11,32 +11,27 @@
 
 namespace rr::graphics {
 
-static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
+static GLenum shader_data_type_to_open_gl_base_type(ShaderDataType type) {
     switch (type) {
         case ShaderDataType::Float:
-            return GL_FLOAT;
         case ShaderDataType::Float2:
-            return GL_FLOAT;
         case ShaderDataType::Float3:
-            return GL_FLOAT;
         case ShaderDataType::Float4:
-            return GL_FLOAT;
-        case ShaderDataType::Int:
-            return GL_INT;
-        case ShaderDataType::Int2:
-            return GL_INT;
-        case ShaderDataType::Int3:
-            return GL_INT;
-        case ShaderDataType::Int4:
-            return GL_INT;
         case ShaderDataType::Mat3:
-            return GL_FLOAT;
         case ShaderDataType::Mat4:
             return GL_FLOAT;
+        case ShaderDataType::Int:
+        case ShaderDataType::Int2:
+        case ShaderDataType::Int3:
+        case ShaderDataType::Int4:
+            return GL_INT;
+        case ShaderDataType::UInt:
+            // TODO should this return GL_INT?
+            return GL_UNSIGNED_INT;
         case ShaderDataType::Bool:
             return GL_BOOL;
         default:
-            dev::LOG->require(false, "Unknown ShaderDataType!");
+            dev::LOG->require(false, "unknown ShaderDataType!");
             return 0;
     }
 }
@@ -95,13 +90,14 @@ void VertexArray::add_vertex_buffer(
                 glEnableVertexAttribArray(m_VertexBufferIndex);
                 glVertexAttribPointer(
                     m_VertexBufferIndex, element.GetComponentCount(),
-                    ShaderDataTypeToOpenGLBaseType(element.Type),
+                    shader_data_type_to_open_gl_base_type(element.Type),
                     element.Normalized ? GL_TRUE : GL_FALSE,
                     layout.get_stride(),
                     reinterpret_cast<const void*>(element.Offset));
                 m_VertexBufferIndex++;
                 break;
             }
+            case ShaderDataType::UInt:
             case ShaderDataType::Int:
             case ShaderDataType::Int2:
             case ShaderDataType::Int3:
@@ -110,7 +106,7 @@ void VertexArray::add_vertex_buffer(
                 glEnableVertexAttribArray(m_VertexBufferIndex);
                 glVertexAttribIPointer(
                     m_VertexBufferIndex, element.GetComponentCount(),
-                    ShaderDataTypeToOpenGLBaseType(element.Type),
+                    shader_data_type_to_open_gl_base_type(element.Type),
                     layout.get_stride(),
                     reinterpret_cast<const void*>(element.Offset));
                 m_VertexBufferIndex++;
@@ -123,7 +119,7 @@ void VertexArray::add_vertex_buffer(
                     glEnableVertexAttribArray(m_VertexBufferIndex);
                     glVertexAttribPointer(
                         m_VertexBufferIndex, (uint8_t)count,
-                        ShaderDataTypeToOpenGLBaseType(element.Type),
+                        shader_data_type_to_open_gl_base_type(element.Type),
                         element.Normalized ? GL_TRUE : GL_FALSE,
                         layout.get_stride(),
                         reinterpret_cast<const void*>(element.Offset +
@@ -135,7 +131,7 @@ void VertexArray::add_vertex_buffer(
                 break;
             }
             default:
-                dev::LOG->require(false, "Unknown ShaderDataType!");
+                dev::LOG->require(false, "unknown ShaderDataType!");
                 break;
         }
     }
