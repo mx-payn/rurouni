@@ -1,13 +1,16 @@
-#include <rurouni/pch.h>
+// pch
+#include "rurouni/pch.hpp"
+//-----------------------
 
+// rurouni
 #include "rurouni/math.hpp"
 
+// external
 #define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/quaternion.hpp>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace rr::math {
 

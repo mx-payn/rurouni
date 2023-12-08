@@ -18,22 +18,21 @@ typedef glm::mat4 mat4;
 /////////////////////////////////////////////////////////////////
 #include <cereal/cereal.hpp>
 
-namespace glm {
+namespace rr::math {
 
-// glm matrices serialization
 template <class Archive>
-void serialize(Archive& archive, glm::mat2& m) {
+void serialize(Archive& archive, rr::math::mat2& m) {
     archive(m[0], m[1]);
 }
 template <class Archive>
-void serialize(Archive& archive, glm::mat3& m) {
+void serialize(Archive& archive, rr::math::mat3& m) {
     archive(m[0], m[1], m[2]);
 }
 template <class Archive>
-void serialize(Archive& archive, glm::mat4& m) {
+void serialize(Archive& archive, rr::math::mat4& m) {
     archive(m[0], m[1], m[2], m[3]);
 }
 
-}  // namespace glm
+}  // namespace rr::math
 
 #endif  // !RR_LIBS_MATH_MAT_H

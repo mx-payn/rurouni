@@ -22,37 +22,37 @@ typedef glm::ivec4 ivec4;
 /////////////////////////////////////////////////////////////////
 #include <cereal/cereal.hpp>
 
-namespace glm {
+namespace rr::math {
 
 template <class Archive>
-void serialize(Archive& archive, glm::vec2& v) {
+void serialize(Archive& archive, rr::math::vec2& v) {
     archive(cereal::make_nvp("x", v.x), cereal::make_nvp("y", v.y));
 }
 template <class Archive>
-void serialize(Archive& archive, glm::vec3& v) {
+void serialize(Archive& archive, rr::math::vec3& v) {
     archive(cereal::make_nvp("x", v.x), cereal::make_nvp("y", v.y),
             cereal::make_nvp("z", v.z));
 }
 template <class Archive>
-void serialize(Archive& archive, glm::vec4& v) {
+void serialize(Archive& archive, rr::math::vec4& v) {
     archive(cereal::make_nvp("x", v.x), cereal::make_nvp("y", v.y),
             cereal::make_nvp("z", v.z), cereal::make_nvp("w", v.w));
 }
 template <class Archive>
-void serialize(Archive& archive, glm::ivec2& v) {
+void serialize(Archive& archive, rr::math::ivec2& v) {
     archive(cereal::make_nvp("x", v.x), cereal::make_nvp("y", v.y));
 }
 template <class Archive>
-void serialize(Archive& archive, glm::ivec3& v) {
+void serialize(Archive& archive, rr::math::ivec3& v) {
     archive(cereal::make_nvp("x", v.x), cereal::make_nvp("y", v.y),
             cereal::make_nvp("z", v.z));
 }
 template <class Archive>
-void serialize(Archive& archive, glm::ivec4& v) {
+void serialize(Archive& archive, rr::math::ivec4& v) {
     archive(cereal::make_nvp("x", v.x), cereal::make_nvp("y", v.y), v.z,
             cereal::make_nvp("z", v.w));
 }
 
-}  // namespace glm
+}  // namespace rr::math
 
 #endif  // !RR_LIBS_MATH_VEC_H

@@ -25,8 +25,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ######################  TARGET  #############################
 #############################################################
 add_library(${PROJECT_NAME} STATIC 
+    # collections
+    src/math.cpp
+    # dev
     src/dev/logger.cpp 
+    # system
     src/system/filesystem.cpp
+    # types
     src/types/uuid.cpp
 )
 add_library(rurouni::common ALIAS ${PROJECT_NAME})
@@ -40,6 +45,7 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC  cereal::cereal
             fmt::fmt
+            glm::glm
             spdlog::spdlog 
             stduuid
     PRIVATE rurouni::pch
