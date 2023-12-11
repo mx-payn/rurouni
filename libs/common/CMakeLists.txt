@@ -28,8 +28,6 @@ add_library(${PROJECT_NAME} STATIC
     # collections
     src/math.cpp
     src/time.cpp
-    # dev
-    src/dev/logger.cpp 
     # event
     src/event/event_system.cpp
     # system

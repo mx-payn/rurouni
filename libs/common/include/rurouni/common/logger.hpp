@@ -1,5 +1,5 @@
-#ifndef RR_EDITOR_LOGGER_H
-#define RR_EDITOR_LOGGER_H
+#ifndef RR_LIBS_COMMON_LOGGER_H
+#define RR_LIBS_COMMON_LOGGER_H
 
 #include "rurouni/system/debug_break.hpp"
 
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-namespace rr::editor {
+namespace rr::common {
 
-static std::string logger_name = "editor";
+static std::string logger_name = "common";
 
 static void init_logger(std::vector<spdlog::sink_ptr> sinks) {
     auto logger = spdlog::get(logger_name);
@@ -76,6 +76,6 @@ void require(T&& assertion,
     }
 }
 
-}  // namespace rr::editor
+}  // namespace rr::common
 
-#endif  // !RR_EDITOR_LOGGER_H
+#endif  // !RR_LIBS_COMMON_DEV_LOGGER_H

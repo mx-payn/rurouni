@@ -73,7 +73,7 @@ endif()
 #############################################################
 ######################  TARGET  #############################
 #############################################################
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/editor.cpp)
 add_executable(rurouni::editor ALIAS ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} rurouni::libs)
