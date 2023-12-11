@@ -94,4 +94,5 @@ void Runtime::on_window_close_event(std::shared_ptr<event::WindowClose> event) {
     runtime::trace("received window close event. closing loop...");
     m_Running = false;
 }
+
 }  // namespace rr
