@@ -1,11 +1,17 @@
 #ifndef RR_LIBS_CORE_SCENE_H
 #define RR_LIBS_CORE_SCENE_H
 
+// rurouni
+#include "entt/entity/fwd.hpp"
 #include "rurouni/core/grid_state.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/framebuffer.hpp"
 
+// external
+#include <entt/entt.hpp>
+
+// std
 #include <memory>
 #include <vector>
 
@@ -44,7 +50,9 @@ class Scene {
 
     // scene state
     GridState m_GridState;
+    entt::registry m_Registry;
 };
+
 }  // namespace rr::core
 
 #endif  // !RR_LIBS_CORE_SCENE_H

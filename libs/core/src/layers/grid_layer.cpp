@@ -29,6 +29,7 @@ GridLayer::GridLayer(const GridState& gridState) : Layer() {
 GridLayer::~GridLayer() {}
 
 void GridLayer::on_render(graphics::BatchRenderer& renderer,
+                          entt::registry& registry,
                           const GridState& gridState) {
     // draw grid
     math::mat4 gridCellTransform;
