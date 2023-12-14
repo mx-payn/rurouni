@@ -26,6 +26,7 @@ include(cmake/dependencies.cmake)
 add_subdirectory(pch)
 add_subdirectory(common)
 add_subdirectory(graphics)
+add_subdirectory(core)
 
 #############################################################
 ####################  INTERFACE  ############################
@@ -36,5 +37,6 @@ add_library(rurouni::libs ALIAS ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} 
     INTERFACE   rurouni::common
                 rurouni::graphics
+                rurouni::core
     )
 
