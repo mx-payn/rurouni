@@ -5,16 +5,17 @@
 #include "rurouni/sandbox/logger.hpp"
 
 // rurouni
+#include "rurouni/common/logger.hpp"
+#include "rurouni/core/logger.hpp"
 #include "rurouni/core/scene.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
-#include "rurouni/graphics/window.hpp"
-#include "rurouni/common/logger.hpp"
-#include "rurouni/system/filesystem.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
+#include "rurouni/graphics/default/shader.hpp"
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
-#include "rurouni/graphics/default/shader.hpp"
+#include "rurouni/graphics/window.hpp"
+#include "rurouni/system/filesystem.hpp"
 
 // external
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -36,6 +37,7 @@ namespace rr {
 
         rr::graphics::init_logger(sinks);
         rr::common::init_logger(sinks);
+        rr::core::init_logger(sinks);
         rr::sandbox::init_logger(sinks);
 
         spdlog::set_level(spdlog::level::level_enum::trace);
