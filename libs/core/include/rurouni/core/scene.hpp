@@ -46,7 +46,8 @@ class Scene {
     std::shared_ptr<Layer> m_DebugLayer;
 
     // cameras
-    UUID m_CameraUUID;
+    entt::entity m_LayerCameraId = entt::null;
+    entt::entity m_OverlayCameraId = entt::null;
 
     // scene state
     GridState m_GridState;

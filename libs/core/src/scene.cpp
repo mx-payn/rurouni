@@ -37,8 +37,9 @@ Scene::Scene(const math::ivec2& viewportSize_px)
 
     // TEMP
     entt::entity camera = m_Registry.create();
-    m_CameraUUID = UUID::create();
-    m_Registry.emplace<components::Identifier>(camera, m_CameraUUID, "camera");
+    m_LayerCameraId = camera;
+    m_Registry.emplace<components::Identifier>(camera, UUID::create(),
+                                               "camera");
     auto& transform = m_Registry.emplace<components::Transform>(camera);
     transform.set_translation(transform.get_translation() -
                               math::vec3{0.5f, 0.5f, 0.0f});
@@ -50,8 +51,6 @@ Scene::Scene(const math::ivec2& viewportSize_px)
     // set initial camera data based on set type
     m_Registry.view<components::OrthographicProjection>().each(
         [this](entt::entity entity, auto& projection) {
-            projection.set_aspect_ratio(m_ViewportSize_px);
-
             switch (projection.get_unit_type()) {
                 case components::OrthographicProjection::UnitType::Cell:
                     projection.set_aspect_ratio(m_ViewportSize_px);
@@ -76,54 +75,68 @@ Scene::~Scene() {}
 void Scene::on_update(float dt) {}
 
 void Scene::on_render(graphics::BatchRenderer& renderer) {
-    // fetch camera data
-    math::mat4 cameraTransform;
-    math::mat4 cameraProjection;
-    bool activeCameraFound = false;
-
-    m_Registry
-        .view<components::Identifier, components::Transform,
-              components::OrthographicProjection>()
-        .each([this, &cameraTransform, &cameraProjection, &activeCameraFound](
-                  entt::entity entity, auto& id, auto& transform,
-                  auto& projection) {
-            if (m_CameraUUID == id.Uuid) {
-                cameraTransform = transform.get_transform();
-                cameraProjection = projection.get_projection();
-                activeCameraFound = true;
-                return;
-            }
-        });
-
-    if (!activeCameraFound) {
-        error(
-            "tried to get active camera [{}] data, but camera was not found "
-            "in ecs. Aborting render...",
-            m_CameraUUID);
-        return;
-    }
-
     m_Framebuffer->bind();
 
     graphics::api::set_clear_color({0.1f, 0.1f, 0.25f, 1.0f});
     graphics::api::clear();
 
+    math::mat4 cameraTransform;
+    math::mat4 cameraProjection;
+
+    // TODO m_Registry.try_get() might be a move here
     // rendering layers
-    renderer.begin(cameraProjection, cameraTransform);
-    for (int i = 0; i < m_Layers.size(); i++) {
-        m_Layers[i]->on_render(renderer, m_Registry, m_GridState);
+    if (m_LayerCameraId != entt::null && m_Registry.valid(m_LayerCameraId) &&
+        m_Registry
+            .all_of<components::Transform, components::OrthographicProjection>(
+                m_LayerCameraId)) {
+        cameraTransform = m_Registry.get<components::Transform>(m_LayerCameraId)
+                              .get_transform();
+        cameraProjection =
+            m_Registry.get<components::OrthographicProjection>(m_LayerCameraId)
+                .get_projection();
+
+        renderer.begin(cameraProjection, cameraTransform);
+        for (int i = 0; i < m_Layers.size(); i++) {
+            m_Layers[i]->on_render(renderer, m_Registry, m_GridState);
+        }
+        renderer.end();
     }
-    renderer.end();
 
     // rendering overlays
-    renderer.begin(cameraProjection, cameraTransform);
-    for (int i = 0; i < m_Overlays.size(); i++) {
-        m_Overlays[i]->on_render(renderer, m_Registry, m_GridState);
+    if (m_OverlayCameraId != entt::null &&
+        m_Registry.valid(m_OverlayCameraId) &&
+        m_Registry
+            .all_of<components::Transform, components::OrthographicProjection>(
+                m_OverlayCameraId)) {
+        cameraTransform =
+            m_Registry.get<components::Transform>(m_OverlayCameraId)
+                .get_transform();
+        cameraProjection =
+            m_Registry
+                .get<components::OrthographicProjection>(m_OverlayCameraId)
+                .get_projection();
+
+        renderer.begin(cameraProjection, cameraTransform);
+        for (int i = 0; i < m_Overlays.size(); i++) {
+            m_Overlays[i]->on_render(renderer, m_Registry, m_GridState);
+        }
+        renderer.end();
     }
-    renderer.end();
 
     // rendering debug layer
-    if (m_DebugLayer != nullptr) {
+    if (m_DebugLayer != nullptr && m_OverlayCameraId != entt::null &&
+        m_Registry.valid(m_OverlayCameraId) &&
+        m_Registry
+            .all_of<components::Transform, components::OrthographicProjection>(
+                m_OverlayCameraId)) {
+        cameraTransform =
+            m_Registry.get<components::Transform>(m_OverlayCameraId)
+                .get_transform();
+        cameraProjection =
+            m_Registry
+                .get<components::OrthographicProjection>(m_OverlayCameraId)
+                .get_projection();
+
         renderer.begin(cameraProjection, cameraTransform);
         m_DebugLayer->on_render(renderer, m_Registry, m_GridState);
         renderer.end();
@@ -173,7 +186,22 @@ void Scene::set_viewport_size(const math::ivec2& size) {
 
     m_Registry.view<components::OrthographicProjection>().each(
         [this, size](entt::entity entity, auto& projection) {
-            projection.set_aspect_ratio(size);
+            switch (projection.get_unit_type()) {
+                case components::OrthographicProjection::UnitType::Cell:
+                    projection.set_aspect_ratio(m_ViewportSize_px);
+                    projection.set_size(m_GridState.CellCount.y);
+                    break;
+                case components::OrthographicProjection::UnitType::Pixel:
+                    projection.set_aspect_ratio(m_ViewportSize_px);
+                    projection.set_size(m_ViewportSize_px.y);
+                    break;
+                case components::OrthographicProjection::UnitType::Fixed:
+                    projection.set_aspect_ratio(m_ViewportSize_px);
+                    break;
+                default:
+                    projection.set_aspect_ratio(m_ViewportSize_px);
+                    break;
+            }
         });
 }
 
