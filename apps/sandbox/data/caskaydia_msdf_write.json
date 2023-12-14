@@ -1,0 +1,19 @@
+{
+    "atlas": {
+        "type": "",
+        "distanceRange": 3.090003243682654e-41,
+        "size": -1.5568761610215584e-25,
+        "width": 22051,
+        "height": 0,
+        "yOrigin": ""
+    },
+    "metrics": {
+        "emSize": 0.0,
+        "ascender": 0.0,
+        "descender": 0.0,
+        "lineHeight": 4.6793373773399e-310,
+        "underlineY": 0.0,
+        "underlineThickness": 4.6793374090036e-310
+    },
+    "glyphs": []
+}

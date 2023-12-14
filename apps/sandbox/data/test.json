@@ -1,0 +1,1540 @@
+{
+    "atlas": {
+        "type": "msdf",
+        "distanceRange": 2.0,
+        "size": 40.0,
+        "width": 476,
+        "height": 476,
+        "yOrigin": "bottom"
+    },
+    "metrics": {
+        "emSize": 2.0,
+        "ascender": 1.85546875,
+        "descender": -0.46875,
+        "lineHeight": 2.32421875,
+        "underlineY": -0.146484375,
+        "underlineThickness": 0.09765625
+    },
+    "glyphs": [
+        {
+            "unicode": 32,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0,
+                "bottom": 0.0,
+                "right": 0.0,
+                "top": 0.0
+            },
+            "atlasBounds": {
+                "left": 0.0,
+                "bottom": 0.0,
+                "right": 0.0,
+                "top": 0.0
+            }
+        },
+        {
+            "unicode": 33,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.41093748807907107,
+                "bottom": -0.04902343824505806,
+                "right": 0.760937511920929,
+                "top": 1.4259765148162842
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 206.5,
+                "right": 14.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 34,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.2503906190395355,
+                "bottom": 0.7367187738418579,
+                "right": 0.9253906011581421,
+                "top": 1.411718726158142
+            },
+            "atlasBounds": {
+                "left": 167.5,
+                "bottom": 14.5,
+                "right": 194.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 35,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06093750149011612,
+                "bottom": -0.03164062649011612,
+                "right": 1.110937476158142,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 305.5,
+                "bottom": 207.5,
+                "right": 347.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 36,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.09355469048023224,
+                "bottom": -0.3441406190395355,
+                "right": 1.0685546398162842,
+                "top": 1.730859398841858
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 392.5,
+                "right": 39.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 37,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.02070312574505806,
+                "bottom": -0.056640625,
+                "right": 1.1707031726837159,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 37.5,
+                "bottom": 267.5,
+                "right": 83.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 38,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.02500000037252903,
+                "bottom": -0.056640625,
+                "right": 1.225000023841858,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 84.5,
+                "bottom": 267.5,
+                "right": 132.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 39,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.4359374940395355,
+                "bottom": 0.7367187738418579,
+                "right": 0.7359374761581421,
+                "top": 1.411718726158142
+            },
+            "atlasBounds": {
+                "left": 457.5,
+                "bottom": 148.5,
+                "right": 469.5,
+                "top": 175.5
+            }
+        },
+        {
+            "unicode": 40,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.22968749701976777,
+                "bottom": -0.23164062201976777,
+                "right": 1.0046875476837159,
+                "top": 1.6183593273162842
+            },
+            "atlasBounds": {
+                "left": 184.5,
+                "bottom": 401.5,
+                "right": 215.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 41,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.16718749701976777,
+                "bottom": -0.23164062201976777,
+                "right": 0.942187488079071,
+                "top": 1.6183593273162842
+            },
+            "atlasBounds": {
+                "left": 216.5,
+                "bottom": 401.5,
+                "right": 247.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 42,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.07343749701976776,
+                "bottom": 0.22519531846046449,
+                "right": 1.0984375476837159,
+                "top": 1.175195336341858
+            },
+            "atlasBounds": {
+                "left": 82.5,
+                "bottom": 3.5,
+                "right": 123.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 43,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06093750149011612,
+                "bottom": 0.15488281846046449,
+                "right": 1.110937476158142,
+                "top": 1.229882836341858
+            },
+            "atlasBounds": {
+                "left": 341.5,
+                "bottom": 44.5,
+                "right": 383.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 44,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.3671875,
+                "bottom": -0.45136719942092898,
+                "right": 0.7421875,
+                "top": 0.27363282442092898
+            },
+            "atlasBounds": {
+                "left": 457.5,
+                "bottom": 176.5,
+                "right": 472.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 45,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06093750149011612,
+                "bottom": 0.5673828125,
+                "right": 1.110937476158142,
+                "top": 0.8173828125
+            },
+            "atlasBounds": {
+                "left": 431.5,
+                "bottom": 336.5,
+                "right": 473.5,
+                "top": 346.5
+            }
+        },
+        {
+            "unicode": 46,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.41093748807907107,
+                "bottom": -0.05000000074505806,
+                "right": 0.760937511920929,
+                "top": 0.30000001192092898
+            },
+            "atlasBounds": {
+                "left": 295.5,
+                "bottom": 27.5,
+                "right": 309.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 47,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.08242187649011612,
+                "bottom": -0.21914061903953553,
+                "right": 1.132421851158142,
+                "top": 1.605859398841858
+            },
+            "atlasBounds": {
+                "left": 312.5,
+                "bottom": 402.5,
+                "right": 354.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 48,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0859375,
+                "bottom": -0.056640625,
+                "right": 1.0859375,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 133.5,
+                "bottom": 267.5,
+                "right": 173.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 49,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.13417968153953553,
+                "bottom": -0.03164062649011612,
+                "right": 1.059179663658142,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 165.5,
+                "bottom": 147.5,
+                "right": 202.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 50,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0771484375,
+                "bottom": -0.03437500074505806,
+                "right": 1.0771484375,
+                "top": 1.4406249523162842
+            },
+            "atlasBounds": {
+                "left": 15.5,
+                "bottom": 206.5,
+                "right": 55.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 51,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.09580077975988388,
+                "bottom": -0.056640625,
+                "right": 1.045800805091858,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 174.5,
+                "bottom": 267.5,
+                "right": 212.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 52,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04550781100988388,
+                "bottom": -0.03164062649011612,
+                "right": 1.120507836341858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 413.5,
+                "bottom": 147.5,
+                "right": 456.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 53,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0986328125,
+                "bottom": -0.05390625074505806,
+                "right": 1.0986328125,
+                "top": 1.4210937023162842
+            },
+            "atlasBounds": {
+                "left": 56.5,
+                "bottom": 206.5,
+                "right": 96.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 54,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0966796875,
+                "bottom": -0.05097656324505806,
+                "right": 1.0966796875,
+                "top": 1.4240233898162842
+            },
+            "atlasBounds": {
+                "left": 97.5,
+                "bottom": 206.5,
+                "right": 137.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 55,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.08066406100988388,
+                "bottom": -0.03164062649011612,
+                "right": 1.155664086341858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 180.5,
+                "bottom": 88.5,
+                "right": 223.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 56,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0859375,
+                "bottom": -0.056640625,
+                "right": 1.0859375,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 213.5,
+                "bottom": 267.5,
+                "right": 253.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 57,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0849609375,
+                "bottom": -0.05097656324505806,
+                "right": 1.0849609375,
+                "top": 1.4240233898162842
+            },
+            "atlasBounds": {
+                "left": 177.5,
+                "bottom": 206.5,
+                "right": 217.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 58,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.41093748807907107,
+                "bottom": -0.044921875,
+                "right": 0.760937511920929,
+                "top": 1.080078125
+            },
+            "atlasBounds": {
+                "left": 128.5,
+                "bottom": 42.5,
+                "right": 142.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 59,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.36640626192092898,
+                "bottom": -0.4605468809604645,
+                "right": 0.766406238079071,
+                "top": 1.089453101158142
+            },
+            "atlasBounds": {
+                "left": 165.5,
+                "bottom": 329.5,
+                "right": 181.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 60,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.0615234375,
+                "bottom": 0.17988280951976777,
+                "right": 1.0615234375,
+                "top": 1.2048828601837159
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 0.5,
+                "right": 40.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 61,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06093750149011612,
+                "bottom": 0.32988280057907107,
+                "right": 1.110937476158142,
+                "top": 1.0548827648162842
+            },
+            "atlasBounds": {
+                "left": 124.5,
+                "bottom": 12.5,
+                "right": 166.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 62,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.1103515625,
+                "bottom": 0.17988280951976777,
+                "right": 1.1103515625,
+                "top": 1.2048828601837159
+            },
+            "atlasBounds": {
+                "left": 41.5,
+                "bottom": 0.5,
+                "right": 81.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 63,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.08535156399011612,
+                "bottom": -0.056640625,
+                "right": 1.010351538658142,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 254.5,
+                "bottom": 267.5,
+                "right": 291.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 64,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.076171875,
+                "bottom": -0.2660156190395355,
+                "right": 1.076171875,
+                "top": 1.433984398841858
+            },
+            "atlasBounds": {
+                "left": 398.5,
+                "bottom": 407.5,
+                "right": 438.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 65,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.010937499813735485,
+                "bottom": -0.03164062649011612,
+                "right": 1.1609375476837159,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 88.5,
+                "right": 46.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 66,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.11933593451976776,
+                "bottom": -0.03164062649011612,
+                "right": 1.1443359851837159,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 47.5,
+                "bottom": 88.5,
+                "right": 88.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 67,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04814453050494194,
+                "bottom": -0.056640625,
+                "right": 1.1481444835662842,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 292.5,
+                "bottom": 267.5,
+                "right": 336.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 68,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.10957030951976776,
+                "bottom": -0.03164062649011612,
+                "right": 1.1345703601837159,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 371.5,
+                "bottom": 147.5,
+                "right": 412.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 69,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12773437798023225,
+                "bottom": -0.03164062649011612,
+                "right": 1.1027343273162842,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 331.5,
+                "bottom": 147.5,
+                "right": 370.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 70,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.14726562798023225,
+                "bottom": -0.03164062649011612,
+                "right": 1.1222655773162842,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 291.5,
+                "bottom": 147.5,
+                "right": 330.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 71,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.02910156175494194,
+                "bottom": -0.056640625,
+                "right": 1.1291015148162842,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 337.5,
+                "bottom": 267.5,
+                "right": 381.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 72,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.11093749850988388,
+                "bottom": -0.03164062649011612,
+                "right": 1.060937523841858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 203.5,
+                "bottom": 147.5,
+                "right": 241.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 73,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.13593749701976777,
+                "bottom": -0.03164062649011612,
+                "right": 1.0359375476837159,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 439.5,
+                "bottom": 417.5,
+                "right": 475.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 74,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04804687574505806,
+                "bottom": -0.05390625074505806,
+                "right": 1.0730469226837159,
+                "top": 1.4210937023162842
+            },
+            "atlasBounds": {
+                "left": 218.5,
+                "bottom": 206.5,
+                "right": 259.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 75,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.11562500149011612,
+                "bottom": -0.03164062649011612,
+                "right": 1.165624976158142,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 79.5,
+                "bottom": 147.5,
+                "right": 121.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 76,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12773437798023225,
+                "bottom": -0.03164062649011612,
+                "right": 1.1027343273162842,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 39.5,
+                "bottom": 147.5,
+                "right": 78.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 77,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.09843750298023224,
+                "bottom": -0.03164062649011612,
+                "right": 1.0734374523162842,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 224.5,
+                "bottom": 88.5,
+                "right": 263.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 78,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.11093749850988388,
+                "bottom": -0.03164062649011612,
+                "right": 1.060937523841858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 147.5,
+                "right": 38.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 79,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04843749850988388,
+                "bottom": -0.056640625,
+                "right": 1.123437523841858,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 382.5,
+                "bottom": 267.5,
+                "right": 425.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 80,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.125,
+                "bottom": -0.03164062649011612,
+                "right": 1.125,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 348.5,
+                "bottom": 207.5,
+                "right": 388.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 81,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04843749850988388,
+                "bottom": -0.4839843809604645,
+                "right": 1.123437523841858,
+                "top": 1.441015601158142
+            },
+            "atlasBounds": {
+                "left": 84.5,
+                "bottom": 398.5,
+                "right": 127.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 82,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.10097656399011612,
+                "bottom": -0.03164062649011612,
+                "right": 1.150976538658142,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 122.5,
+                "bottom": 147.5,
+                "right": 164.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 83,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.09355469048023224,
+                "bottom": -0.056640625,
+                "right": 1.0685546398162842,
+                "top": 1.443359375
+            },
+            "atlasBounds": {
+                "left": 426.5,
+                "bottom": 267.5,
+                "right": 465.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 84,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04843749850988388,
+                "bottom": -0.03164062649011612,
+                "right": 1.123437523841858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 136.5,
+                "bottom": 88.5,
+                "right": 179.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 85,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.11093749850988388,
+                "bottom": -0.05390625074505806,
+                "right": 1.060937523841858,
+                "top": 1.4210937023162842
+            },
+            "atlasBounds": {
+                "left": 138.5,
+                "bottom": 206.5,
+                "right": 176.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 86,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.010937499813735485,
+                "bottom": -0.03164062649011612,
+                "right": 1.1609375476837159,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 89.5,
+                "bottom": 88.5,
+                "right": 135.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 87,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": -0.01406249962747097,
+                "bottom": -0.03164062649011612,
+                "right": 1.185937523841858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 242.5,
+                "bottom": 147.5,
+                "right": 290.5,
+                "top": 205.5
+            }
+        },
+        {
+            "unicode": 88,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.03593749925494194,
+                "bottom": -0.03164062649011612,
+                "right": 1.1359374523162842,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 260.5,
+                "bottom": 207.5,
+                "right": 304.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 89,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": -0.0015625000232830644,
+                "bottom": -0.03164062649011612,
+                "right": 1.173437476158142,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 428.5,
+                "bottom": 207.5,
+                "right": 475.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 90,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12070312350988388,
+                "bottom": -0.03164062649011612,
+                "right": 1.070703148841858,
+                "top": 1.418359398841858
+            },
+            "atlasBounds": {
+                "left": 389.5,
+                "bottom": 207.5,
+                "right": 427.5,
+                "top": 265.5
+            }
+        },
+        {
+            "unicode": 91,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.3314453065395355,
+                "bottom": -0.244140625,
+                "right": 1.006445288658142,
+                "top": 1.630859375
+            },
+            "atlasBounds": {
+                "left": 128.5,
+                "bottom": 400.5,
+                "right": 155.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 92,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.03945312649011612,
+                "bottom": -0.21914061903953553,
+                "right": 1.089453101158142,
+                "top": 1.605859398841858
+            },
+            "atlasBounds": {
+                "left": 355.5,
+                "bottom": 402.5,
+                "right": 397.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 93,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.16542968153953553,
+                "bottom": -0.244140625,
+                "right": 0.8404296636581421,
+                "top": 1.630859375
+            },
+            "atlasBounds": {
+                "left": 156.5,
+                "bottom": 400.5,
+                "right": 183.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 94,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.17343750596046449,
+                "bottom": 0.768750011920929,
+                "right": 0.9984375238418579,
+                "top": 1.4187500476837159
+            },
+            "atlasBounds": {
+                "left": 195.5,
+                "bottom": 15.5,
+                "right": 228.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 95,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06093750149011612,
+                "bottom": -0.2158203125,
+                "right": 1.110937476158142,
+                "top": 0.0341796875
+            },
+            "atlasBounds": {
+                "left": 307.5,
+                "bottom": 90.5,
+                "right": 349.5,
+                "top": 100.5
+            }
+        },
+        {
+            "unicode": 96,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.2918945252895355,
+                "bottom": 1.0164062976837159,
+                "right": 0.8418945074081421,
+                "top": 1.6164062023162842
+            },
+            "atlasBounds": {
+                "left": 229.5,
+                "bottom": 17.5,
+                "right": 251.5,
+                "top": 41.5
+            }
+        },
+        {
+            "unicode": 97,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06230468675494194,
+                "bottom": -0.0498046875,
+                "right": 1.1623046398162842,
+                "top": 1.0751953125
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 42.5,
+                "right": 44.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 98,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12871094048023225,
+                "bottom": -0.05234374850988388,
+                "right": 1.1037108898162842,
+                "top": 1.497656226158142
+            },
+            "atlasBounds": {
+                "left": 224.5,
+                "bottom": 329.5,
+                "right": 263.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 99,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.10205078125,
+                "bottom": -0.044921875,
+                "right": 1.10205078125,
+                "top": 1.080078125
+            },
+            "atlasBounds": {
+                "left": 183.5,
+                "bottom": 42.5,
+                "right": 223.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 100,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06328125298023224,
+                "bottom": -0.05234374850988388,
+                "right": 1.0382812023162842,
+                "top": 1.497656226158142
+            },
+            "atlasBounds": {
+                "left": 264.5,
+                "bottom": 329.5,
+                "right": 303.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 101,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.08867187798023224,
+                "bottom": -0.044921875,
+                "right": 1.0636718273162842,
+                "top": 1.080078125
+            },
+            "atlasBounds": {
+                "left": 143.5,
+                "bottom": 42.5,
+                "right": 182.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 102,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.03203124925494194,
+                "bottom": -0.03281249850988388,
+                "right": 1.1320312023162842,
+                "top": 1.517187476158142
+            },
+            "atlasBounds": {
+                "left": 344.5,
+                "bottom": 329.5,
+                "right": 388.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 103,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06328125298023224,
+                "bottom": -0.4935546815395355,
+                "right": 1.0382812023162842,
+                "top": 1.081445336341858
+            },
+            "atlasBounds": {
+                "left": 125.5,
+                "bottom": 328.5,
+                "right": 164.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 104,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.13593749701976777,
+                "bottom": -0.03007812425494194,
+                "right": 1.0359375476837159,
+                "top": 1.4949219226837159
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 266.5,
+                "right": 36.5,
+                "top": 327.5
+            }
+        },
+        {
+            "unicode": 105,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12871094048023225,
+                "bottom": -0.03085937537252903,
+                "right": 1.1037108898162842,
+                "top": 1.519140601158142
+            },
+            "atlasBounds": {
+                "left": 304.5,
+                "bottom": 329.5,
+                "right": 343.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 106,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.13886718451976777,
+                "bottom": -0.502734363079071,
+                "right": 0.913867175579071,
+                "top": 1.5222656726837159
+            },
+            "atlasBounds": {
+                "left": 52.5,
+                "bottom": 394.5,
+                "right": 83.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 107,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12226562201976776,
+                "bottom": -0.03007812425494194,
+                "right": 1.1472656726837159,
+                "top": 1.4949219226837159
+            },
+            "atlasBounds": {
+                "left": 389.5,
+                "bottom": 330.5,
+                "right": 430.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 108,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.05976562574505806,
+                "bottom": -0.05234374850988388,
+                "right": 1.0847656726837159,
+                "top": 1.497656226158142
+            },
+            "atlasBounds": {
+                "left": 182.5,
+                "bottom": 329.5,
+                "right": 223.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 109,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.07343749701976776,
+                "bottom": -0.03515625,
+                "right": 1.0984375476837159,
+                "top": 1.08984375
+            },
+            "atlasBounds": {
+                "left": 390.5,
+                "bottom": 101.5,
+                "right": 431.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 110,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.13593749701976777,
+                "bottom": -0.03515625,
+                "right": 1.0359375476837159,
+                "top": 1.08984375
+            },
+            "atlasBounds": {
+                "left": 224.5,
+                "bottom": 42.5,
+                "right": 260.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 111,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.09843750298023224,
+                "bottom": -0.044921875,
+                "right": 1.0734374523162842,
+                "top": 1.080078125
+            },
+            "atlasBounds": {
+                "left": 307.5,
+                "bottom": 101.5,
+                "right": 346.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 112,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.13359375298023225,
+                "bottom": -0.4847656190395355,
+                "right": 1.1085937023162842,
+                "top": 1.090234398841858
+            },
+            "atlasBounds": {
+                "left": 40.5,
+                "bottom": 328.5,
+                "right": 79.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 113,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06328125298023224,
+                "bottom": -0.4847656190395355,
+                "right": 1.0382812023162842,
+                "top": 1.090234398841858
+            },
+            "atlasBounds": {
+                "left": 0.5,
+                "bottom": 328.5,
+                "right": 39.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 114,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.05156249925494194,
+                "bottom": -0.03515625,
+                "right": 1.1515624523162842,
+                "top": 1.08984375
+            },
+            "atlasBounds": {
+                "left": 83.5,
+                "bottom": 42.5,
+                "right": 127.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 115,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12343750149011612,
+                "bottom": -0.044921875,
+                "right": 1.048437476158142,
+                "top": 1.080078125
+            },
+            "atlasBounds": {
+                "left": 45.5,
+                "bottom": 42.5,
+                "right": 82.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 116,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.03164062649011612,
+                "bottom": -0.04843749850988388,
+                "right": 1.081640601158142,
+                "top": 1.376562476158142
+            },
+            "atlasBounds": {
+                "left": 264.5,
+                "bottom": 89.5,
+                "right": 306.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 117,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.10683593899011612,
+                "bottom": -0.0546875,
+                "right": 1.156835913658142,
+                "top": 1.0703125
+            },
+            "atlasBounds": {
+                "left": 347.5,
+                "bottom": 101.5,
+                "right": 389.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 118,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.04843749850988388,
+                "bottom": -0.03242187574505806,
+                "right": 1.123437523841858,
+                "top": 1.0675780773162842
+            },
+            "atlasBounds": {
+                "left": 432.5,
+                "bottom": 102.5,
+                "right": 475.5,
+                "top": 146.5
+            }
+        },
+        {
+            "unicode": 119,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.03593749925494194,
+                "bottom": -0.03242187574505806,
+                "right": 1.1359374523162842,
+                "top": 1.0675780773162842
+            },
+            "atlasBounds": {
+                "left": 431.5,
+                "bottom": 347.5,
+                "right": 475.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 120,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.07343749701976776,
+                "bottom": -0.03242187574505806,
+                "right": 1.0984375476837159,
+                "top": 1.0675780773162842
+            },
+            "atlasBounds": {
+                "left": 299.5,
+                "bottom": 43.5,
+                "right": 340.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 121,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.02128906175494194,
+                "bottom": -0.5042968988418579,
+                "right": 1.1212890148162842,
+                "top": 1.070703148841858
+            },
+            "atlasBounds": {
+                "left": 80.5,
+                "bottom": 328.5,
+                "right": 124.5,
+                "top": 391.5
+            }
+        },
+        {
+            "unicode": 122,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.12343750149011612,
+                "bottom": -0.03242187574505806,
+                "right": 1.048437476158142,
+                "top": 1.0675780773162842
+            },
+            "atlasBounds": {
+                "left": 261.5,
+                "bottom": 43.5,
+                "right": 298.5,
+                "top": 87.5
+            }
+        },
+        {
+            "unicode": 123,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.21406249701976777,
+                "bottom": -0.23554687201976777,
+                "right": 0.989062488079071,
+                "top": 1.6144530773162842
+            },
+            "atlasBounds": {
+                "left": 248.5,
+                "bottom": 401.5,
+                "right": 279.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 124,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.44843751192092898,
+                "bottom": -0.3316406309604645,
+                "right": 0.723437488079071,
+                "top": 1.718359351158142
+            },
+            "atlasBounds": {
+                "left": 40.5,
+                "bottom": 393.5,
+                "right": 51.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 125,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.18281249701976777,
+                "bottom": -0.23554687201976777,
+                "right": 0.957812488079071,
+                "top": 1.6144530773162842
+            },
+            "atlasBounds": {
+                "left": 280.5,
+                "bottom": 401.5,
+                "right": 311.5,
+                "top": 475.5
+            }
+        },
+        {
+            "unicode": 126,
+            "advance": 1.171875,
+            "planeBounds": {
+                "left": 0.06093750149011612,
+                "bottom": 0.44140625,
+                "right": 1.110937476158142,
+                "top": 0.94140625
+            },
+            "atlasBounds": {
+                "left": 252.5,
+                "bottom": 21.5,
+                "right": 294.5,
+                "top": 41.5
+            }
+        }
+    ]
+}

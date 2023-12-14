@@ -1,0 +1,120 @@
+@startuml
+!define DARKRED
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml 
+
+enum TextureDataFormat {
+    None
+    R8
+    RGB8 
+    RGBA8 
+    RGBA32F
+}
+
+enum FontRepresentationType {
+    None
+    MSDF
+}
+
+struct ImageTextureSpecification {
+    + Path filepath
+    + UUID id
+}
+
+struct DataTextureSpecification {
+    + void* data
+    + uint32_t dataSize
+    + TextureDataFormat format
+    + bool generateMips
+    + UUID id
+}
+
+struct FontSpecification {
+
+}
+
+struct GlyphSpecification {
+
+}
+
+struct GlyphRenderSpecification {
+
+}
+
+abstract class Texture {
++ Texture()
++ Texture(ImageTextureSpecification)
++ Texture(DataTextureSpecification)
+
++ void bind()
+
++ virtual array<vec2, 4> get_uv_coords()
++ virtual uint32_t get_renderer_id()
+
+# ivec2 size_px
+# UUID id
+# wp<Shader> shader
+
+# uint32_t internalFormat
+# uint32_t dataFormat
+
+# string name
+# typeid underlyingTypeId
+}
+
+class Sprite {
+    + Sprite(ivec2 size, UUId id, wp<Shader> shader, string name)
+
+    + virtual array<vec2, 4> get_uv_coords() override
+    + virtual uint32_t get_renderer_id() override
+
+    - wp<Texture> spritesheet
+    - array<vec2, 4> uvCoords
+    - ivec2 index
+}
+
+abstract class Font {
+
+}
+
+class MonospaceFont {
+
+}
+
+class ProportionalFont {
+
+}
+
+interface Text {
+    + virtual void update(float dt) = 0
+    + virtual array<vec2, 4> get_uv_coords() = 0
+    + virtual uint32_t get_renderer_id() = 0 
+}
+
+class StaticText {
+
+}
+
+class DynamicText {
+
+}
+
+class Renderer
+class AssetManager
+
+Texture -- AssetManager
+Texture -- Renderer
+
+Texture <|-- Sprite
+Texture <|-- Font
+Texture <|-- Text
+
+Font <|-- MonospaceFont
+Font <|-- ProportionalFont
+
+Text <|-- StaticText
+Text <|-- DynamicText
+
+Texture o-- Sprite
+Font o-- Text
+
+@enduml

@@ -5,8 +5,8 @@
 //-----------------------
 
 // rurouni
-#include "default/shader.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
+#include "rurouni/graphics/default/shader.hpp"
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/math.hpp"

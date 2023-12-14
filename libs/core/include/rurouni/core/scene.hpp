@@ -4,6 +4,7 @@
 #include "rurouni/core/grid_state.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
+#include "rurouni/graphics/framebuffer.hpp"
 
 #include <memory>
 #include <vector>
@@ -26,8 +27,11 @@ class Scene {
 
     void set_viewport_size(const math::ivec2& size);
 
+    graphics::Framebuffer& get_framebuffer() const { return *m_Framebuffer; }
+
    private:
     math::ivec2 m_ViewportSize_px;
+    std::unique_ptr<graphics::Framebuffer> m_Framebuffer;
 
     // layers
     std::vector<std::unique_ptr<Layer>> m_Layers;
