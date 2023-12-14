@@ -3,8 +3,8 @@
 //-----------------------
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
 #include "rurouni/graphics/framebuffer.hpp"
+#include "rurouni/graphics/logger.hpp"
 #include "rurouni/math.hpp"
 
 // external
@@ -29,7 +29,7 @@ static GLenum rurouni_fb_texture_format_to_gl(FramebufferTextureFormat format) {
         case FramebufferTextureFormat::RED_INTEGER:
             return GL_RED_INTEGER;
         default:
-            dev::LOG->require(false, "Unknown FramebufferTextureFormat!");
+            require(false, "Unknown FramebufferTextureFormat!");
             return 0;
     }
 }
@@ -202,8 +202,8 @@ void Framebuffer::invalidate() {
     }
 
     if (m_ColorAttachements.size() > 1) {
-        dev::LOG->require(m_ColorAttachements.size() <= 4,
-                          "incompatible color attachement count");
+        require(m_ColorAttachements.size() <= 4,
+                "incompatible color attachement count");
         GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,
                              GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
         glDrawBuffers(m_ColorAttachements.size(), buffers);
@@ -211,9 +211,8 @@ void Framebuffer::invalidate() {
         glDrawBuffer(GL_NONE);
     }
 
-    dev::LOG->require(
-        glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
-        "Framebuffer status incomplete!");
+    require(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE,
+            "Framebuffer status incomplete!");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -228,7 +227,7 @@ void Framebuffer::unbind() {
 }
 
 uint32_t Framebuffer::get_color_attachment_renderer_id(uint32_t index) const {
-    dev::LOG->require(index < m_ColorAttachements.size(), "");
+    require(index < m_ColorAttachements.size(), "");
     return m_ColorAttachements[index];
 }
 
@@ -240,7 +239,7 @@ void Framebuffer::resize(const math::ivec2& size) {
 template <>
 int32_t Framebuffer::read_pixel_data<int32_t>(uint32_t attachementIndex,
                                               const math::ivec2& position) {
-    dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
+    require(attachementIndex < m_ColorAttachements.size(), "");
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
     int32_t pixelData;
     glReadPixels(position.x, position.y, 1, 1, GL_RED_INTEGER, GL_INT,
@@ -252,7 +251,7 @@ int32_t Framebuffer::read_pixel_data<int32_t>(uint32_t attachementIndex,
 template <>
 uint32_t Framebuffer::read_pixel_data<uint32_t>(uint32_t attachementIndex,
                                                 const math::ivec2& position) {
-    dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
+    require(attachementIndex < m_ColorAttachements.size(), "");
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
     uint32_t pixelData;
     glReadPixels(position.x, position.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT,
@@ -265,7 +264,7 @@ template <>
 math::vec4 Framebuffer::read_pixel_data<math::vec4>(
     uint32_t attachementIndex,
     const math::ivec2& position) {
-    dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
+    require(attachementIndex < m_ColorAttachements.size(), "");
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
     math::vec4 pixelData;
     glReadPixels(position.x, position.y, 1, 1, GL_RGBA, GL_FLOAT,
@@ -275,7 +274,7 @@ math::vec4 Framebuffer::read_pixel_data<math::vec4>(
 }
 
 void Framebuffer::clear_attachement(uint32_t attachementIndex, int value) {
-    dev::LOG->require(attachementIndex < m_ColorAttachements.size(), "");
+    require(attachementIndex < m_ColorAttachements.size(), "");
 
     auto& spec = m_ColorAttachementSpecifications[attachementIndex];
     glClearTexImage(m_ColorAttachements[attachementIndex], 0,

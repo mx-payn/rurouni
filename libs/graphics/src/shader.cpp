@@ -3,7 +3,7 @@
 //-----------------------
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
+#include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/shader.hpp"
 #include "rurouni/math.hpp"
 #include "rurouni/system/filesystem.hpp"
@@ -58,7 +58,7 @@ std::string Shader::get_shader_source(const system::Path& filepath) {
         in.read(&shaderSource[0], (int32_t)shaderSource.size());
         in.close();
     } else {
-        dev::LOG->error("Could not open file: {}", filepath.c_str());
+        error("Could not open file: {}", filepath.c_str());
     }
 
     return shaderSource;
@@ -88,8 +88,8 @@ void Shader::compile_shader(const std::string& name,
         // We don't need the shader anymore.
         glDeleteShader(shader);
 
-        dev::LOG->error("{}", infoLog.data());
-        dev::LOG->require(false, "shader compilation failure!");
+        error("{}", infoLog.data());
+        require(false, "shader compilation failure!");
     }
 
     glAttachShader(program, shader);
@@ -119,8 +119,8 @@ void Shader::link_program(uint32_t& program) {
         for (auto id : m_ShaderIDs)
             glDeleteShader(id);
 
-        dev::LOG->error("{}", infoLog.data());
-        dev::LOG->require(false, "Shader link failure!");
+        error("{}", infoLog.data());
+        require(false, "Shader link failure!");
         return;
     }
 

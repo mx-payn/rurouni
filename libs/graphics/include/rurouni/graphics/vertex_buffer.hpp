@@ -2,7 +2,7 @@
 #define RR_LIB_GRAPHICS_VERTEX_BUFFER_H
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
+#include "rurouni/graphics/logger.hpp"
 
 // std
 #include <cstdint>
@@ -49,7 +49,7 @@ static int32_t shader_data_type_size(ShaderDataType type) {
         case ShaderDataType::Bool:
             return 1;
         default:
-            dev::LOG->require(false, "unknown ShaderDataType!");
+            require(false, "unknown ShaderDataType!");
             return 0;
     }
 }
@@ -94,7 +94,7 @@ struct BufferElement {
             case ShaderDataType::Bool:
                 return 1;
             default:
-                dev::LOG->require(false, "unknown ShaderDataType!");
+                require(false, "unknown ShaderDataType!");
                 return 0;
         }
     }

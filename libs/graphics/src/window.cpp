@@ -3,11 +3,11 @@
 //-----------------------
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
 #include "rurouni/event/key_event.hpp"
 #include "rurouni/event/mouse_event.hpp"
 #include "rurouni/event/window_event.hpp"
 #include "rurouni/graphics/key_codes.hpp"
+#include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/mouse_codes.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/graphics/window.hpp"
@@ -22,16 +22,16 @@ namespace rr::graphics {
 
 static bool s_GLFWInitialized = false;
 
-Window::Window(const WindowConfig& config,
+Window::Window(const WindowSpecification& spec,
                std::shared_ptr<event::EventSystem> eventSystem) {
     m_Data.EventSystem = eventSystem;
-    m_Data.VSync = config.VSync;
-    m_Data.Fullscreen = config.Fullscreen;
-    m_Data.Maximized = config.Maximized;
+    m_Data.VSync = spec.VSync;
+    m_Data.Fullscreen = spec.Fullscreen;
+    m_Data.Maximized = spec.Maximized;
     m_Data.Iconified = false;
     m_Data.Focused = true;
-    m_Data.Floating = config.Floating;
-    m_Data.Resizable = config.Resizable;
+    m_Data.Floating = spec.Floating;
+    m_Data.Resizable = spec.Resizable;
 
     if (!s_GLFWInitialized) {
         // Set GLFW error callback, this is allowed before init
@@ -39,13 +39,13 @@ Window::Window(const WindowConfig& config,
 
         // initialize GLFW
         int success = glfwInit();
-        dev::LOG->require(success == GLFW_TRUE,
-                          "GLFW initialization fail! Check log message!");
+        require(success == GLFW_TRUE,
+                "GLFW initialization fail! Check log message!");
         s_GLFWInitialized = true;
     }
 
     // Window Hints
-    if (config.Fullscreen) {
+    if (spec.Fullscreen) {
         // Fullscreen mode just takes the whole screen
         // non of these flags actually matter
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -55,13 +55,11 @@ Window::Window(const WindowConfig& config,
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
     } else {
         // windowed mode
-        glfwWindowHint(GLFW_RESIZABLE,
-                       config.Resizable ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, spec.Resizable ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE);
-        glfwWindowHint(GLFW_FLOATING, config.Floating ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_FLOATING, spec.Floating ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED,
-                       config.Maximized ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_MAXIMIZED, spec.Maximized ? GLFW_TRUE : GLFW_FALSE);
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
@@ -79,16 +77,15 @@ Window::Window(const WindowConfig& config,
 
     // For linux X11 window managers to set floating rules
     glfwWindowHintString(GLFW_X11_CLASS_NAME, "rurouni");
-    glfwWindowHintString(GLFW_X11_INSTANCE_NAME, config.Title.c_str());
+    glfwWindowHintString(GLFW_X11_INSTANCE_NAME, spec.Title.c_str());
 
-    if (config.Fullscreen) {
+    if (spec.Fullscreen) {
         // window creation fullscreen
         math::ivec2 size =
-            config.Size.value_or(math::ivec2{mode->width, mode->height});
-        m_Window = glfwCreateWindow(size.x, size.y, config.Title.c_str(),
-                                    monitor, nullptr);
-        dev::LOG->require(m_Window,
-                          "Window creation failed! Check log message!");
+            spec.Size.value_or(math::ivec2{mode->width, mode->height});
+        m_Window = glfwCreateWindow(size.x, size.y, spec.Title.c_str(), monitor,
+                                    nullptr);
+        require(m_Window, "Window creation failed! Check log message!");
         m_Data.WindowSize = size;
         m_Data.WindowPosition = {0, 0};
     } else {
@@ -101,21 +98,20 @@ Window::Window(const WindowConfig& config,
                                &size.y);
 
         // set custom size if awailable
-        if (config.Size.has_value()) {
-            size = config.Size.value();
+        if (spec.Size.has_value()) {
+            size = spec.Size.value();
         }
 
-        m_Window = glfwCreateWindow(size.x, size.y, config.Title.c_str(),
-                                    nullptr, nullptr);
-        dev::LOG->require(m_Window,
-                          "Window creation failure! Check GLFW log message!");
+        m_Window = glfwCreateWindow(size.x, size.y, spec.Title.c_str(), nullptr,
+                                    nullptr);
+        require(m_Window, "Window creation failure! Check GLFW log message!");
         glfwSetWindowPos(m_Window, position.x, position.y);
 
         m_Data.WindowSize = size;
         m_Data.WindowPosition = position;
     }
 
-    m_Data.Title = config.Title;
+    m_Data.Title = spec.Title;
 
     // ===== Graphics Context =====>
     glfwMakeContextCurrent(m_Window);
@@ -139,7 +135,7 @@ Window::Window(const WindowConfig& config,
                                &m_Data.ContentScale.y);
 
     // vsync
-    set_vsync(config.VSync);
+    set_vsync(spec.VSync);
 
     // user pointer for event callbacks
     glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -256,22 +252,22 @@ void Window::opengl_message_callback(unsigned source,
                                      const void* userParam) {
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
-            dev::LOG->critical("{}", message);
+            critical("{}", message);
             return;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            dev::LOG->error("{}", message);
+            error("{}", message);
             return;
         case GL_DEBUG_SEVERITY_LOW:
-            dev::LOG->warn("{}", message);
+            warn("{}", message);
             return;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            dev::LOG->info("{}", message);
+            info("{}", message);
             return;
     }
 }
 
 void Window::glfw_error_callback(int error, const char* description) {
-    dev::LOG->error("GLFW Error [{}]: {}", error, description);
+    graphics::error("GLFW Error [{}]: {}", error, description);
 }
 
 void Window::window_size_callback(GLFWwindow* window, int width, int height) {

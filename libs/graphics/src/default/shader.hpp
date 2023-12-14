@@ -56,83 +56,127 @@ void main()
 )";
 
 static const std::string DEFAULT_TEXT_SHADER_VERTEX_SRC = R"(
+#version 430 core
+
+layout(location = 0) in vec3 a_Position;
+layout(location = 1) in vec2 a_TexCoord;
+
+uniform mat4 u_ViewProjection;
+
+out vec2 v_TexCoord;
+
+void main()
+{
+  v_TexCoord = a_TexCoord;
+  gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+}
+)";
+
+static const std::string DEFAULT_TEXT_SHADER_FRAGMENT_SRC = R"(
+#version 430 core
+
+layout(location = 0) out vec4 color;
+
+in vec2 v_TexCoord;
+
+uniform sampler2D u_Texture;
+
+void main()
+{
+  color = texture(u_Texture, v_TexCoord);
+  if(color.a < 0.1)
+       discard;
+}
+)";
+
+static const std::string DEFAULT_MSDF_SHADER_VERTEX_SRC = R"(
 #version 450 core
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
 layout(location = 2) in vec2 a_TexCoord;
-layout(location = 3) in float a_TexIndex;
-layout(location = 4) in int a_EntityID;
 
 uniform mat4 u_ViewProjection;
 
-struct VertexOutput
-{
-	vec4 Color;
-	vec2 TexCoord;
-    float TexIndex;
-};
-
-layout (location = 0) out VertexOutput Output;
-layout (location = 3) out flat int v_EntityID;
+out vec2 v_TexCoord;
+out vec4 v_Color;
 
 void main()
 {
-	Output.Color = a_Color;
-	Output.TexCoord = a_TexCoord;
-	Output.TexIndex = a_TexIndex;
-	v_EntityID = a_EntityID;
+	v_TexCoord = a_TexCoord;
+    v_Color = a_Color;
 
 	gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 }
 )";
 
-static const std::string DEFAULT_TEXT_SHADER_FRAGMENT_SRC = R"(
+static const std::string DEFAULT_MSDF_SHADER_FRAGMENT_SRC = R"(
 #version 450 core
 
 layout(location = 0) out vec4 o_Color;
-layout(location = 1) out int o_EntityID;
 
-struct VertexOutput
-{
-	vec4 Color;
-	vec2 TexCoord;
-    float TexIndex;
-};
+in vec2 v_TexCoord;
+in vec4 v_Color;
 
-layout (location = 0) in VertexOutput Input;
-layout (location = 3) in flat int v_EntityID;
-
-uniform sampler2D u_Textures[5];
-
-float screenPxRange() {
-	const float pxRange = 2.0; // set to distance field's pixel range
-    vec2 unitRange = vec2(pxRange)/vec2(textureSize(u_Textures[int(Input.TexIndex)], 0));
-    vec2 screenTexSize = vec2(1.0)/fwidth(Input.TexCoord);
-    return max(0.5*dot(unitRange, screenTexSize), 1.0);
-}
+uniform sampler2D u_Texture;
 
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
 }
 
+// source: https://medium.com/@calebfaith/implementing-msdf-font-in-opengl-ea09a9ab7e00
+void main() {
+    vec3 msd = texture(u_Texture, v_TexCoord).rgb;
+    ivec2 sz = textureSize(u_Texture, 0).xy;
+    float dx = dFdx(v_TexCoord.x) * sz.x; 
+    float dy = dFdy(v_TexCoord.y) * sz.y;
+    float toPixels = 8.0 * inversesqrt(dx * dx + dy * dy);
+    float sigDist = median(msd.r, msd.g, msd.b);
+    float w = fwidth(sigDist);
+    float opacity = smoothstep(0.5 - w, 0.5 + w, sigDist);
+
+    o_Color = vec4(v_Color.rgb, opacity);
+}
+)";
+
+static const std::string DEFAULT_SDF_SHADER_VERTEX_SRC = R"(
+#version 450 core
+
+layout(location = 0) in vec3 a_Position;
+layout(location = 1) in vec4 a_Color;
+layout(location = 2) in vec2 a_TexCoord;
+
+uniform mat4 u_ViewProjection;
+
+out vec2 v_TexCoord;
+out vec4 v_Color;
+
 void main()
 {
-	vec4 texColor = Input.Color * texture(u_Textures[int(Input.TexIndex)], Input.TexCoord);
+	v_TexCoord = a_TexCoord;
+    v_Color = a_Color;
 
-	vec3 msd = texture(u_Textures[int(Input.TexIndex)], Input.TexCoord).rgb;
-    float sd = median(msd.r, msd.g, msd.b);
-    float screenPxDistance = screenPxRange()*(sd - 0.5);
-    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
-	if (opacity == 0.0)
-		discard;
+	gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+}
+)";
 
-	vec4 bgColor = vec4(0.0);
-    o_Color = mix(bgColor, Input.Color, opacity);
-	if (o_Color.a == 0.0)
-		discard;
+static const std::string DEFAULT_SDF_SHADER_FRAGMENT_SRC = R"(
+#version 450 core
 
-	o_EntityID = v_EntityID;
+layout(location = 0) out vec4 o_Color;
+
+in vec2 v_TexCoord;
+in vec4 v_Color;
+
+uniform sampler2D u_Texture;
+
+void main() {
+    float c = texture(u_Texture, v_TexCoord).r;
+
+    if (c > 0.5)
+        o_Color = vec4(1, 1, 1, 1) * v_Color;
+    else 
+        o_Color = vec4(0, 0, 0, 0);
 }
 )";
 

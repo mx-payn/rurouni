@@ -3,7 +3,7 @@
 //-----------------------
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
+#include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/math.hpp"
 
@@ -23,20 +23,20 @@ static void opengl_message_callback(unsigned source,
                                     const void* userParam) {
     switch (severity) {
         case GL_DEBUG_SEVERITY_HIGH:
-            dev::LOG->critical("{}", message);
+            critical("{}", message);
             return;
         case GL_DEBUG_SEVERITY_MEDIUM:
-            dev::LOG->error("{}", message);
+            error("{}", message);
             return;
         case GL_DEBUG_SEVERITY_LOW:
-            dev::LOG->warn("{}", message);
+            warn("{}", message);
             return;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-            dev::LOG->info("{}", message);
+            info("{}", message);
             return;
     }
 
-    dev::LOG->require(false, "Unknown severity level!");
+    require(false, "Unknown severity level!");
 }
 
 void init() {

@@ -3,7 +3,7 @@
 //-----------------------
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
+#include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/vertex_array.hpp"
 
 // external
@@ -31,7 +31,7 @@ static GLenum shader_data_type_to_open_gl_base_type(ShaderDataType type) {
         case ShaderDataType::Bool:
             return GL_BOOL;
         default:
-            dev::LOG->require(false, "unknown ShaderDataType!");
+            require(false, "unknown ShaderDataType!");
             return 0;
     }
 }
@@ -44,9 +44,9 @@ VertexArray::VertexArray(float* quadVertices,
                          uint32_t quadVertexCount,
                          const BufferLayout& quadLayout) {
     const uint32_t QUAD_INDEX_COUNT = 6;
-    dev::LOG->require(quadVertexCount / QUAD_INDEX_COUNT ==
-                          quadLayout.get_elements().size() * 2,
-                      "vertexCount and layout do not match to a quad");
+    require(quadVertexCount / QUAD_INDEX_COUNT ==
+                quadLayout.get_elements().size() * 2,
+            "vertexCount and layout do not match to a quad");
     glCreateVertexArrays(1, &m_RendererID);
 
     std::shared_ptr<VertexBuffer> quadVB = std::make_shared<VertexBuffer>(
@@ -74,8 +74,8 @@ void VertexArray::unbind() const {
 
 void VertexArray::add_vertex_buffer(
     std::shared_ptr<VertexBuffer>& vertexBuffer) {
-    dev::LOG->require(vertexBuffer->get_layout().get_elements().size() > 0,
-                      "Vertex Buffer has no layout!");
+    require(vertexBuffer->get_layout().get_elements().size() > 0,
+            "Vertex Buffer has no layout!");
 
     glBindVertexArray(m_RendererID);
     vertexBuffer->bind();
@@ -131,7 +131,7 @@ void VertexArray::add_vertex_buffer(
                 break;
             }
             default:
-                dev::LOG->require(false, "unknown ShaderDataType!");
+                require(false, "unknown ShaderDataType!");
                 break;
         }
     }

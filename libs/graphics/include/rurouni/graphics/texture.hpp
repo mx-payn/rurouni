@@ -2,12 +2,14 @@
 #define RR_LIB_GRAPHICS_TEXTURE_H
 
 // rurouni
+#include "rurouni/graphics/shader.hpp"
 #include "rurouni/math/vec.hpp"
 #include "rurouni/system/filesystem.hpp"
 #include "rurouni/types/uuid.hpp"
 
 // std
 #include <exception>
+#include <optional>
 
 namespace rr::graphics {
 
@@ -17,15 +19,37 @@ struct TextureException : public std::exception {
     const char* what() const throw() { return "texture failure, check log"; }
 };
 
-enum class ImageFormat { None = 0, R8, RGB8, RGBA8, RGBA32F };
-
-struct TextureSpecification {
-    math::ivec2 size{1};
-    ImageFormat format = ImageFormat::RGBA8;
-    bool generateMips = true;
+/** values from gl.h */
+enum class TexturePixelFormat : uint32_t {
+    None = 0,
+    R8 = 0x8229,
+    RGB8 = 0x8051,
+    RGBA8 = 0x8058,
+    RGBA32F = 0x8814
 };
 
-/** \brief Abstract texture class providing GraphicsAPI dependent texture
+/** values from gl.h */
+enum class TextureDataFormat : uint32_t {
+    None = 0,
+    RED = 0x1903,
+    RGB = 0x1907,
+    RGBA = 0x1908,
+};
+
+struct DataTextureSpecification {
+    glm::ivec2 size;
+    TextureDataFormat dataFormat = TextureDataFormat::RGBA;
+    TexturePixelFormat pixelFormat = TexturePixelFormat::RGBA8;
+    bool generateMips = true;
+    UUID id;
+};
+
+struct ImageTextureSpecification {
+    system::Path Filepath;
+    UUID id;
+};
+
+/** \brief texture class providing GraphicsAPI dependent texture
  * functionalities.
  *
  *  Abstract class to hold GraphicsAPI independet Data and providing an
@@ -37,21 +61,11 @@ struct TextureSpecification {
  */
 class Texture {
    public:
-    /** Creates texture from path
-     *
-     * \param[in] path The absolute path of the image file.
-     */
-    Texture(const system::Path& path, const UUID& uuid = UUID());
+    Texture() = default;
+    Texture(const DataTextureSpecification& spec);
+    Texture(const ImageTextureSpecification& spec);
 
-    /** Creates empty texture of given size
-     *
-     * Data can then be set via set_data() function
-     */
-    Texture(const math::ivec2& size, const UUID& uuid = UUID());
-
-    Texture(const TextureSpecification& spec, const UUID& uuid = UUID());
-
-    ~Texture();
+    virtual ~Texture();
 
     /** GPU call to Bind / Select a Texture for further processing.
      *  Textures have to be bound before data can be accessed on the GPU.
@@ -75,6 +89,8 @@ class Texture {
      */
     void set_data(void* data, uint32_t size);
 
+    const std::array<math::vec2, 4>& get_uv_coords() { return m_UVCoords; }
+
     /** Retrieves the unique identification of texture data stored on the GPU.
      *  This is NOT equal to the UUID used by the program, but only a GPU
      *  generated identifier for each texture location on GPU.
@@ -83,22 +99,28 @@ class Texture {
      *
      *  \returns The unique identifier to access texture data in GPU memory.
      */
-    uint32_t get_renderer_id() const { return m_RendererID; }
+    virtual std::optional<uint32_t> get_renderer_id() const {
+        return m_RendererID;
+    }
 
     /** \returns The texture size in pixel. */
     const math::ivec2& get_size() const { return m_Size; }
-    /** \returns The textures absolute path on disk. */
-    const std::filesystem::path& get_path() const { return m_Path; }
     const UUID& get_uuid() const { return m_UUID; }
 
-   private:
+   protected:
     math::ivec2 m_Size = {0.0f, 0.0f};  //!< The texture size in pixel
-    system::Path m_Path = "";           //!< The absolute path of the image
     UUID m_UUID = UUID();
 
-    uint32_t m_RendererID;  //!< The unique identifier for data in GPU memory.
-    uint32_t m_InternalFormat;  //!< Data format of the image file.
-    uint32_t m_DataFormat;      //!< Data format of the image file.
+    std::optional<uint32_t> m_RendererID =
+        {};  //!< The unique identifier for data in GPU memory.
+    TextureDataFormat m_DataFormat = TextureDataFormat::None;
+    TexturePixelFormat m_PixelFormat = TexturePixelFormat::None;
+
+    std::optional<std::weak_ptr<Shader>> m_Shader;
+
+    std::array<math::vec2, 4> m_UVCoords = {
+        math::vec2{0.0f, 0.0f}, math::vec2{1.0f, 0.0f}, math::vec2{1.0f, 1.0f},
+        math::vec2{0.0f, 1.0f}};
 };
 
 }  // namespace rr::graphics

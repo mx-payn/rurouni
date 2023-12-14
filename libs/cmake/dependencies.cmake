@@ -30,7 +30,9 @@ FetchContent_Declare(
     )
 
 # glfw
-set(GLFW_INSTALL OFF)
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_DOCS OFF)
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -44,13 +46,14 @@ FetchContent_Declare(
     GIT_TAG 0.9.9.8
     )
 
-# msdf-atlas-gen
-set(MSDF_ATLAS_BUILD_STANDALONE OFF)
+# magic_enum
+# Static reflection for enums (to string, from string, iteration)
+# for modern C++, work with any enum type without any macro or boilerplate code
 FetchContent_Declare(
-  msdf-atlas-gen
-  GIT_REPOSITORY https://github.com/Chlumsky/msdf-atlas-gen.git
-  GIT_TAG v1.2.2
-  )
+    magic_enum
+    GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+    GIT_TAG v0.9.5
+    )
 
 # spdlog
 set(SPDLOG_FMT_EXTERNAL ON)
@@ -73,7 +76,7 @@ FetchContent_MakeAvailable(
     glad 
     glfw 
     glm
-    msdf-atlas-gen
+    magic_enum
     spdlog
     stduuid
     )

@@ -35,10 +35,9 @@ add_library(${PROJECT_NAME}
     src/framebuffer.cpp
     src/texture.cpp
     src/batch_renderer.cpp
-    src/debug_renderer.cpp
-    src/camera.cpp
     src/font.cpp
     src/text.cpp
+    src/sprite.cpp
     )
 add_library(rurouni::graphics ALIAS ${PROJECT_NAME})
 
@@ -52,10 +51,10 @@ target_include_directories(
 
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC  rurouni::common
+            magic_enum::magic_enum
     PRIVATE rurouni::pch
             glfw
             glad
-            msdf-atlas-gen::msdf-atlas-gen
 )
 
 target_precompile_headers(${PROJECT_NAME} REUSE_FROM rurouni::pch)

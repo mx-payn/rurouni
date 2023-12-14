@@ -3,7 +3,7 @@
 //-----------------------
 
 // rurouni
-#include "rurouni/dev/logger.hpp"
+#include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/texture.hpp"
 #include "rurouni/math/vec.hpp"
 #include "rurouni/system/filesystem.hpp"
@@ -20,147 +20,117 @@
 
 namespace rr::graphics {
 
-namespace utils {
+Texture::Texture(const DataTextureSpecification& spec) {
+    m_Size = spec.size;
+    m_UUID = spec.id;
+    m_PixelFormat = spec.pixelFormat;
+    m_DataFormat = spec.dataFormat;
 
-static GLenum image_format_to_gl_data_format(ImageFormat format) {
-    switch (format) {
-        case ImageFormat::RGB8:
-            return GL_RGB;
-        case ImageFormat::RGBA8:
-            return GL_RGBA;
-        default:
-            dev::LOG->require(false, "unhandled data format");
-    }
-
-    return 0;
-}
-
-static GLenum image_format_to_gl_internal_format(ImageFormat format) {
-    switch (format) {
-        case ImageFormat::RGB8:
-            return GL_RGB8;
-        case ImageFormat::RGBA8:
-            return GL_RGBA8;
-        default:
-            dev::LOG->require(false, "unhandled data format");
-    }
-
-    return 0;
-}
-
-}  // namespace utils
-
-Texture::Texture(const TextureSpecification& spec, const UUID& uuid)
-    : m_Size(spec.size), m_UUID(uuid) {
     if (m_UUID.is_null())
         m_UUID.generate();
 
-    m_InternalFormat = utils::image_format_to_gl_internal_format(spec.format);
-    m_DataFormat = utils::image_format_to_gl_data_format(spec.format);
+    uint32_t rendererId;
+    glCreateTextures(GL_TEXTURE_2D, 1, &rendererId);
+    glTextureStorage2D(rendererId, 1, static_cast<uint32_t>(m_PixelFormat),
+                       m_Size.x, m_Size.y);
 
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-    glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Size.x, m_Size.y);
+    glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(rendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(rendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTextureParameteri(rendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    m_RendererID = rendererId;
 }
 
-Texture::Texture(const math::ivec2& size, const UUID& uuid)
-    : m_Size(size), m_UUID(uuid) {
-    if (m_UUID.is_null())
-        m_UUID.generate();
+Texture::Texture(const ImageTextureSpecification& spec) {
+    m_UUID = spec.id;
 
-    m_InternalFormat = GL_RGBA8;
-    m_DataFormat = GL_RGBA;
-
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-    glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Size.x, m_Size.y);
-
-    glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-}
-
-Texture::Texture(const system::Path& path, const UUID& uuid)
-    : m_Path(path), m_UUID(uuid) {
     if (m_UUID.is_null())
         m_UUID.generate();
 
     // -- loading image data using stbi --
     int width, height, channels;
     // image is upside down without flip
-    stbi_set_flip_vertically_on_load(1);
-    stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-    dev::LOG->trace("loaded image_data: {} . channels: {}", path.c_str(),
-                    channels);
-    dev::LOG->require(data != nullptr, "Failed to load image!");
+    // stbi_set_flip_vertically_on_load(1);
+    stbi_uc* data =
+        stbi_load(spec.Filepath.c_str(), &width, &height, &channels, 0);
+    trace("loaded image_data: {} . channels: {}", spec.Filepath, channels);
+    require(data != nullptr, "Failed to load image!");
     if (!data) {
-        dev::LOG->error("failed loading image! path: '{}', uuid: '{}'", path,
-                        m_UUID);
+        error("failed loading image! path: '{}', uuid: '{}'", spec.Filepath,
+              m_UUID);
         throw TextureException();
     }
 
     m_Size = {width, height};
 
     // -- image data format parsing --
-    GLenum internalFormat = 0, dataFormat = 0;
     if (channels == 4) {
-        internalFormat = GL_RGBA8;
-        dataFormat = GL_RGBA;
+        m_PixelFormat = TexturePixelFormat::RGBA8;
+        m_DataFormat = TextureDataFormat::RGBA;
     } else if (channels == 3) {
-        internalFormat = GL_RGB8;
-        dataFormat = GL_RGB;
+        m_PixelFormat = TexturePixelFormat::RGB8;
+        m_DataFormat = TextureDataFormat::RGB;
+    } else if (channels == 1) {
+        m_PixelFormat = TexturePixelFormat::R8;
+        m_DataFormat = TextureDataFormat::RED;
     }
 
-    m_InternalFormat = internalFormat;
-    m_DataFormat = dataFormat;
-
-    if (!(internalFormat & dataFormat)) {
-        dev::LOG->error(
+    if (!((uint32_t)m_DataFormat & (uint32_t)m_PixelFormat)) {
+        error(
             "the texture format of the loaded image is not supported! path: "
             "'{}', uuid: '{}'",
-            path, m_UUID);
+            spec.Filepath, m_UUID);
         throw TextureException();
     }
 
+    m_RendererID = 0;
+
     // -- uploading image data to GPU memory --
     // reserving memory space on GPU and getting unique identifier for space
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-    glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Size.x, m_Size.y);
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID.value());
+    glTextureStorage2D(m_RendererID.value(), 1,
+                       static_cast<uint32_t>(m_PixelFormat), m_Size.x,
+                       m_Size.y);
 
     // setting texture parameters for rendering
-    glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // uploading image data to reserved GPU memory space
-    glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Size.x, m_Size.y, m_DataFormat,
-                        GL_UNSIGNED_BYTE, data);
+    glTextureSubImage2D(m_RendererID.value(), 0, 0, 0, m_Size.x, m_Size.y,
+                        static_cast<uint32_t>(m_DataFormat), GL_UNSIGNED_BYTE,
+                        data);
 
     // image data not needed anymore
     stbi_image_free(data);
 }
 
 Texture::~Texture() {
-    glDeleteTextures(1, &m_RendererID);
+    if (m_RendererID.has_value()) {
+        glDeleteTextures(1, &m_RendererID.value());
+    }
 }
 
+// TODO checking the validity of renderer_id may be caller
+//      responsibility to handle invalid textures with special
+//      texture drawing
 void Texture::bind(uint32_t slot) const {
-    glBindTextureUnit(slot, m_RendererID);
-    // glActiveTexture(GL_TEXTURE0 + slot);
-    // glBindTexture(GL_TEXTURE_2D, m_RendererID);
+    if (auto id = get_renderer_id()) {
+        glBindTextureUnit(slot, id.value());
+    } else {
+        error("tried to bind an invalid texture");
+    }
 }
 
 void Texture::set_data(void* data, uint32_t size) {
     // uploading image data to reserved GPU memory space
-    glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Size.x, m_Size.y, m_DataFormat,
-                        GL_UNSIGNED_BYTE, data);
+    glTextureSubImage2D(m_RendererID.value(), 0, 0, 0, m_Size.x, m_Size.y,
+                        static_cast<uint32_t>(m_DataFormat), GL_UNSIGNED_BYTE,
+                        data);
 }
 
 }  // namespace rr::graphics

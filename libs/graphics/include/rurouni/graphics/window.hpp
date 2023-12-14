@@ -16,7 +16,7 @@ class GLFWwindow;
 
 namespace rr::graphics {
 
-struct WindowConfig {
+struct WindowSpecification {
     std::string Title = "undefined";
 
     std::optional<math::ivec2> Size;
@@ -96,7 +96,7 @@ struct WindowData {
 
 class Window {
    public:
-    Window(const WindowConfig& config,
+    Window(const WindowSpecification& spec,
            std::shared_ptr<event::EventSystem> eventSystem);
     ~Window();
 
