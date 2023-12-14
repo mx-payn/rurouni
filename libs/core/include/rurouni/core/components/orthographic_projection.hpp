@@ -11,22 +11,24 @@
 namespace rr::core::components {
 
 struct OrthographicProjection {
+   public:
+    enum class UnitType { Pixel, Cell, Fixed };
+
    private:
+    UnitType m_UnitType = UnitType::Pixel;
     float m_Size = 1.0f;
     float m_Near = -1.0f;
     float m_Far = 1.0f;
+    float m_AspectRatio = 0.0f;
 
     math::mat4 m_Projection = math::mat4(1.0f);
     bool m_ProjectionDirty = true;
-    float m_AspectRatio = 0.8f;
 
     void recalculate_projection() {
-        float left = -m_Size * m_AspectRatio * 0.5f;
-        float right = m_Size * m_AspectRatio * 0.5f;
-        float bottom = -m_Size * 0.5f;
-        float top = m_Size * 0.5f;
-        float width = right - left;
-        float height = top - bottom;
+        float left = 0.0f;
+        float right = m_Size * m_AspectRatio;
+        float bottom = m_Size;
+        float top = 0.0f;
 
         m_Projection = math::ortho(left, right, bottom, top, m_Near, m_Far);
         m_ProjectionDirty = false;
@@ -42,6 +44,7 @@ struct OrthographicProjection {
 
         return m_Projection;
     }
+    UnitType get_unit_type() const { return m_UnitType; }
 
     void set_aspect_ratio(float aspectRatio) {
         m_AspectRatio = aspectRatio;
@@ -63,13 +66,15 @@ struct OrthographicProjection {
         m_Far = far;
         m_ProjectionDirty = true;
     }
+    void set_unit_type(UnitType type) { m_UnitType = type; }
 
     OrthographicProjection() = default;
-    OrthographicProjection(const math::ivec2& viewportSize,
+    OrthographicProjection(UnitType type,
+                           const math::ivec2& viewportSize,
                            float size,
                            float near,
                            float far)
-        : m_Size(size), m_Near(near), m_Far(far) {
+        : m_UnitType(type), m_Size(size), m_Near(near), m_Far(far) {
         m_AspectRatio = (float)viewportSize.x / (float)viewportSize.y;
         recalculate_projection();
     }
@@ -82,7 +87,8 @@ struct OrthographicProjection {
     friend class cereal::access;
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(cereal::make_nvp("size", m_Size),
+        archive(cereal::make_nvp("unit_type", m_UnitType),
+                cereal::make_nvp("size", m_Size),
                 cereal::make_nvp("near", m_Near),
                 cereal::make_nvp("far", m_Far));
         m_ProjectionDirty = true;

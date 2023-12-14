@@ -7,6 +7,7 @@
 #include "rurouni/core/layer.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/framebuffer.hpp"
+#include "rurouni/types/uuid.hpp"
 
 // external
 #include <entt/entt.hpp>
@@ -45,8 +46,7 @@ class Scene {
     std::shared_ptr<Layer> m_DebugLayer;
 
     // cameras
-    math::mat4 m_CameraTransform;
-    math::mat4 m_CameraProjection;
+    UUID m_CameraUUID;
 
     // scene state
     GridState m_GridState;
