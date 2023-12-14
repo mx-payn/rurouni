@@ -40,6 +40,7 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC  rurouni::common
             rurouni::graphics
+            EnTT::EnTT
     PRIVATE rurouni::pch
 )
 

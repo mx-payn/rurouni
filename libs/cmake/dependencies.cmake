@@ -10,6 +10,11 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/USCiLab/cereal.git
   GIT_TAG v1.3.2
   )
+# entt
+FetchContent_Declare(
+  entt
+  GIT_REPOSITORY https://github.com/skypjack/entt.git
+  GIT_TAG v3.12.2)
 
 # fmt
 FetchContent_Declare(
@@ -72,6 +77,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(
     cereal
+    entt
     fmt
     glad 
     glfw 
