@@ -1,6 +1,4 @@
 // pch
-#include "rurouni/graphics/shader.hpp"
-#include "rurouni/graphics/texture.hpp"
 #include "rurouni/pch.hpp"
 //-----------------------
 
@@ -9,6 +7,8 @@
 #include "rurouni/graphics/default/shader.hpp"
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
+#include "rurouni/graphics/shader.hpp"
+#include "rurouni/graphics/texture.hpp"
 #include "rurouni/math.hpp"
 
 namespace rr::graphics {

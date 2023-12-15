@@ -42,13 +42,11 @@ void GridLayer::on_render(graphics::BatchRenderer& renderer,
             for (float x = startX + offsetX; x < endX; x++) {
                 gridCellTransform =
                     math::translate(math::mat4(1.0f), math::vec3(x, y, 0.0f));
-                renderer.draw_rect(gridCellTransform, {0.2, 0.2, 0.2, 1.0f},
+                renderer.draw_rect(gridCellTransform, m_GridColor,
                                    (uint32_t)entt::null);
             }
         }
     }
-
-    // draw grid
 }
 
 }  // namespace rr::core

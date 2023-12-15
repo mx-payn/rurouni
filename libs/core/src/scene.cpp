@@ -1,4 +1,6 @@
+// pch
 #include "rurouni/pch.hpp"
+//-----------------------
 
 // rurouni
 #include "rurouni/core/components/identifier.hpp"
@@ -133,28 +135,6 @@ void Scene::write_scene(std::optional<system::Path> filepath) {
     os.close();
 }
 
-void Scene::update_camera_data() {
-    m_Registry.view<components::OrthographicProjection>().each(
-        [this](entt::entity entity, auto& projection) {
-            switch (projection.get_unit_type()) {
-                case components::OrthographicProjection::UnitType::Cell:
-                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
-                    projection.set_size(m_SceneState.CellCount.y);
-                    break;
-                case components::OrthographicProjection::UnitType::Pixel:
-                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
-                    projection.set_size(m_SceneState.ViewportSize_px.y);
-                    break;
-                case components::OrthographicProjection::UnitType::Fixed:
-                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
-                    break;
-                default:
-                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
-                    break;
-            }
-        });
-}
-
 void Scene::push_layer(std::unique_ptr<Layer> layer) {
     layer->on_attach();
     m_Layers.push_back(std::move(layer));
@@ -190,9 +170,8 @@ void Scene::set_debug_layer(std::shared_ptr<Layer> layer) {
 }
 
 void Scene::set_viewport_size(const math::ivec2& size) {
+    // update scene state
     m_SceneState.ViewportSize_px = size;
-
-    m_Framebuffer->resize(size);
 
     float aspectRatio = (float)size.x / (float)size.y;
     int32_t cellCountY = m_SceneState.CellCount.y;
@@ -200,7 +179,33 @@ void Scene::set_viewport_size(const math::ivec2& size) {
         math::ivec2(std::ceil(cellCountY * aspectRatio), cellCountY);
     m_SceneState.CellSize_px = math::ivec2(size.y / m_SceneState.CellCount.y);
 
+    // update framebuffer
+    m_Framebuffer->resize(size);
+
+    // update components
     update_camera_data();
+}
+
+void Scene::update_camera_data() {
+    m_Registry.view<components::OrthographicProjection>().each(
+        [this](entt::entity entity, auto& projection) {
+            switch (projection.get_unit_type()) {
+                case components::OrthographicProjection::UnitType::Cell:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    projection.set_size(m_SceneState.CellCount.y);
+                    break;
+                case components::OrthographicProjection::UnitType::Pixel:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    projection.set_size(m_SceneState.ViewportSize_px.y);
+                    break;
+                case components::OrthographicProjection::UnitType::Fixed:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    break;
+                default:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    break;
+            }
+        });
 }
 
 }  // namespace rr::core
