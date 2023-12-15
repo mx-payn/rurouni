@@ -10,6 +10,7 @@
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/graphics/window.hpp"
+#include "rurouni/time.hpp"
 
 // external
 #include "spdlog/sinks/basic_file_sink.h"
@@ -33,10 +34,13 @@ Runtime::Runtime(const graphics::WindowSpecification& windowSpec) {
     m_UserConfigDir = system::get_app_user_config_dir(RR_RUNTIME_APP_NAME);
 
     // initializing loggers
+    std::string currentDateTime = time::get_current_date_and_time();
+    system::Path logPath =
+        m_UserDataDir / "logs" / currentDateTime.append(".log");
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
     sinks.push_back(
-        std::make_shared<spdlog::sinks::basic_file_sink_st>("out.log"));
+        std::make_shared<spdlog::sinks::basic_file_sink_st>(logPath));
 
     rr::graphics::init_logger(sinks);
     rr::common::init_logger(sinks);

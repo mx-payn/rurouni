@@ -16,6 +16,7 @@
 
 // external
 #include "rurouni/system/filesystem.hpp"
+#include "rurouni/time.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
@@ -32,10 +33,13 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
     m_UserConfigDir = system::get_app_user_config_dir(RR_EDITOR_APP_NAME);
 
     // initializing loggers
+    std::string currentDateTime = time::get_current_date_and_time();
+    system::Path logPath =
+        m_UserDataDir / "logs" / currentDateTime.append(".log");
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
     sinks.push_back(
-        std::make_shared<spdlog::sinks::basic_file_sink_st>("out.log"));
+        std::make_shared<spdlog::sinks::basic_file_sink_st>(logPath));
 
     graphics::init_logger(sinks);
     common::init_logger(sinks);
