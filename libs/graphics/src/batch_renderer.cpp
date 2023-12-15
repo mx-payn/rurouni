@@ -13,48 +13,10 @@
 
 namespace rr::graphics {
 
-BatchRenderer::BatchRenderer() {
-    m_QuadShader = std::make_shared<Shader>(DEFAULT_QUAD_SHADER_VERTEX_SRC,
-                                            DEFAULT_QUAD_SHADER_FRAGMENT_SRC);
-
-    // init vertex positions
-    m_QuadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
-    m_QuadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.0f};
-    m_QuadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.0f};
-    m_QuadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
-
-    // TODO this is duplicate code
-    // init indices
-    uint32_t offset = 0;
-    for (uint32_t i = 0; i < MAX_INDICES; i += 6) {
-        // first triangle
-        m_QuadIndices[i + 0] = offset + 0;
-        m_QuadIndices[i + 1] = offset + 1;
-        m_QuadIndices[i + 2] = offset + 2;
-        // second triangle
-        m_QuadIndices[i + 3] = offset + 2;
-        m_QuadIndices[i + 4] = offset + 3;
-        m_QuadIndices[i + 5] = offset + 0;
-
-        offset += 4;
-    }
-
-    m_QuadIndexBuffer =
-        std::make_shared<IndexBuffer>(m_QuadIndices, MAX_INDICES);
-
-    // init vertex arrays
-    generate_quad_va();
-
-    // init white texture
-    DataTextureSpecification spec;
-    spec.size = math::ivec2{1, 1};
-    spec.dataFormat = TextureDataFormat::RGBA;
-    spec.pixelFormat = TexturePixelFormat::RGBA8;
-    m_WhiteTexture = std::make_shared<Texture>(spec);
-    uint32_t whiteTextureData = 0xFFFFFFFF;
-    m_WhiteTexture->set_data(&whiteTextureData, sizeof(uint32_t));
-    m_TextureSlots[0] = m_WhiteTexture;
-}
+BatchRenderer::BatchRenderer()
+    : BatchRenderer(
+          std::make_shared<Shader>(DEFAULT_QUAD_SHADER_VERTEX_SRC,
+                                   DEFAULT_QUAD_SHADER_FRAGMENT_SRC)) {}
 
 BatchRenderer::BatchRenderer(std::shared_ptr<Shader> quadShader)
     : m_QuadShader(quadShader) {
@@ -88,14 +50,36 @@ BatchRenderer::BatchRenderer(std::shared_ptr<Shader> quadShader)
     generate_quad_va();
 
     // init white texture
-    DataTextureSpecification spec;
-    spec.size = math::ivec2{1, 1};
-    spec.dataFormat = TextureDataFormat::RGBA;
-    spec.pixelFormat = TexturePixelFormat::RGBA8;
-    m_WhiteTexture = std::make_shared<Texture>(spec);
+    DataTextureSpecification whiteSpec;
+    whiteSpec.id.generate();
+    whiteSpec.size = math::ivec2{1, 1};
+    whiteSpec.dataFormat = TextureDataFormat::RGBA;
+    whiteSpec.pixelFormat = TexturePixelFormat::RGBA8;
+    m_WhiteTexture = std::make_shared<Texture>(whiteSpec);
     uint32_t whiteTextureData = 0xFFFFFFFF;
     m_WhiteTexture->set_data(&whiteTextureData, sizeof(uint32_t));
-    m_TextureSlots[0] = m_WhiteTexture;
+
+    // init rect texture
+    graphics::DataTextureSpecification rectSpec;
+    rectSpec.id.generate();
+    rectSpec.dataFormat = graphics::TextureDataFormat::RGBA;
+    rectSpec.pixelFormat = graphics::TexturePixelFormat::RGBA8;
+    rectSpec.size = math::ivec2{32};
+    m_RectTexture = std::make_unique<graphics::Texture>(rectSpec);
+
+    std::vector<uint32_t> rectData;
+    for (int y = 0; y < rectSpec.size.y; y++) {
+        for (int x = 0; x < rectSpec.size.x; x++) {
+            if (y == 0 || y == rectSpec.size.y - 1 || x == 0 ||
+                x == rectSpec.size.x - 1) {
+                rectData.push_back(0xFFFFFFFF);
+            } else {
+                rectData.push_back(0x00000000);
+            }
+        }
+    }
+    m_RectTexture->set_data(rectData.data(),
+                            rectData.size() * sizeof(uint32_t));
 }
 
 BatchRenderer::~BatchRenderer() {}
@@ -128,7 +112,7 @@ void BatchRenderer::end() {
 
 void BatchRenderer::begin_quads() {
     m_QuadVertexArrayData.clear();
-    m_TextureSlotIndex = 1;
+    m_TextureSlotIndex = 0;
 }
 
 void BatchRenderer::flush_quads() {
@@ -164,9 +148,30 @@ void BatchRenderer::draw_quad(const math::mat4& transform,
         begin_quads();
     }
 
+    float textureIndex = get_texture_index(m_WhiteTexture);
+
     for (size_t i = 0; i < 4; i++) {
         QuadVertex qv = {transform * m_QuadVertexPositions[i], color,
-                         DEFAULT_UV_TEXTURE_COORDS[i], 0.0f, entityId};
+                         DEFAULT_UV_TEXTURE_COORDS[i], textureIndex, entityId};
+
+        m_QuadVertexArrayData.push_back(qv);
+    }
+}
+
+void BatchRenderer::draw_rect(const math::mat4& transform,
+                              const math::vec4& color,
+                              uint32_t entityId) {
+    if (m_QuadVertexArrayData.size() >= MAX_VERTICES) {
+        // start new batch
+        flush_quads();
+        begin_quads();
+    }
+
+    float textureIndex = get_texture_index(m_RectTexture);
+
+    for (size_t i = 0; i < 4; i++) {
+        QuadVertex qv = {transform * m_QuadVertexPositions[i], color,
+                         DEFAULT_UV_TEXTURE_COORDS[i], textureIndex, entityId};
 
         m_QuadVertexArrayData.push_back(qv);
     }
@@ -219,7 +224,7 @@ void BatchRenderer::generate_quad_va() {
 
 float BatchRenderer::get_texture_index(std::weak_ptr<Texture> texture) {
     float textureIndex = 0.0f;
-    for (uint32_t i = 1; i < m_TextureSlotIndex; i++) {
+    for (uint32_t i = 0; i < m_TextureSlotIndex; i++) {
         auto slot = m_TextureSlots[i].lock();
         require(slot,
                 "encountered invalid weak_ptr to texture! asset manager "

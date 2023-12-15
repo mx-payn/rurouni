@@ -3,7 +3,7 @@
 
 // rurouni
 #include "entt/entity/fwd.hpp"
-#include "rurouni/core/grid_state.hpp"
+#include "rurouni/core/scene_state.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 
 // external
@@ -20,8 +20,13 @@ class Layer {
     virtual void on_detach() {}
 
     virtual void on_render(graphics::BatchRenderer& renderer,
-                           entt::registry& registry,
-                           const GridState& gridState) = 0;
+                           const entt::registry& registry,
+                           const SceneState& sceneState) = 0;
+
+   private:
+    friend class cereal::access;
+    template <typename Archive>
+    void serialize(Archive& archive) {}
 };
 
 }  // namespace rr::core

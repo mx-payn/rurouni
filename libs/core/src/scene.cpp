@@ -3,6 +3,7 @@
 // rurouni
 #include "rurouni/core/components/identifier.hpp"
 #include "rurouni/core/components/orthographic_projection.hpp"
+#include "rurouni/core/components/texture.hpp"
 #include "rurouni/core/components/transform.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/core/layers/grid_layer.hpp"
@@ -11,12 +12,15 @@
 #include "rurouni/graphics/framebuffer.hpp"
 #include "rurouni/graphics/render_api.hpp"
 
+// external
+#include "cereal/archives/json.hpp"
+#include "cereal/cereal.hpp"
+#include "cereal/types/vector.hpp"
+
 namespace rr::core {
 
-const int32_t CELL_COUNT_Y = 45;
-
-Scene::Scene(const math::ivec2& viewportSize_px)
-    : m_ViewportSize_px(viewportSize_px) {
+Scene::Scene(const math::ivec2& viewportSize_px) {
+    m_SceneState.ViewportSize_px = viewportSize_px;
     // framebuffer init
     graphics::FramebufferSpecification framebufferSpec;
     framebufferSpec.size = viewportSize_px;
@@ -25,49 +29,6 @@ Scene::Scene(const math::ivec2& viewportSize_px)
         graphics::FramebufferTextureFormat::ENTITY_ID,
         graphics::FramebufferTextureFormat::DEPTH24STENCIL8};
     m_Framebuffer = std::make_unique<graphics::Framebuffer>(framebufferSpec);
-
-    // grid state init
-    float aspectRatio = (float)viewportSize_px.x / (float)viewportSize_px.y;
-    m_GridState.CellCount =
-        math::ivec2(std::floor(CELL_COUNT_Y * aspectRatio), CELL_COUNT_Y);
-    m_GridState.CellSize_px =
-        math::ivec2(viewportSize_px.y / m_GridState.CellCount.y);
-
-    push_layer(std::make_unique<GridLayer>(m_GridState));
-
-    // TEMP
-    entt::entity camera = m_Registry.create();
-    m_LayerCameraId = camera;
-    m_Registry.emplace<components::Identifier>(camera, UUID::create(),
-                                               "camera");
-    auto& transform = m_Registry.emplace<components::Transform>(camera);
-    transform.set_translation(transform.get_translation() -
-                              math::vec3{0.5f, 0.5f, 0.0f});
-    m_Registry.emplace<components::OrthographicProjection>(
-        camera, components::OrthographicProjection::UnitType::Cell,
-        m_ViewportSize_px, static_cast<float>(m_GridState.CellCount.y), -32.0f,
-        32.0f);
-
-    // set initial camera data based on set type
-    m_Registry.view<components::OrthographicProjection>().each(
-        [this](entt::entity entity, auto& projection) {
-            switch (projection.get_unit_type()) {
-                case components::OrthographicProjection::UnitType::Cell:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    projection.set_size(m_GridState.CellCount.y);
-                    break;
-                case components::OrthographicProjection::UnitType::Pixel:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    projection.set_size(m_ViewportSize_px.y);
-                    break;
-                case components::OrthographicProjection::UnitType::Fixed:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    break;
-                default:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    break;
-            }
-        });
 }
 
 Scene::~Scene() {}
@@ -83,66 +44,115 @@ void Scene::on_render(graphics::BatchRenderer& renderer) {
     math::mat4 cameraTransform;
     math::mat4 cameraProjection;
 
-    // TODO m_Registry.try_get() might be a move here
     // rendering layers
-    if (m_LayerCameraId != entt::null && m_Registry.valid(m_LayerCameraId) &&
+    auto cameraComponents =
         m_Registry
-            .all_of<components::Transform, components::OrthographicProjection>(
-                m_LayerCameraId)) {
-        cameraTransform = m_Registry.get<components::Transform>(m_LayerCameraId)
-                              .get_transform();
-        cameraProjection =
-            m_Registry.get<components::OrthographicProjection>(m_LayerCameraId)
-                .get_projection();
+            .try_get<components::Transform, components::OrthographicProjection>(
+                m_SceneState.LayerCameraId);
+    if (std::get<0>(cameraComponents) && std::get<1>(cameraComponents)) {
+        cameraTransform = std::get<0>(cameraComponents)->get_transform();
+        cameraProjection = std::get<1>(cameraComponents)->get_projection();
 
         renderer.begin(cameraProjection, cameraTransform);
         for (int i = 0; i < m_Layers.size(); i++) {
-            m_Layers[i]->on_render(renderer, m_Registry, m_GridState);
+            m_Layers[i]->on_render(renderer, m_Registry, m_SceneState);
         }
         renderer.end();
     }
 
     // rendering overlays
-    if (m_OverlayCameraId != entt::null &&
-        m_Registry.valid(m_OverlayCameraId) &&
+    cameraComponents =
         m_Registry
-            .all_of<components::Transform, components::OrthographicProjection>(
-                m_OverlayCameraId)) {
-        cameraTransform =
-            m_Registry.get<components::Transform>(m_OverlayCameraId)
-                .get_transform();
-        cameraProjection =
-            m_Registry
-                .get<components::OrthographicProjection>(m_OverlayCameraId)
-                .get_projection();
+            .try_get<components::Transform, components::OrthographicProjection>(
+                m_SceneState.OverlayCameraId);
+    if (std::get<0>(cameraComponents) && std::get<1>(cameraComponents)) {
+        cameraTransform = std::get<0>(cameraComponents)->get_transform();
+        cameraProjection = std::get<1>(cameraComponents)->get_projection();
 
         renderer.begin(cameraProjection, cameraTransform);
         for (int i = 0; i < m_Overlays.size(); i++) {
-            m_Overlays[i]->on_render(renderer, m_Registry, m_GridState);
+            m_Overlays[i]->on_render(renderer, m_Registry, m_SceneState);
         }
         renderer.end();
-    }
 
-    // rendering debug layer
-    if (m_DebugLayer != nullptr && m_OverlayCameraId != entt::null &&
-        m_Registry.valid(m_OverlayCameraId) &&
-        m_Registry
-            .all_of<components::Transform, components::OrthographicProjection>(
-                m_OverlayCameraId)) {
-        cameraTransform =
-            m_Registry.get<components::Transform>(m_OverlayCameraId)
-                .get_transform();
-        cameraProjection =
-            m_Registry
-                .get<components::OrthographicProjection>(m_OverlayCameraId)
-                .get_projection();
-
-        renderer.begin(cameraProjection, cameraTransform);
-        m_DebugLayer->on_render(renderer, m_Registry, m_GridState);
-        renderer.end();
+        // rendering debug layer
+        if (m_DebugLayer != nullptr) {
+            renderer.begin(cameraProjection, cameraTransform);
+            m_DebugLayer->on_render(renderer, m_Registry, m_SceneState);
+            renderer.end();
+        }
     }
 
     m_Framebuffer->unbind();
+}
+
+void Scene::load_scene(const system::Path& filepath,
+                       const math::ivec2& viewportSize_px) {
+    std::ifstream is(filepath);
+    {
+        cereal::JSONInputArchive input(is);
+        input(cereal::make_nvp("name", m_Name),
+              cereal::make_nvp("layers", m_Layers),
+              cereal::make_nvp("overlays", m_Overlays),
+              cereal::make_nvp("scene_state", m_SceneState));
+
+        input.setNextName("registry");
+        input.startNode();
+        entt::snapshot_loader{m_Registry}
+            .get<entt::entity>(input)
+            .get<components::Identifier>(input)
+            .get<components::Transform>(input)
+            .get<components::Texture>(input)
+            .get<components::OrthographicProjection>(input);
+        input.finishNode();
+    }
+    is.close();
+
+    set_viewport_size(viewportSize_px);
+}
+
+void Scene::write_scene(std::optional<system::Path> filepath) {
+    std::ofstream os(filepath ? filepath.value() : m_Filepath);
+    {
+        cereal::JSONOutputArchive out(os);
+        out(cereal::make_nvp("name", m_Name),
+            cereal::make_nvp("layers", m_Layers),
+            cereal::make_nvp("overlays", m_Overlays),
+            cereal::make_nvp("scene_state", m_SceneState));
+
+        out.setNextName("registry");
+        out.startNode();
+        entt::snapshot{m_Registry}
+            .get<entt::entity>(out)
+            .get<components::Identifier>(out)
+            .get<components::Transform>(out)
+            .get<components::Texture>(out)
+            .get<components::OrthographicProjection>(out);
+        out.finishNode();
+    }
+    os.close();
+}
+
+void Scene::update_camera_data() {
+    m_Registry.view<components::OrthographicProjection>().each(
+        [this](entt::entity entity, auto& projection) {
+            switch (projection.get_unit_type()) {
+                case components::OrthographicProjection::UnitType::Cell:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    projection.set_size(m_SceneState.CellCount.y);
+                    break;
+                case components::OrthographicProjection::UnitType::Pixel:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    projection.set_size(m_SceneState.ViewportSize_px.y);
+                    break;
+                case components::OrthographicProjection::UnitType::Fixed:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    break;
+                default:
+                    projection.set_aspect_ratio(m_SceneState.ViewportSize_px);
+                    break;
+            }
+        });
 }
 
 void Scene::push_layer(std::unique_ptr<Layer> layer) {
@@ -180,29 +190,17 @@ void Scene::set_debug_layer(std::shared_ptr<Layer> layer) {
 }
 
 void Scene::set_viewport_size(const math::ivec2& size) {
-    m_ViewportSize_px = size;
+    m_SceneState.ViewportSize_px = size;
 
     m_Framebuffer->resize(size);
 
-    m_Registry.view<components::OrthographicProjection>().each(
-        [this, size](entt::entity entity, auto& projection) {
-            switch (projection.get_unit_type()) {
-                case components::OrthographicProjection::UnitType::Cell:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    projection.set_size(m_GridState.CellCount.y);
-                    break;
-                case components::OrthographicProjection::UnitType::Pixel:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    projection.set_size(m_ViewportSize_px.y);
-                    break;
-                case components::OrthographicProjection::UnitType::Fixed:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    break;
-                default:
-                    projection.set_aspect_ratio(m_ViewportSize_px);
-                    break;
-            }
-        });
+    float aspectRatio = (float)size.x / (float)size.y;
+    int32_t cellCountY = m_SceneState.CellCount.y;
+    m_SceneState.CellCount =
+        math::ivec2(std::ceil(cellCountY * aspectRatio), cellCountY);
+    m_SceneState.CellSize_px = math::ivec2(size.y / m_SceneState.CellCount.y);
+
+    update_camera_data();
 }
 
 }  // namespace rr::core

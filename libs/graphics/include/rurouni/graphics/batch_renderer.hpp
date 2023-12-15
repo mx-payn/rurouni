@@ -41,6 +41,9 @@ class BatchRenderer {
     void draw_quad(const math::mat4& transform,
                    const math::vec4& color,
                    uint32_t entityId);
+    void draw_rect(const math::mat4& transform,
+                   const math::vec4& color,
+                   uint32_t entityId);
 
     const math::mat4& get_view_projection_matrix() const {
         return m_ViewProjectionMatrix;
@@ -94,8 +97,9 @@ class BatchRenderer {
 
     // texture slots
     std::shared_ptr<Texture> m_WhiteTexture;
+    std::shared_ptr<Texture> m_RectTexture;
     std::array<std::weak_ptr<Texture>, MAX_TEXTURE_SLOTS> m_TextureSlots;
-    uint32_t m_TextureSlotIndex = 1;
+    uint32_t m_TextureSlotIndex = 0;
 };
 
 }  // namespace rr::graphics

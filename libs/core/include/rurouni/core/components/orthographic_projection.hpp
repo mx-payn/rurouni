@@ -2,6 +2,7 @@
 #define RR_LIB_CORE_COMPONENTS_ORTHOGRAPHIC_PROJECTION_H
 
 // rurouni
+#include "magic_enum.hpp"
 #include "rurouni/math.hpp"
 
 // external
@@ -21,21 +22,33 @@ struct OrthographicProjection {
     float m_Far = 1.0f;
     float m_AspectRatio = 0.0f;
 
+    float m_Left;
+    float m_Right;
+    float m_Bottom;
+    float m_Top;
+
     math::mat4 m_Projection = math::mat4(1.0f);
     bool m_ProjectionDirty = true;
 
     void recalculate_projection() {
-        float left = 0.0f;
-        float right = m_Size * m_AspectRatio;
-        float bottom = m_Size;
-        float top = 0.0f;
+        float boundsY = m_Size * 0.5f;
+        float boundsX = m_Size * m_AspectRatio * 0.5f;
+        m_Left = -boundsX;
+        m_Right = boundsX;
+        m_Bottom = boundsY;
+        m_Top = -boundsY;
 
-        m_Projection = math::ortho(left, right, bottom, top, m_Near, m_Far);
+        m_Projection =
+            math::ortho(m_Left, m_Right, m_Bottom, m_Top, m_Near, m_Far);
         m_ProjectionDirty = false;
     }
 
    public:
     float get_size() const { return m_Size; }
+    float get_left() const { return m_Left; }
+    float get_right() const { return m_Right; }
+    float get_bottom() const { return m_Bottom; }
+    float get_top() const { return m_Top; }
     float get_near_clip() const { return m_Near; }
     float get_far_clip() const { return m_Far; }
     const math::mat4& get_projection() {
@@ -94,6 +107,25 @@ struct OrthographicProjection {
         m_ProjectionDirty = true;
     }
 };
+
+template <class Archive>
+std::string save_minimal(Archive const&,
+                         OrthographicProjection::UnitType const& type) {
+    return std::string(magic_enum::enum_name(type));
+}
+
+template <class Archive>
+void load_minimal(Archive const&,
+                  OrthographicProjection::UnitType& type,
+                  std::string const& value) {
+    if (auto maybeType =
+            magic_enum::enum_cast<OrthographicProjection::UnitType>(
+                value, magic_enum::case_insensitive)) {
+        type = maybeType.value();
+    } else {
+        type = OrthographicProjection::UnitType::Fixed;
+    }
+}
 
 }  // namespace rr::core::components
 

@@ -54,6 +54,9 @@ namespace rr {
         m_CurrentScene = std::make_shared<core::Scene>(
                 m_Window->get_window_data().FramebufferSize
                 );
+        m_CurrentScene->load_scene(
+            system::Path(RR_SANDBOX_DATA_DIR) / "scene.json",
+            m_Window->get_window_data().FramebufferSize);
         m_PostFXShader = std::make_unique<graphics::Shader>(
                 graphics::DEFAULT_POST_FX_SHADER_VERTEX_SRC,
                 graphics::DEFAULT_POST_FX_SHADER_FRAGMENT_SRC
@@ -94,6 +97,8 @@ namespace rr {
         m_CurrentScene->on_render(*m_Renderer);
 
         // draw scene to default framebuffer
+        graphics::api::set_viewport(
+            m_Window->get_window_data().FramebufferSize);
         m_PostFXShader->bind();
         m_CurrentScene->get_framebuffer().draw_color_attachement(0);
         m_PostFXShader->unbind();

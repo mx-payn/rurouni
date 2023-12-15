@@ -3,10 +3,11 @@
 
 // rurouni
 #include "entt/entity/fwd.hpp"
-#include "rurouni/core/grid_state.hpp"
 #include "rurouni/core/layer.hpp"
+#include "rurouni/core/scene_state.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/framebuffer.hpp"
+#include "rurouni/system/filesystem.hpp"
 #include "rurouni/types/uuid.hpp"
 
 // external
@@ -23,6 +24,10 @@ class Scene {
     Scene(const math::ivec2& viewportSize_px);
     ~Scene();
 
+    void load_scene(const system::Path& filepath,
+                    const math::ivec2& viewportSize_px);
+    void write_scene(std::optional<system::Path> filepath);
+
     void on_update(float dt);
     void on_render(graphics::BatchRenderer& renderer);
 
@@ -37,7 +42,12 @@ class Scene {
     graphics::Framebuffer& get_framebuffer() const { return *m_Framebuffer; }
 
    private:
-    math::ivec2 m_ViewportSize_px;
+    void update_camera_data();
+
+   private:
+    std::string m_Name;
+    system::Path m_Filepath;
+
     std::unique_ptr<graphics::Framebuffer> m_Framebuffer;
 
     // layers
@@ -45,12 +55,8 @@ class Scene {
     std::vector<std::unique_ptr<Layer>> m_Overlays;
     std::shared_ptr<Layer> m_DebugLayer;
 
-    // cameras
-    entt::entity m_LayerCameraId = entt::null;
-    entt::entity m_OverlayCameraId = entt::null;
-
     // scene state
-    GridState m_GridState;
+    SceneState m_SceneState;
     entt::registry m_Registry;
 };
 
