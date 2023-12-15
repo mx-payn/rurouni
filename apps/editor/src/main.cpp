@@ -17,7 +17,7 @@ int main() {
     windowSpec.Fullscreen = false;
     windowSpec.VSync = true;
 
-    rr::Editor editor(windowSpec);
+    rr::editor::Editor editor(windowSpec);
     editor.run();
 
     return 0;

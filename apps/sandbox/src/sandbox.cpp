@@ -15,6 +15,7 @@
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/graphics/window.hpp"
+#include "rurouni/system/command.hpp"
 #include "rurouni/system/filesystem.hpp"
 
 // external
@@ -43,8 +44,21 @@ namespace rr {
         spdlog::set_level(spdlog::level::level_enum::trace);
         spdlog::flush_on(spdlog::level::level_enum::trace);
 
+        system::Path execPath =
+            system::get_current_executable_path().parent_path();
+        system::Path dataDir = execPath / RR_RELATIVE_SANDBOX_DATA_DIR;
+        system::Path configDir = execPath / RR_RELATIVE_SANDBOX_CONFIG_DIR;
+        system::Path userDataDir =
+            system::get_app_user_data_dir(RR_SANDBOX_APP_NAME);
+        system::Path userConfigDir =
+            system::get_app_user_config_dir(RR_SANDBOX_APP_NAME);
+
         // filepath info
-        sandbox::info("data dir : {}", RR_SANDBOX_DATA_DIR);
+        sandbox::info("exec dir : {}", execPath);
+        sandbox::info("data dir : {}", dataDir);
+        sandbox::info("config dir : {}", configDir);
+        sandbox::info("user data dir : {}", userDataDir);
+        sandbox::info("user config dir : {}", userConfigDir);
 
         m_EventSystem = std::make_shared<event::EventSystem>();
         m_EventSystem->subscribe<event::WindowClose>(this);
@@ -54,9 +68,8 @@ namespace rr {
         m_CurrentScene = std::make_shared<core::Scene>(
                 m_Window->get_window_data().FramebufferSize
                 );
-        m_CurrentScene->load_scene(
-            system::Path(RR_SANDBOX_DATA_DIR) / "scene.json",
-            m_Window->get_window_data().FramebufferSize);
+        m_CurrentScene->load_scene(system::Path(dataDir) / "scene.json",
+                                   m_Window->get_window_data().FramebufferSize);
         m_PostFXShader = std::make_unique<graphics::Shader>(
                 graphics::DEFAULT_POST_FX_SHADER_VERTEX_SRC,
                 graphics::DEFAULT_POST_FX_SHADER_FRAGMENT_SRC

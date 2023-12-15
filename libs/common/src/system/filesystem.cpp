@@ -5,6 +5,9 @@
 // rurouni
 #include "rurouni/system/filesystem.hpp"
 
+#include <unistd.h>
+#include <cstdlib>
+
 namespace rr::system {
 
 bool exists(const Path& path) {
@@ -57,6 +60,36 @@ void copy(const Path& from, const Path& to) {
 
 void copy(const Path& from, const Path& to, copy_options options) {
     return std::filesystem::copy(from, to, options);
+}
+
+Path get_current_executable_path() {
+    char buffer[1024];
+    ssize_t len = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
+
+    if (len != -1) {
+        buffer[len] = '\0';
+        return Path(buffer);
+    }
+
+    return Path();
+}
+
+Path get_app_user_data_dir(const std::string& appName) {
+    if (const char* path = std::getenv("XDG_DATA_HOME")) {
+        return Path(path) / appName;
+    }
+
+    const char* path = std::getenv("HOME");
+    return Path(path) / ".local/share" / appName;
+}
+
+Path get_app_user_config_dir(const std::string& appName) {
+    if (const char* path = std::getenv("XDG_CONFIG_HOME")) {
+        return Path(path) / appName;
+    }
+
+    const char* path = std::getenv("HOME");
+    return Path(path) / ".config" / appName;
 }
 
 }  // namespace rr::system

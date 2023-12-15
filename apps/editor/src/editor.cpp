@@ -7,6 +7,7 @@
 
 // rurouni
 #include "rurouni/common/logger.hpp"
+#include "rurouni/editor/ui.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
 #include "rurouni/graphics/logger.hpp"
@@ -14,13 +15,22 @@
 #include "rurouni/graphics/window.hpp"
 
 // external
+#include "rurouni/system/filesystem.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
-namespace rr {
+namespace rr::editor {
 
 Editor::Editor(const graphics::WindowSpecification& windowSpec) {
+    m_AppName = RR_EDITOR_APP_NAME;
+    m_ExecPath = system::get_current_executable_path();
+    m_SharedDataDir = m_ExecPath.parent_path() / RR_EDITOR_RELATIVE_DATA_DIR;
+    m_SharedConfigDir =
+        m_ExecPath.parent_path() / RR_EDITOR_RELATIVE_CONFIG_DIR;
+    m_UserDataDir = system::get_app_user_data_dir(RR_EDITOR_APP_NAME);
+    m_UserConfigDir = system::get_app_user_config_dir(RR_EDITOR_APP_NAME);
+
     // initializing loggers
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
@@ -35,22 +45,25 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
     spdlog::flush_on(spdlog::level::level_enum::trace);
 
     // filepath info
-    editor::info("bin dir ......... : {}", RR_EDITOR_BIN_DIR);
-    editor::info("lib dir ......... : {}", RR_EDITOR_LIB_DIR);
-    editor::info("archive dir ..... : {}", RR_EDITOR_ARCHIVE_DIR);
-    editor::info("shared data dir . : {}", RR_EDITOR_SHARED_DATA_DIR);
-    editor::info("shared config dir : {}", RR_EDITOR_SHARED_CONFIG_DIR);
-    editor::info("user data dir ... : {}", RR_EDITOR_USER_DATA_DIR);
-    editor::info("user config dir . : {}", RR_EDITOR_USER_CONFIG_DIR);
+    editor::info("app name ........ : {}", m_AppName);
+    editor::info("exec path ....... : {}", m_ExecPath);
+    editor::info("exec dir ........ : {}", m_ExecPath.parent_path());
+    editor::info("shared data dir . : {}", m_SharedDataDir);
+    editor::info("shared config dir : {}", m_SharedConfigDir);
+    editor::info("user data dir ... : {}", m_UserDataDir);
+    editor::info("user config dir . : {}", m_UserConfigDir);
 
     m_EventSystem = std::make_shared<event::EventSystem>();
     m_EventSystem->subscribe<event::WindowClose>(this);
 
     m_Window = std::make_shared<graphics::Window>(windowSpec, m_EventSystem);
+
+    ui::init(*m_Window, m_SharedDataDir, m_UserDataDir, m_UserConfigDir);
 }
 
 Editor::~Editor() {
     m_EventSystem->unsubscribe_from_all(this);
+    ui::terminate();
 }
 
 void Editor::run() {
@@ -73,11 +86,16 @@ void Editor::run() {
 
 void Editor::update(float dt) {
     m_Window->update(dt);
+    ui::update(dt, m_UserConfigDir);
 }
 
 void Editor::render() {
     graphics::api::set_clear_color({0.05f, 0.05f, 0.05f, 1.0f});
     graphics::api::clear();
+
+    ui::begin();
+    ui::draw_dockspace(m_UIState);
+    ui::end();
 
     m_Window->swap_buffers();
 }
@@ -93,4 +111,4 @@ void Editor::on_window_close_event(std::shared_ptr<event::WindowClose> event) {
     m_Running = false;
 }
 
-}  // namespace rr
+}  // namespace rr::editor

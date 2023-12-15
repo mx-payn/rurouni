@@ -29,46 +29,24 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # data paths
-# runtime needs to know where its data is stored, like icons, fonts etc.
-# when building, the data root is inside the build folder
-# when installing, the data root is somewhere on the system
-# so we need to specify whether we are going to install the target,
-# to bake the right path into the binary
-if (RR_INSTALL_BUILD)
-    ## shared directories
-    set(RR_RUNTIME_BIN_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}")
-    set(RR_RUNTIME_LIB_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
-    set(RR_RUNTIME_ARCHIVE_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
-    set(RR_RUNTIME_SHARED_DATA_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-    set(RR_RUNTIME_SHARED_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME}")
+set(RR_APP_FILES_DIR "${CMAKE_BINARY_DIR}/out/${PROJECT_NAME}")
 
-    ## user directories
-    set(RR_RUNTIME_USER_CONFIG_DIR "${USER_CONFIG_DIR}/${PROJECT_NAME}")
-    set(RR_RUNTIME_USER_DATA_DIR "${USER_DATA_DIR}/${PROJECT_NAME}")
-else()
-    ## simulating a filesystem inside the build folder
-    ## and creating a simlink to the in-source data folder
-    file(MAKE_DIRECTORY
-        "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}"
-        )
-    file(CREATE_LINK 
-        "${CMAKE_CURRENT_SOURCE_DIR}/data" 
-        "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}"
-        SYMBOLIC
-    )
+set(RR_BIN_DIR "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_BINDIR}")
+set(RR_LIB_DIR "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_LIBDIR}")
+set(RR_ARCHIVE_DIR "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_LIBDIR}")
+set(RR_DATA_DIR "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+set(RR_CONFIG_DIR "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME}")
 
-    ## shared directories
-    set(RR_RUNTIME_BIN_DIR "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
-    set(RR_RUNTIME_LIB_DIR "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
-    set(RR_RUNTIME_ARCHIVE_DIR "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
-    set(RR_RUNTIME_SHARED_DATA_DIR "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-    set(RR_RUNTIME_SHARED_CONFIG_DIR "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RR_BIN_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${RR_LIB_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RR_LIB_DIR})
 
-    ## user directories
-    ## simulating a filesystem inside the binary dir
-    set(RR_RUNTIME_USER_CONFIG_DIR "${CMAKE_BINARY_DIR}/user/.config/${PROJECT_NAME}")
-    set(RR_RUNTIME_USER_DATA_DIR   "${CMAKE_BINARY_DIR}/user/.local/share/${PROJECT_NAME}")
-endif()
+# the path to the data directory relative to the executable path
+file(RELATIVE_PATH RR_RUNTIME_RELATIVE_DATA_DIR ${RR_BIN_DIR} ${RR_DATA_DIR})
+file(RELATIVE_PATH RR_RUNTIME_RELATIVE_CONFIG_DIR ${RR_BIN_DIR} ${RR_CONFIG_DIR})
+
+file(MAKE_DIRECTORY "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_DATADIR}")
+file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/data" ${RR_DATA_DIR} SYMBOLIC)
 
 #############################################################
 ######################  TARGET  #############################

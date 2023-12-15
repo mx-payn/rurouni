@@ -6,6 +6,7 @@
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
 #include "rurouni/graphics/window.hpp"
+#include "rurouni/system/filesystem.hpp"
 
 // std
 #include <memory>
@@ -33,6 +34,13 @@ class Runtime : public event::Subscriber {
 
     std::shared_ptr<graphics::Window> m_Window;
     std::shared_ptr<event::EventSystem> m_EventSystem;
+
+    std::string m_AppName;
+    system::Path m_ExecPath;
+    system::Path m_SharedDataDir;
+    system::Path m_SharedConfigDir;
+    system::Path m_UserDataDir;
+    system::Path m_UserConfigDir;
 };
 
 }  // namespace rr

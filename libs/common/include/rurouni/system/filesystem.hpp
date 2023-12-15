@@ -34,6 +34,15 @@ void copy(const Path& from, const Path& to);
 /** copies contents of source to target path */
 void copy(const Path& from, const Path& to, copy_options options);
 
+/** returns the running executables absolute path */
+Path get_current_executable_path();
+
+/** returns the absolute path to the user data dir */
+Path get_app_user_data_dir(const std::string& appName);
+
+/** returns the absolute path to the user config dir */
+Path get_app_user_config_dir(const std::string& appName);
+
 }  // namespace rr::system
 
 /////////////////////////////////////////////////////////////////

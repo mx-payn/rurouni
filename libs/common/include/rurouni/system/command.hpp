@@ -3,6 +3,7 @@
 
 // std
 #include <string>
+#include "rurouni/system/filesystem.hpp"
 
 namespace rr::system {
 

@@ -23,6 +23,15 @@
 namespace rr {
 
 Runtime::Runtime(const graphics::WindowSpecification& windowSpec) {
+    // paths
+    m_AppName = RR_RUNTIME_APP_NAME;
+    m_ExecPath = system::get_current_executable_path();
+    m_SharedDataDir = m_ExecPath.parent_path() / RR_RUNTIME_RELATIVE_DATA_DIR;
+    m_SharedConfigDir =
+        m_ExecPath.parent_path() / RR_RUNTIME_RELATIVE_CONFIG_DIR;
+    m_UserDataDir = system::get_app_user_data_dir(RR_RUNTIME_APP_NAME);
+    m_UserConfigDir = system::get_app_user_config_dir(RR_RUNTIME_APP_NAME);
+
     // initializing loggers
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
@@ -37,13 +46,13 @@ Runtime::Runtime(const graphics::WindowSpecification& windowSpec) {
     spdlog::flush_on(spdlog::level::level_enum::trace);
 
     // filepath info
-    runtime::info("bin dir ......... : {}", RR_RUNTIME_BIN_DIR);
-    runtime::info("lib dir ......... : {}", RR_RUNTIME_LIB_DIR);
-    runtime::info("archive dir ..... : {}", RR_RUNTIME_ARCHIVE_DIR);
-    runtime::info("shared data dir . : {}", RR_RUNTIME_SHARED_DATA_DIR);
-    runtime::info("shared config dir : {}", RR_RUNTIME_SHARED_CONFIG_DIR);
-    runtime::info("user data dir ... : {}", RR_RUNTIME_USER_DATA_DIR);
-    runtime::info("user config dir . : {}", RR_RUNTIME_USER_CONFIG_DIR);
+    runtime::info("app name ........ : {}", m_AppName);
+    runtime::info("exec path ....... : {}", m_ExecPath);
+    runtime::info("exec dir ........ : {}", m_ExecPath.parent_path());
+    runtime::info("shared data dir . : {}", m_SharedDataDir);
+    runtime::info("shared config dir : {}", m_SharedConfigDir);
+    runtime::info("user data dir ... : {}", m_UserDataDir);
+    runtime::info("user config dir . : {}", m_UserConfigDir);
 
     m_EventSystem = std::make_shared<event::EventSystem>();
     m_EventSystem->subscribe<event::WindowClose>(this);
