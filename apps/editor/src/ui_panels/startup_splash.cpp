@@ -8,12 +8,13 @@
 
 namespace rr::editor::ui {
 
-void StartupSplash::draw(UIState& state,
-                 event::EventSystem& eventSystem,
-                 std::unordered_map<UUID, ProjectHistoryItem>& history,
-                 std::function<void(const system::Path&,
-                                    const std::string& name)> importFunc,
-                 std::function<void(const UUID&)> openFunc) {
+void StartupSplash::draw(
+    UIState& state,
+    event::EventSystem& eventSystem,
+    std::unordered_map<UUID, ProjectHistoryItem>& history,
+    std::function<void(const system::Path&, const std::string& name)>
+        importFunc,
+    std::function<void(const UUID&)> openFunc) {
     // setup
     static bool open = true;
     ImGuiIO& io = ImGui::GetIO();

@@ -6,13 +6,13 @@
 #include "rurouni/editor/ui.hpp"
 
 // rurouni
+#include "rurouni/core/project.hpp"
 #include "rurouni/event/application_event.hpp"
 #include "rurouni/event/event.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
-#include "rurouni/core/project.hpp"
 
 // std
 #include <memory>
@@ -35,7 +35,8 @@ class Editor : public event::Subscriber {
     void on_window_close_event(std::shared_ptr<event::WindowClose> event);
     void on_window_framebuffer_resize(
         std::shared_ptr<event::WindowFramebufferResize> event);
-    void on_application_close_event(std::shared_ptr<event::ApplicationClose> event);
+    void on_application_close_event(
+        std::shared_ptr<event::ApplicationClose> event);
 
    private:
     void create_project(const system::Path& path, const std::string& name);

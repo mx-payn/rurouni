@@ -58,4 +58,25 @@ struct fmt::formatter<rr::system::Path> : fmt::formatter<std::string> {
     }
 };
 
+/////////////////////////////////////////////////////////////////
+///////////////////  serialization  /////////////////////////////
+/////////////////////////////////////////////////////////////////
+#include <cereal/cereal.hpp>
+
+namespace std::filesystem {
+
+template <class Archive>
+std::string save_minimal(Archive const&, std::filesystem::path const& p) {
+    return p.string();
+}
+
+template <class Archive>
+void load_minimal(Archive const&,
+                  std::filesystem::path& p,
+                  std::string const& value) {
+    p = std::filesystem::path(value);
+}
+
+}  // namespace std::filesystem
+
 #endif  // !RR_LIBS_COMMON_SYSTEM_FILESYSTEM_H

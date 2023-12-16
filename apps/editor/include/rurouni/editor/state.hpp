@@ -16,6 +16,18 @@ struct UIState {
     bool ShowModalCreateProject = false;
 };
 
+}  // namespace rr::editor
+
+/// serialization
+#include <cereal/cereal.hpp>
+
+namespace rr::editor {
+
+template <class Archive>
+void serialize(Archive& archive, rr::editor::ProjectHistoryItem& p) {
+    archive(cereal::make_nvp("name", p.Name), cereal::make_nvp("path", p.Path));
 }
 
-#endif // !RR_EDITOR_STATE_H
+}  // namespace rr::editor
+
+#endif  // !RR_EDITOR_STATE_H

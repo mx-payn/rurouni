@@ -1,9 +1,9 @@
 #ifndef RR_EDITOR_UI_H
 #define RR_EDITOR_UI_H
 
+#include "rurouni/editor/state.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
-#include "rurouni/editor/state.hpp"
 
 #include <imgui/imgui.h>
 

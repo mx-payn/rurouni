@@ -2,11 +2,12 @@
 #include "rurouni/editor.hpp"
 #include "rurouni/editor/config.h"
 #include "rurouni/editor/logger.hpp"
+#include "rurouni/editor/state.hpp"
+#include "rurouni/editor/ui.hpp"
 #include "rurouni/editor/ui_panels/startup_splash.hpp"
 
 // rurouni
 #include "rurouni/common/logger.hpp"
-#include "rurouni/editor/ui.hpp"
 #include "rurouni/event/application_event.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
@@ -17,11 +18,15 @@
 #include "rurouni/time.hpp"
 
 // external
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+#include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
+#include <cereal/types/unordered_map.hpp>
 
 // std
+#include <fstream>
 #include <functional>
 #include <memory>
 
@@ -68,6 +73,25 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
     m_Window = std::make_shared<graphics::Window>(windowSpec, m_EventSystem);
 
     ui::init(*m_Window, m_SharedDataDir, m_UserDataDir, m_UserConfigDir);
+
+    // read project history
+    system::Path historyPath = m_UserConfigDir / "project_history.json";
+
+    if (system::exists(historyPath)) {
+        try {
+            std::ifstream is(historyPath);
+            cereal::JSONInputArchive in(is);
+            in(m_ProjectHistory);
+        } catch (cereal::Exception& e) {
+            error("cereal: {}", e.what());
+            error("path: {}", historyPath.string());
+
+            // ui::push_error(
+            //     "project history",
+            //     fmt::format("error while reading {}", historyPath.string()),
+            //     e.what());
+        }
+    }
 }
 
 Editor::~Editor() {
@@ -103,19 +127,15 @@ void Editor::render() {
     graphics::api::clear();
     ui::begin();
 
-
     if (m_CurrentProject.has_value()) {
         ui::draw_dockspace(m_UIState);
     } else {
         ui::StartupSplash::draw(
-                m_UIState,
-                *m_EventSystem,
-                m_ProjectHistory,
+            m_UIState, *m_EventSystem, m_ProjectHistory,
             std::bind(&Editor::import_project, this, std::placeholders::_1,
                       std::placeholders::_2),
             std::bind(&Editor::open_project, this, std::placeholders::_1));
     }
-    
 
     ui::end();
     m_Window->swap_buffers();
@@ -126,21 +146,23 @@ void Editor::on_event(std::shared_ptr<event::Event> event) {
         event,
         std::bind(&Editor::on_window_close_event, this, std::placeholders::_1));
     event::dispatch<event::ApplicationClose>(
-        event,
-        std::bind(&Editor::on_application_close_event, this, std::placeholders::_1));
+        event, std::bind(&Editor::on_application_close_event, this,
+                         std::placeholders::_1));
 }
 
 void Editor::on_window_close_event(std::shared_ptr<event::WindowClose> event) {
     m_Running = false;
 }
 
-void Editor::on_application_close_event(std::shared_ptr<event::ApplicationClose> event) {
+void Editor::on_application_close_event(
+    std::shared_ptr<event::ApplicationClose> event) {
     m_Running = false;
 }
 
-
-void Editor::create_project(const system::Path& path, const std::string& name) {}
-void Editor::import_project(const system::Path& path, const std::string& name) {}
+void Editor::create_project(const system::Path& path, const std::string& name) {
+}
+void Editor::import_project(const system::Path& path, const std::string& name) {
+}
 void Editor::open_project(const UUID& id) {}
 
 }  // namespace rr::editor
