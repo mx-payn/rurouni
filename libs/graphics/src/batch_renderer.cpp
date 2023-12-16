@@ -125,13 +125,25 @@ void BatchRenderer::flush_quads() {
     m_QuadVertexBuffer->set_data(m_QuadVertexArrayData.data(), dataSize);
 
     for (uint32_t i = 0; i < m_TextureSlotIndex; i++) {
-        auto slot = m_TextureSlots[i].lock();
-        require(slot,
+        auto texturePtr = m_TextureSlots[i].lock();
+
+        if (texturePtr == nullptr) {
+            error(
                 "encountered invalid weak_ptr to texture! asset manager "
-                "seems to unload textures before they get drawn");
-        require(slot->get_renderer_id().has_value(),
-                "texture slot has can not have no value.");
-        slot->bind(i);
+                "seems to unload textures before they get drawn.");
+            m_WhiteTexture->bind(i);
+            continue;
+        }
+
+        if (!texturePtr->get_renderer_id().has_value()) {
+            error(
+                "encountered a texture without renderer id. maybe its atlas "
+                "handle is invalid.");
+            m_WhiteTexture->bind(i);
+            continue;
+        }
+
+        texturePtr->bind(i);
     }
 
     m_QuadShader->bind();
@@ -181,13 +193,6 @@ void BatchRenderer::draw_texture(const math::mat4& transform,
                                  std::weak_ptr<Texture> texture,
                                  math::vec4 color,
                                  uint32_t entityId) {
-    // if the texture is expired
-    if (texture.expired()) {
-        error("texture is not valid any more. drawing ugly replacement");
-        draw_quad(transform, math::vec4{1.0f, 0.0f, 1.0f, 1.0f}, entityId);
-        return;
-    }
-
     if (m_QuadVertexArrayData.size() >= MAX_VERTICES) {
         // start new batch
         flush_quads();
@@ -226,6 +231,7 @@ float BatchRenderer::get_texture_index(std::weak_ptr<Texture> texture) {
     float textureIndex = 0.0f;
     for (uint32_t i = 0; i < m_TextureSlotIndex; i++) {
         auto slot = m_TextureSlots[i].lock();
+
         require(slot,
                 "encountered invalid weak_ptr to texture! asset manager "
                 "seems to unload textures before they get drawn");
