@@ -55,6 +55,8 @@ add_executable(${PROJECT_NAME}
     src/main.cpp 
     src/editor.cpp
     src/ui.cpp
+    ## panels
+    src/ui_panels/startup_splash.cpp
     ## imgui
     src/imgui/imgui.cpp
     src/imgui/imgui_demo.cpp

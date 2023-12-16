@@ -3,12 +3,11 @@
 
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
+#include "rurouni/editor/state.hpp"
 
 #include <imgui/imgui.h>
 
 namespace rr::editor::ui {
-
-struct State {};
 
 void init(graphics::Window& window,
           const system::Path& sharedDataDir,
@@ -21,7 +20,7 @@ void update(float dt, const system::Path& userConfigDir);
 void begin();
 void end();
 
-void draw_dockspace(State& state);
+void draw_dockspace(UIState& state);
 // void draw_menu_bar(State& state);
 
 }  // namespace rr::editor::ui

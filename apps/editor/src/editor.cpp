@@ -1,25 +1,29 @@
 // editor
 #include "rurouni/editor.hpp"
-#include <functional>
-#include <memory>
 #include "rurouni/editor/config.h"
 #include "rurouni/editor/logger.hpp"
+#include "rurouni/editor/ui_panels/startup_splash.hpp"
 
 // rurouni
 #include "rurouni/common/logger.hpp"
 #include "rurouni/editor/ui.hpp"
+#include "rurouni/event/application_event.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
 #include "rurouni/graphics/window.hpp"
-
-// external
 #include "rurouni/system/filesystem.hpp"
 #include "rurouni/time.hpp"
+
+// external
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
+
+// std
+#include <functional>
+#include <memory>
 
 namespace rr::editor {
 
@@ -59,6 +63,7 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
 
     m_EventSystem = std::make_shared<event::EventSystem>();
     m_EventSystem->subscribe<event::WindowClose>(this);
+    m_EventSystem->subscribe<event::ApplicationClose>(this);
 
     m_Window = std::make_shared<graphics::Window>(windowSpec, m_EventSystem);
 
@@ -96,11 +101,23 @@ void Editor::update(float dt) {
 void Editor::render() {
     graphics::api::set_clear_color({0.05f, 0.05f, 0.05f, 1.0f});
     graphics::api::clear();
-
     ui::begin();
-    ui::draw_dockspace(m_UIState);
-    ui::end();
 
+
+    if (m_CurrentProject.has_value()) {
+        ui::draw_dockspace(m_UIState);
+    } else {
+        ui::StartupSplash::draw(
+                m_UIState,
+                *m_EventSystem,
+                m_ProjectHistory,
+            std::bind(&Editor::import_project, this, std::placeholders::_1,
+                      std::placeholders::_2),
+            std::bind(&Editor::open_project, this, std::placeholders::_1));
+    }
+    
+
+    ui::end();
     m_Window->swap_buffers();
 }
 
@@ -108,11 +125,22 @@ void Editor::on_event(std::shared_ptr<event::Event> event) {
     event::dispatch<event::WindowClose>(
         event,
         std::bind(&Editor::on_window_close_event, this, std::placeholders::_1));
+    event::dispatch<event::ApplicationClose>(
+        event,
+        std::bind(&Editor::on_application_close_event, this, std::placeholders::_1));
 }
 
 void Editor::on_window_close_event(std::shared_ptr<event::WindowClose> event) {
-    editor::trace("received window close event. closing loop...");
     m_Running = false;
 }
+
+void Editor::on_application_close_event(std::shared_ptr<event::ApplicationClose> event) {
+    m_Running = false;
+}
+
+
+void Editor::create_project(const system::Path& path, const std::string& name) {}
+void Editor::import_project(const system::Path& path, const std::string& name) {}
+void Editor::open_project(const UUID& id) {}
 
 }  // namespace rr::editor

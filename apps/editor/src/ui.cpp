@@ -109,7 +109,7 @@ void end() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void draw_dockspace(State& state) {
+void draw_dockspace(UIState& state) {
     static bool opt_open = true;
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
