@@ -46,15 +46,15 @@ namespace rr {
 
         system::Path execPath =
             system::get_current_executable_path().parent_path();
+        system::Path appName = execPath.stem();
         system::Path dataDir = execPath / RR_RELATIVE_SANDBOX_DATA_DIR;
         system::Path configDir = execPath / RR_RELATIVE_SANDBOX_CONFIG_DIR;
-        system::Path userDataDir =
-            system::get_app_user_data_dir(RR_SANDBOX_APP_NAME);
-        system::Path userConfigDir =
-            system::get_app_user_config_dir(RR_SANDBOX_APP_NAME);
+        system::Path userDataDir = system::get_app_user_data_dir(appName);
+        system::Path userConfigDir = system::get_app_user_config_dir(appName);
 
         // filepath info
         sandbox::info("exec dir : {}", execPath);
+        sandbox::info("app name : {}", appName);
         sandbox::info("data dir : {}", dataDir);
         sandbox::info("config dir : {}", configDir);
         sandbox::info("user data dir : {}", userDataDir);

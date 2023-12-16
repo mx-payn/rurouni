@@ -15,12 +15,6 @@ option(RR_INSTALL_BUILD "use the install dir paths instead of build paths for da
 #############################################################
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(GNUInstallDirs)
-# output paths
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
-
 #############################################################
 ####################  SUBDIRS  ##############################
 #############################################################

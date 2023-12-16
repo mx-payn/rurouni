@@ -24,13 +24,13 @@
 namespace rr::editor {
 
 Editor::Editor(const graphics::WindowSpecification& windowSpec) {
-    m_AppName = RR_EDITOR_APP_NAME;
     m_ExecPath = system::get_current_executable_path();
+    m_AppName = m_ExecPath.stem();
     m_SharedDataDir = m_ExecPath.parent_path() / RR_EDITOR_RELATIVE_DATA_DIR;
     m_SharedConfigDir =
         m_ExecPath.parent_path() / RR_EDITOR_RELATIVE_CONFIG_DIR;
-    m_UserDataDir = system::get_app_user_data_dir(RR_EDITOR_APP_NAME);
-    m_UserConfigDir = system::get_app_user_config_dir(RR_EDITOR_APP_NAME);
+    m_UserDataDir = system::get_app_user_data_dir(m_AppName);
+    m_UserConfigDir = system::get_app_user_config_dir(m_AppName);
 
     // initializing loggers
     std::string currentDateTime = time::get_current_date_and_time();
