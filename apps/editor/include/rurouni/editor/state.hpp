@@ -13,7 +13,7 @@ struct ModuleHistoryItem {
 };
 
 struct UIState {
-    bool ShowModalCreateModule = false;
+    bool ShowModuleCreateModal = false;
 };
 
 }  // namespace rr::editor

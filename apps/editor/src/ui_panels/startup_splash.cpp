@@ -32,7 +32,7 @@ void StartupSplash::draw(
 
     // new project button
     if (ImGui::Button("New")) {
-        state.ShowModalCreateModule = true;
+        state.ShowModuleCreateModal = true;
     }
 
     ImGui::SameLine();

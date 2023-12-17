@@ -4,6 +4,7 @@
 #include "rurouni/editor/logger.hpp"
 #include "rurouni/editor/state.hpp"
 #include "rurouni/editor/ui.hpp"
+#include "rurouni/editor/ui_modals/module_create.hpp"
 #include "rurouni/editor/ui_panels/startup_splash.hpp"
 
 // rurouni
@@ -29,6 +30,7 @@
 #include <fstream>
 #include <functional>
 #include <memory>
+#include <regex>
 
 namespace rr::editor {
 
@@ -92,6 +94,9 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
             //     e.what());
         }
     }
+
+    // modals
+    m_ModuleCreateModal = std::make_unique<ui::ModuleCreateModal>();
 }
 
 Editor::~Editor() {
@@ -137,6 +142,11 @@ void Editor::render() {
             std::bind(&Editor::open_module, this, std::placeholders::_1));
     }
 
+    // draw modals
+    m_ModuleCreateModal->draw(
+        m_UIState, std::bind(&Editor::create_module, this,
+                             std::placeholders::_1, std::placeholders::_2));
+
     ui::end();
     m_Window->swap_buffers();
 }
@@ -159,8 +169,65 @@ void Editor::on_application_close_event(
     m_Running = false;
 }
 
-void Editor::create_module(const system::Path& path, const std::string& name) {}
+void Editor::create_module(const system::Path& path, const std::string& name) {
+    system::Path modulePath = path / name;
+    UUID id = UUID::create();
+
+    system::copy(m_SharedDataDir / "module-template", modulePath,
+                 system::copy_options::recursive);
+
+    // configure project.json
+    std::ifstream in(modulePath / "module.json");
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+    in.close();
+
+    // TODO this works, but is shit
+    std::regex name_regex("RR_PROJECT_NAME");
+    std::string result = std::regex_replace(buffer.str(), name_regex, name);
+    std::regex path_regex("RR_PROJECT_PATH");
+    result = std::regex_replace(result, path_regex, (modulePath).string());
+    std::regex id_regex("RR_PROJECT_ID");
+    result = std::regex_replace(result, id_regex, id.to_string());
+
+    debug("\n{}", result);
+
+    std::ofstream out(modulePath / "module.json");
+    out << result;
+    out.close();
+
+    // update history in memory
+    ModuleHistoryItem item;
+    item.Name = name;
+    item.Path = modulePath;
+    m_ModuleHistory[id] = item;
+
+    // write memory to file
+    write_module_history();
+}
+
 void Editor::import_module(const system::Path& path, const std::string& name) {}
 void Editor::open_module(const UUID& id) {}
+
+void Editor::write_module_history() {
+    system::Path historyPath = m_UserConfigDir / "module_history.json";
+
+    if (!system::exists(m_UserConfigDir))
+        system::create_directories(m_UserConfigDir);
+
+    try {
+        std::ofstream os(historyPath);
+        cereal::JSONOutputArchive out(os);
+        out(m_ModuleHistory);
+    } catch (cereal::Exception& e) {
+        error("cereal: {}", e.what());
+        error("path: {}", historyPath.string());
+
+        // ui::push_error(
+        //     "project history",
+        //     fmt::format("error while writing {}", historyPath.string()),
+        //     e.what());
+    }
+}
 
 }  // namespace rr::editor

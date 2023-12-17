@@ -2,11 +2,12 @@
 #define RR_EDITOR_H
 
 // editor
-#include "rurouni/core/scene.hpp"
 #include "rurouni/editor/ui.hpp"
+#include "rurouni/editor/ui_modals/module_create.hpp"
 
 // rurouni
 #include "rurouni/core/module.hpp"
+#include "rurouni/core/scene.hpp"
 #include "rurouni/event/application_event.hpp"
 #include "rurouni/event/event.hpp"
 #include "rurouni/event/event_system.hpp"
@@ -45,6 +46,8 @@ class Editor : public event::Subscriber {
     void import_module(const system::Path& path, const std::string& name);
     void open_module(const UUID& id);
 
+    void write_module_history();
+
    private:
     // editor state
     bool m_Running;
@@ -60,6 +63,9 @@ class Editor : public event::Subscriber {
     // systems
     std::shared_ptr<graphics::Window> m_Window;
     std::shared_ptr<event::EventSystem> m_EventSystem;
+
+    // modals
+    std::unique_ptr<ui::ModuleCreateModal> m_ModuleCreateModal;
 
     // editor paths
     std::string m_AppName;
