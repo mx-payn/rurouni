@@ -59,6 +59,7 @@ add_executable(${PROJECT_NAME}
     src/ui_panels/startup_splash.cpp
     # modals
     src/ui_modals/module_create.cpp
+    src/ui_modals/error.cpp
     ## imgui
     src/imgui/imgui.cpp
     src/imgui/imgui_demo.cpp

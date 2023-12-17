@@ -3,6 +3,7 @@
 
 // editor
 #include "rurouni/editor/ui.hpp"
+#include "rurouni/editor/ui_modals/error.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
 
 // rurouni
@@ -66,6 +67,7 @@ class Editor : public event::Subscriber {
 
     // modals
     std::unique_ptr<ui::ModuleCreateModal> m_ModuleCreateModal;
+    std::unique_ptr<ui::ErrorModal> m_ErrorModal;
 
     // editor paths
     std::string m_AppName;

@@ -63,6 +63,7 @@ void StartupSplash::draw_history(
     // TODO validation: does the project still exist?
     if (ImGui::BeginListBox("history")) {
         for (auto& [k, v] : history) {
+            ImGui::PushID(k.to_string().c_str());
             const bool is_selected = (selectedId == k);
             if (ImGui::Selectable(v.Name.c_str(), is_selected))
                 selectedId = selectedId == k ? UUID() : k;
@@ -71,6 +72,8 @@ void StartupSplash::draw_history(
             // keyboard navigation focus)
             if (is_selected)
                 ImGui::SetItemDefaultFocus();
+
+            ImGui::PopID();
         }
         ImGui::EndListBox();
     }

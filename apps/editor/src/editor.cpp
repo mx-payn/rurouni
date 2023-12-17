@@ -4,6 +4,7 @@
 #include "rurouni/editor/logger.hpp"
 #include "rurouni/editor/state.hpp"
 #include "rurouni/editor/ui.hpp"
+#include "rurouni/editor/ui_modals/error.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
 #include "rurouni/editor/ui_panels/startup_splash.hpp"
 
@@ -76,27 +77,27 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
 
     ui::init(*m_Window, m_SharedDataDir, m_UserDataDir, m_UserConfigDir);
 
-    // read project history
-    system::Path historyPath = m_UserConfigDir / "project_history.json";
+    // modals
+    m_ModuleCreateModal = std::make_unique<ui::ModuleCreateModal>();
+    m_ErrorModal = std::make_unique<ui::ErrorModal>();
 
+    // read project history
+    system::Path historyPath = m_UserConfigDir / "module_history.json";
     if (system::exists(historyPath)) {
         try {
             std::ifstream is(historyPath);
             cereal::JSONInputArchive in(is);
             in(m_ModuleHistory);
+            is.close();
         } catch (cereal::Exception& e) {
             error("cereal: {}", e.what());
             error("path: {}", historyPath.string());
 
-            // ui::push_error(
-            //     "project history",
-            //     fmt::format("error while reading {}", historyPath.string()),
-            //     e.what());
+            ui::ErrorModal::push_error("failed deserialization",
+                                       "error while reading '{}'. what: {}",
+                                       historyPath.string(), e.what());
         }
     }
-
-    // modals
-    m_ModuleCreateModal = std::make_unique<ui::ModuleCreateModal>();
 }
 
 Editor::~Editor() {
@@ -143,6 +144,7 @@ void Editor::render() {
     }
 
     // draw modals
+    m_ErrorModal->draw();
     m_ModuleCreateModal->draw(
         m_UIState, std::bind(&Editor::create_module, this,
                              std::placeholders::_1, std::placeholders::_2));
@@ -223,10 +225,9 @@ void Editor::write_module_history() {
         error("cereal: {}", e.what());
         error("path: {}", historyPath.string());
 
-        // ui::push_error(
-        //     "project history",
-        //     fmt::format("error while writing {}", historyPath.string()),
-        //     e.what());
+        ui::ErrorModal::push_error("failed serialization",
+                                   "error while writing '{}'. what: {}",
+                                   historyPath.string(), e.what());
     }
 }
 
