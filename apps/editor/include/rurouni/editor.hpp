@@ -52,6 +52,9 @@ class Editor : public event::Subscriber {
     void write_module_history();
     void cleanup_module_history();
 
+    void change_scene(const system::Path& path);
+    void draw_scene();
+
    private:
     // editor state
     bool m_Running;

@@ -2,6 +2,7 @@
 #define RR_LIBS_CORE_SCENE_H
 
 // rurouni
+#include "entt/entity/fwd.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/core/scene_state.hpp"
 #include "rurouni/error.hpp"
@@ -40,6 +41,7 @@ class Scene {
     void set_viewport_size(const math::ivec2& size);
 
     graphics::Framebuffer& get_framebuffer() const { return *m_Framebuffer; }
+    entt::registry& get_registry() { return m_Registry; }
 
    private:
     void update_camera_data();

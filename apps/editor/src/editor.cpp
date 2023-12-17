@@ -8,6 +8,7 @@
 #include "rurouni/editor/ui.hpp"
 #include "rurouni/editor/ui_modals/error.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
+#include "rurouni/editor/ui_panels/scene_viewport.hpp"
 #include "rurouni/editor/ui_panels/startup_splash.hpp"
 
 // rurouni
@@ -132,6 +133,13 @@ void Editor::render() {
 
     if (m_CurrentModule.has_value()) {
         ui::draw_dockspace(m_UIState);
+
+        if (!m_CurrentScenes.empty()) {
+            ui::SceneViewportPanel::draw(
+                m_UIState, *m_CurrentScenes.back(),
+                std::bind(&Editor::draw_scene, this),
+                std::bind(&Editor::change_scene, this, std::placeholders::_1));
+        }
     } else {
         ui::StartupSplash::draw(
             m_UIState, *m_EventSystem, m_ModuleHistory,
@@ -360,6 +368,16 @@ void Editor::cleanup_module_history() {
 
     if (didErase)
         write_module_history();
+}
+
+void Editor::change_scene(const system::Path& path) {
+    // TODO
+}
+
+void Editor::draw_scene() {
+    if (!m_CurrentScenes.empty()) {
+        m_CurrentScenes.back()->on_render(*m_Renderer);
+    }
 }
 
 }  // namespace rr::editor

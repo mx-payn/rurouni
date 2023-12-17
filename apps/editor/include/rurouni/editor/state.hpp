@@ -4,6 +4,9 @@
 #include "rurouni/math/vec.hpp"
 #include "rurouni/system/filesystem.hpp"
 
+#include <entt/entt.hpp>
+
+#include <optional>
 #include <string>
 
 namespace rr::editor {
@@ -16,7 +19,10 @@ struct ModuleHistoryItem {
 struct UIState {
     math::ivec2 SceneViewportSize = math::ivec2(1.0f);
 
+    std::optional<entt::entity> m_SelectedEntity;
+
     bool ShowModuleCreateModal = false;
+    bool ShowPanelSceneViewport = true;
 };
 
 }  // namespace rr::editor
