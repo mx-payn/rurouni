@@ -299,7 +299,7 @@ void Editor::open_module(const UUID& id) {
     }
 
     auto scene = std::make_unique<core::Scene>(math::ivec2(1.0f));
-    scene->load_scene(absStartScenePath, m_UIState.SceneViewportSize);
+    scene->read_from_file(absStartScenePath, m_UIState.SceneViewportSize);
     m_CurrentScenes.push_back(std::move(scene));
 }
 

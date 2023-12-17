@@ -2,6 +2,7 @@
 #define RR_LIBS_CORE_MODULE_H
 
 #include "rurouni/core/scene.hpp"
+#include "rurouni/error.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/window.hpp"
@@ -13,14 +14,6 @@
 #include <memory>
 
 namespace rr::core {
-
-struct Error {
-    template <class... Args>
-    Error(fmt::format_string<Args...> fmt, Args&&... args) {
-        Message = fmt::format(fmt, std::forward<Args>(args)...);
-    }
-    std::string Message;
-};
 
 class Module {
    public:
@@ -39,6 +32,7 @@ class Module {
     void set_name(const std::string& name) { m_Name = name; }
     const UUID& get_id() const { return m_Id; }
     void set_id(const UUID& id) { m_Id = id; }
+    const system::Path& get_root_path() const { return m_RootPath; }
     const system::Path& get_start_scene_path() const {
         return m_StartScenePath;
     }
@@ -57,6 +51,7 @@ class Module {
     std::shared_ptr<graphics::BatchRenderer> m_Renderer;
     std::shared_ptr<event::EventSystem> m_EventSystem;
 
+    system::Path m_RootPath;
     system::Path m_StartScenePath;  //!< relative path to start scene
 };
 

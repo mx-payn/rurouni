@@ -2,9 +2,9 @@
 #define RR_LIBS_CORE_SCENE_H
 
 // rurouni
-#include "entt/entity/fwd.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/core/scene_state.hpp"
+#include "rurouni/error.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/framebuffer.hpp"
 #include "rurouni/system/filesystem.hpp"
@@ -24,9 +24,9 @@ class Scene {
     Scene(const math::ivec2& viewportSize_px);
     ~Scene();
 
-    void load_scene(const system::Path& filepath,
-                    const math::ivec2& viewportSize_px);
-    void write_scene(std::optional<system::Path> filepath);
+    std::optional<Error> read_from_file(const system::Path& filepath,
+                                        const math::ivec2& viewportSize_px);
+    std::optional<Error> write_to_file(const system::Path& path);
 
     void on_update(float dt);
     void on_render(graphics::BatchRenderer& renderer);

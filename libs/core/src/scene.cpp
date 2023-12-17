@@ -1,5 +1,4 @@
 // pch
-#include "cereal/details/helpers.hpp"
 #include "rurouni/pch.hpp"
 //-----------------------
 
@@ -14,6 +13,7 @@
 #include "rurouni/core/scene.hpp"
 #include "rurouni/graphics/framebuffer.hpp"
 #include "rurouni/graphics/render_api.hpp"
+#include "rurouni/system/filesystem.hpp"
 
 // external
 #include "cereal/archives/json.hpp"
@@ -89,8 +89,8 @@ void Scene::on_render(graphics::BatchRenderer& renderer) {
     m_Framebuffer->unbind();
 }
 
-void Scene::load_scene(const system::Path& filepath,
-                       const math::ivec2& viewportSize_px) {
+std::optional<Error> Scene::read_from_file(const system::Path& filepath,
+                                           const math::ivec2& viewportSize_px) {
     try {
         std::ifstream is(filepath);
         cereal::JSONInputArchive input(is);
@@ -112,14 +112,20 @@ void Scene::load_scene(const system::Path& filepath,
     } catch (cereal::Exception e) {
         error("failed deserializing scene. path: {}", filepath);
         error("cereal: {}", e.what());
+
+        return Error("failed deserializing scene.",
+                     "failed deserializing scene. path: {}, what: {}", filepath,
+                     e.what());
     }
 
     set_viewport_size(viewportSize_px);
+
+    return {};
 }
 
-void Scene::write_scene(std::optional<system::Path> filepath) {
-    std::ofstream os(filepath ? filepath.value() : m_Filepath);
-    {
+std::optional<Error> Scene::write_to_file(const system::Path& path) {
+    try {
+        std::ofstream os(path);
         cereal::JSONOutputArchive out(os);
         out(cereal::make_nvp("name", m_Name),
             cereal::make_nvp("layers", m_Layers),
@@ -135,8 +141,17 @@ void Scene::write_scene(std::optional<system::Path> filepath) {
             .get<components::Texture>(out)
             .get<components::OrthographicProjection>(out);
         out.finishNode();
+        os.close();
+    } catch (cereal::Exception e) {
+        error("failed serializing scene. path: {}", path);
+        error("cereal: {}", e.what());
+
+        return Error("failed serializing scene.",
+                     "failed serializing scene. path: {}, what: {}", path,
+                     e.what());
     }
-    os.close();
+
+    return {};
 }
 
 void Scene::push_layer(std::unique_ptr<Layer> layer) {

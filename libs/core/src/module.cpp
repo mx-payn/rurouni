@@ -46,8 +46,10 @@ std::optional<Error> Module::load_from_file(const system::Path& path) {
         error("error while loading module from path: {}", path);
         error("{}", e.what());
         return Error("error while loading module from path: {}, message: {}",
-                     e.what());
+                     path, e.what());
     }
+
+    m_RootPath = path.parent_path();
 
     return {};
 }
@@ -83,7 +85,7 @@ std::optional<Error> Module::write_to_file(const system::Path& path) {
         error("error while writing module to path: {}", path);
         error("{}", e.what());
         return Error("error while writing module to path: {}, message: {}",
-                     e.what());
+                     path, e.what());
     }
 
     return {};

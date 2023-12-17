@@ -68,8 +68,9 @@ namespace rr {
         m_CurrentScene = std::make_shared<core::Scene>(
                 m_Window->get_window_data().FramebufferSize
                 );
-        m_CurrentScene->load_scene(system::Path(dataDir) / "scene.json",
-                                   m_Window->get_window_data().FramebufferSize);
+        m_CurrentScene->read_from_file(
+            system::Path(dataDir) / "scene.json",
+            m_Window->get_window_data().FramebufferSize);
         m_PostFXShader = std::make_unique<graphics::Shader>(
                 graphics::DEFAULT_POST_FX_SHADER_VERTEX_SRC,
                 graphics::DEFAULT_POST_FX_SHADER_FRAGMENT_SRC
