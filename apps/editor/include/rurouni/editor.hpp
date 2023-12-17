@@ -47,7 +47,9 @@ class Editor : public event::Subscriber {
     void import_module(const system::Path& path, const std::string& name);
     void open_module(const UUID& id);
 
+    void read_module_history();
     void write_module_history();
+    void cleanup_module_history();
 
    private:
     // editor state

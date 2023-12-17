@@ -82,22 +82,7 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
     m_ErrorModal = std::make_unique<ui::ErrorModal>();
 
     // read project history
-    system::Path historyPath = m_UserConfigDir / "module_history.json";
-    if (system::exists(historyPath)) {
-        try {
-            std::ifstream is(historyPath);
-            cereal::JSONInputArchive in(is);
-            in(m_ModuleHistory);
-            is.close();
-        } catch (cereal::Exception& e) {
-            error("cereal: {}", e.what());
-            error("path: {}", historyPath.string());
-
-            ui::ErrorModal::push_error("failed deserialization",
-                                       "error while reading '{}'. what: {}",
-                                       historyPath.string(), e.what());
-        }
-    }
+    read_module_history();
 }
 
 Editor::~Editor() {
@@ -211,6 +196,28 @@ void Editor::create_module(const system::Path& path, const std::string& name) {
 void Editor::import_module(const system::Path& path, const std::string& name) {}
 void Editor::open_module(const UUID& id) {}
 
+void Editor::read_module_history() {
+    system::Path historyPath = m_UserConfigDir / "module_history.json";
+
+    if (system::exists(historyPath)) {
+        try {
+            std::ifstream is(historyPath);
+            cereal::JSONInputArchive in(is);
+            in(m_ModuleHistory);
+            is.close();
+        } catch (cereal::Exception& e) {
+            error("cereal: {}", e.what());
+            error("path: {}", historyPath.string());
+
+            ui::ErrorModal::push_error("failed deserialization",
+                                       "error while reading '{}'. what: {}",
+                                       historyPath.string(), e.what());
+        }
+
+        cleanup_module_history();
+    }
+}
+
 void Editor::write_module_history() {
     system::Path historyPath = m_UserConfigDir / "module_history.json";
 
@@ -229,6 +236,23 @@ void Editor::write_module_history() {
                                    "error while writing '{}'. what: {}",
                                    historyPath.string(), e.what());
     }
+}
+
+void Editor::cleanup_module_history() {
+    bool didErase = false;
+    for (auto it = m_ModuleHistory.begin(); it != m_ModuleHistory.end();) {
+        system::Path historyPath = it->second.Path / "module.json";
+
+        if (!system::exists(historyPath)) {
+            it = m_ModuleHistory.erase(it);
+            didErase = true;
+        } else {
+            it++;
+        }
+    }
+
+    if (didErase)
+        write_module_history();
 }
 
 }  // namespace rr::editor
