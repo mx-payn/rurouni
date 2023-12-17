@@ -18,8 +18,7 @@ class StartupSplash {
     static void draw(UIState& state,
                      event::EventSystem& eventSystem,
                      std::unordered_map<UUID, ModuleHistoryItem>& history,
-                     std::function<void(const system::Path&,
-                                        const std::string& name)> importFunc,
+                     std::function<void(const system::Path&)> importFunc,
                      std::function<void(const UUID&)> openFunc);
 
    private:
@@ -27,8 +26,7 @@ class StartupSplash {
         std::unordered_map<UUID, ModuleHistoryItem>& history,
         UUID& selectedId);
     static void draw_import(
-        std::function<void(const system::Path&, const std::string& name)>
-            importFunc);
+        std::function<void(const system::Path&)> importFunc);
     static void draw_exit(event::EventSystem& eventSystem);
 };
 

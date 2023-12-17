@@ -1,4 +1,5 @@
 // pch
+#include "cereal/details/helpers.hpp"
 #include "rurouni/pch.hpp"
 //-----------------------
 
@@ -90,8 +91,8 @@ void Scene::on_render(graphics::BatchRenderer& renderer) {
 
 void Scene::load_scene(const system::Path& filepath,
                        const math::ivec2& viewportSize_px) {
-    std::ifstream is(filepath);
-    {
+    try {
+        std::ifstream is(filepath);
         cereal::JSONInputArchive input(is);
         input(cereal::make_nvp("name", m_Name),
               cereal::make_nvp("layers", m_Layers),
@@ -107,8 +108,11 @@ void Scene::load_scene(const system::Path& filepath,
             .get<components::Texture>(input)
             .get<components::OrthographicProjection>(input);
         input.finishNode();
+        is.close();
+    } catch (cereal::Exception e) {
+        error("failed deserializing scene. path: {}", filepath);
+        error("cereal: {}", e.what());
     }
-    is.close();
 
     set_viewport_size(viewportSize_px);
 }

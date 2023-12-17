@@ -8,13 +8,11 @@
 
 namespace rr::editor::ui {
 
-void StartupSplash::draw(
-    UIState& state,
-    event::EventSystem& eventSystem,
-    std::unordered_map<UUID, ModuleHistoryItem>& history,
-    std::function<void(const system::Path&, const std::string& name)>
-        importFunc,
-    std::function<void(const UUID&)> openFunc) {
+void StartupSplash::draw(UIState& state,
+                         event::EventSystem& eventSystem,
+                         std::unordered_map<UUID, ModuleHistoryItem>& history,
+                         std::function<void(const system::Path&)> importFunc,
+                         std::function<void(const UUID&)> openFunc) {
     // setup
     static bool open = true;
     ImGuiIO& io = ImGui::GetIO();
@@ -80,16 +78,14 @@ void StartupSplash::draw_history(
 }
 
 void StartupSplash::draw_import(
-    std::function<void(const system::Path&, const std::string& name)>
-        importFunc) {
+    std::function<void(const system::Path&)> importFunc) {
     if (ImGui::Button("Import")) {
         // TODO make a modal to specify name and path
         // which would enable custom name when clashing
-        auto result =
-            system::execute_command("zenity --file-selection --directory");
+        auto result = system::execute_command("zenity --file-selection");
         auto path = system::Path(result);
 
-        importFunc(path, path.stem());
+        importFunc(path);
     }
 }
 

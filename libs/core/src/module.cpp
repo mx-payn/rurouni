@@ -1,3 +1,4 @@
+#include "cereal/details/helpers.hpp"
 #include "rurouni/pch.hpp"
 
 #include "rurouni/core/logger.hpp"
@@ -9,20 +10,12 @@
 
 namespace rr::core {
 
-Module::Module(const system::Path& path,
-               std::shared_ptr<graphics::Window> window,
+Module::Module(std::shared_ptr<graphics::Window> window,
                std::shared_ptr<graphics::BatchRenderer> renderer,
                std::shared_ptr<event::EventSystem> eventSystem)
-    : m_ModulePath(path),
-      m_Window(window),
-      m_Renderer(renderer),
-      m_EventSystem(eventSystem) {}
+    : m_Window(window), m_Renderer(renderer), m_EventSystem(eventSystem) {}
 
 Module::~Module() {}
-
-std::optional<Error> Module::load_from_file() {
-    return load_from_file(m_ModulePath);
-}
 
 std::optional<Error> Module::load_from_file(const system::Path& path) {
     if (!system::exists(path)) {
@@ -46,11 +39,10 @@ std::optional<Error> Module::load_from_file(const system::Path& path) {
             cereal::JSONInputArchive input(is);
             input(cereal::make_nvp("name", m_Name),
                   cereal::make_nvp("id", m_Id),
-                  cereal::make_nvp("module_path", m_ModulePath),
                   cereal::make_nvp("start_scene_path", m_StartScenePath));
         }
         is.close();
-    } catch (std::exception e) {
+    } catch (cereal::Exception e) {
         error("error while loading module from path: {}", path);
         error("{}", e.what());
         return Error("error while loading module from path: {}, message: {}",
@@ -58,10 +50,6 @@ std::optional<Error> Module::load_from_file(const system::Path& path) {
     }
 
     return {};
-}
-
-std::optional<Error> Module::write_to_file() {
-    return write_to_file(m_ModulePath);
 }
 
 std::optional<Error> Module::write_to_file(const system::Path& path) {
@@ -88,7 +76,6 @@ std::optional<Error> Module::write_to_file(const system::Path& path) {
         {
             cereal::JSONOutputArchive out(os);
             out(cereal::make_nvp("name", m_Name), cereal::make_nvp("id", m_Id),
-                cereal::make_nvp("module_path", m_ModulePath),
                 cereal::make_nvp("start_scene_path", m_StartScenePath));
         }
         os.close();

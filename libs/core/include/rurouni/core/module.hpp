@@ -24,15 +24,12 @@ struct Error {
 
 class Module {
    public:
-    Module(const system::Path& path,
-           std::shared_ptr<graphics::Window> window,
+    Module(std::shared_ptr<graphics::Window> window,
            std::shared_ptr<graphics::BatchRenderer> renderer,
            std::shared_ptr<event::EventSystem> eventSystem);
     ~Module();
 
-    std::optional<Error> load_from_file();
     std::optional<Error> load_from_file(const system::Path& path);
-    std::optional<Error> write_to_file();
     std::optional<Error> write_to_file(const system::Path& path);
 
     void on_update(float dt);
@@ -42,8 +39,6 @@ class Module {
     void set_name(const std::string& name) { m_Name = name; }
     const UUID& get_id() const { return m_Id; }
     void set_id(const UUID& id) { m_Id = id; }
-    const system::Path& get_module_path() const { return m_ModulePath; }
-    void set_module_path(const system::Path& path) { m_ModulePath = path; }
     const system::Path& get_start_scene_path() const {
         return m_StartScenePath;
     }
@@ -62,7 +57,6 @@ class Module {
     std::shared_ptr<graphics::BatchRenderer> m_Renderer;
     std::shared_ptr<event::EventSystem> m_EventSystem;
 
-    system::Path m_ModulePath;      //!< absolte path to the project dir
     system::Path m_StartScenePath;  //!< relative path to start scene
 };
 

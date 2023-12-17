@@ -1,0 +1,65 @@
+{
+    "name": "",
+    "layers": [
+        {
+            "polymorphic_id": 2147483649,
+            "polymorphic_name": "rr::core::GridLayer",
+            "ptr_wrapper": {
+                "valid": 1,
+                "data": {
+                    "grid_color": {
+                        "x": 0.2,
+                        "y": 0.2,
+                        "z": 0.2,
+                        "w": 1.0
+                    }
+                }
+            }
+        }
+    ],
+    "overlays": [],
+    "scene_state": {
+        "cell_count_y": 45,
+        "layer_camera_entt_id": 0,
+        "overlay_camera_entt_id": 4294967295
+    },
+    "registry": {
+        "value0": 1,
+        "value1": 1,
+        "value2": 0,
+        "value3": 1,
+        "value4": 0,
+        "value5": {
+            "uuid": "f3ac6599-80f9-4f78-a564-b1fae3760320",
+            "name": "camera"
+        },
+        "value6": 1,
+        "value7": 0,
+        "value8": {
+            "translation": {
+                "x": 39.5,
+                "y": 22.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "value9": 0,
+        "value10": 1,
+        "value11": 0,
+        "value12": {
+            "unit_type": "Cell",
+            "size": 44.0,
+            "near": -32.0,
+            "far": 32.0
+        }
+    }
+}

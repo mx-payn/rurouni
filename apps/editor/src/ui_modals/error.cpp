@@ -2,7 +2,6 @@
 
 #include <imgui/imgui.h>
 
-#include <string>
 #include <vector>
 
 namespace rr::editor::ui {
@@ -25,7 +24,6 @@ void ErrorModal::draw() {
         static int selected = 0;
         if (ImGui::BeginListBox("##list")) {
             for (int i = 0; i < s_Errors.size(); i++) {
-                ImGui::PushID(std::to_string(i).c_str());
                 const bool is_selected = (selected == i);
                 if (ImGui::Selectable(s_Errors[i].Title.c_str(), is_selected))
                     selected = i;
@@ -34,8 +32,6 @@ void ErrorModal::draw() {
                 // keyboard navigation focus)
                 if (is_selected)
                     ImGui::SetItemDefaultFocus();
-
-                ImGui::PopID();
             }
             ImGui::EndListBox();
         }

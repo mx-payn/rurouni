@@ -1,6 +1,5 @@
 {
-    "name": "RR_PROJECT_NAME",
-    "id": "RR_PROJECT_ID",
-    "project_path": "RR_PROJECT_PATH",
-    "start_scene_path": "RR_PROJECT_PATH/scenes/default.json"
+    "name": "RR_MODULE_NAME",
+    "id": "RR_MODULE_ID",
+    "start_scene_path": "scenes/default.json"
 }

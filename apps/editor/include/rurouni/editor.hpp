@@ -13,6 +13,7 @@
 #include "rurouni/event/event.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
+#include "rurouni/graphics/batch_renderer.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
 
@@ -44,7 +45,7 @@ class Editor : public event::Subscriber {
 
    private:
     void create_module(const system::Path& path, const std::string& name);
-    void import_module(const system::Path& path, const std::string& name);
+    void import_module(const system::Path& path);
     void open_module(const UUID& id);
 
     void read_module_history();
@@ -66,6 +67,7 @@ class Editor : public event::Subscriber {
     // systems
     std::shared_ptr<graphics::Window> m_Window;
     std::shared_ptr<event::EventSystem> m_EventSystem;
+    std::shared_ptr<graphics::BatchRenderer> m_Renderer;
 
     // modals
     std::unique_ptr<ui::ModuleCreateModal> m_ModuleCreateModal;
