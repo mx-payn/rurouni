@@ -81,7 +81,7 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
         try {
             std::ifstream is(historyPath);
             cereal::JSONInputArchive in(is);
-            in(m_ProjectHistory);
+            in(m_ModuleHistory);
         } catch (cereal::Exception& e) {
             error("cereal: {}", e.what());
             error("path: {}", historyPath.string());
@@ -127,14 +127,14 @@ void Editor::render() {
     graphics::api::clear();
     ui::begin();
 
-    if (m_CurrentProject.has_value()) {
+    if (m_CurrentModule.has_value()) {
         ui::draw_dockspace(m_UIState);
     } else {
         ui::StartupSplash::draw(
-            m_UIState, *m_EventSystem, m_ProjectHistory,
-            std::bind(&Editor::import_project, this, std::placeholders::_1,
+            m_UIState, *m_EventSystem, m_ModuleHistory,
+            std::bind(&Editor::import_module, this, std::placeholders::_1,
                       std::placeholders::_2),
-            std::bind(&Editor::open_project, this, std::placeholders::_1));
+            std::bind(&Editor::open_module, this, std::placeholders::_1));
     }
 
     ui::end();
@@ -159,10 +159,8 @@ void Editor::on_application_close_event(
     m_Running = false;
 }
 
-void Editor::create_project(const system::Path& path, const std::string& name) {
-}
-void Editor::import_project(const system::Path& path, const std::string& name) {
-}
-void Editor::open_project(const UUID& id) {}
+void Editor::create_module(const system::Path& path, const std::string& name) {}
+void Editor::import_module(const system::Path& path, const std::string& name) {}
+void Editor::open_module(const UUID& id) {}
 
 }  // namespace rr::editor

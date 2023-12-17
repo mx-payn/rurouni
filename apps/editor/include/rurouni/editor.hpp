@@ -6,7 +6,7 @@
 #include "rurouni/editor/ui.hpp"
 
 // rurouni
-#include "rurouni/core/project.hpp"
+#include "rurouni/core/module.hpp"
 #include "rurouni/event/application_event.hpp"
 #include "rurouni/event/event.hpp"
 #include "rurouni/event/event_system.hpp"
@@ -16,6 +16,8 @@
 
 // std
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace rr::editor {
 
@@ -39,24 +41,27 @@ class Editor : public event::Subscriber {
         std::shared_ptr<event::ApplicationClose> event);
 
    private:
-    void create_project(const system::Path& path, const std::string& name);
-    void import_project(const system::Path& path, const std::string& name);
-    void open_project(const UUID& id);
+    void create_module(const system::Path& path, const std::string& name);
+    void import_module(const system::Path& path, const std::string& name);
+    void open_module(const UUID& id);
 
    private:
-    // state
+    // editor state
     bool m_Running;
     float m_DeltaTime;
+    std::unordered_map<UUID, ModuleHistoryItem> m_ModuleHistory;
+
+    // module state
     UIState m_UIState;
-    std::optional<core::Project> m_CurrentProject;
-    std::unique_ptr<core::Scene> m_CurrentScene;
-    std::unordered_map<UUID, ProjectHistoryItem> m_ProjectHistory;
+    std::optional<core::Module> m_CurrentModule;
+    std::vector<std::unique_ptr<core::Scene>> m_CurrentScenes;
+    std::unique_ptr<core::Scene> m_NextScene;
 
     // systems
     std::shared_ptr<graphics::Window> m_Window;
     std::shared_ptr<event::EventSystem> m_EventSystem;
 
-    // paths
+    // editor paths
     std::string m_AppName;
     system::Path m_ExecPath;
     system::Path m_SharedDataDir;

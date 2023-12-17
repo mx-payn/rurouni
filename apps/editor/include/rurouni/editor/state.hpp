@@ -7,13 +7,13 @@
 
 namespace rr::editor {
 
-struct ProjectHistoryItem {
+struct ModuleHistoryItem {
     std::string Name;
     system::Path Path;
 };
 
 struct UIState {
-    bool ShowModalCreateProject = false;
+    bool ShowModalCreateModule = false;
 };
 
 }  // namespace rr::editor
@@ -24,7 +24,7 @@ struct UIState {
 namespace rr::editor {
 
 template <class Archive>
-void serialize(Archive& archive, rr::editor::ProjectHistoryItem& p) {
+void serialize(Archive& archive, rr::editor::ModuleHistoryItem& p) {
     archive(cereal::make_nvp("name", p.Name), cereal::make_nvp("path", p.Path));
 }
 

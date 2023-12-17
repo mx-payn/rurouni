@@ -11,7 +11,7 @@ namespace rr::editor::ui {
 void StartupSplash::draw(
     UIState& state,
     event::EventSystem& eventSystem,
-    std::unordered_map<UUID, ProjectHistoryItem>& history,
+    std::unordered_map<UUID, ModuleHistoryItem>& history,
     std::function<void(const system::Path&, const std::string& name)>
         importFunc,
     std::function<void(const UUID&)> openFunc) {
@@ -32,7 +32,7 @@ void StartupSplash::draw(
 
     // new project button
     if (ImGui::Button("New")) {
-        state.ShowModalCreateProject = true;
+        state.ShowModalCreateModule = true;
     }
 
     ImGui::SameLine();
@@ -58,7 +58,7 @@ void StartupSplash::draw(
 }
 
 void StartupSplash::draw_history(
-    std::unordered_map<UUID, ProjectHistoryItem>& history,
+    std::unordered_map<UUID, ModuleHistoryItem>& history,
     UUID& selectedId) {
     // TODO validation: does the project still exist?
     if (ImGui::BeginListBox("history")) {

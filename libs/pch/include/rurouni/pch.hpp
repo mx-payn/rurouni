@@ -4,6 +4,7 @@
 // std
 #include <algorithm>
 #include <cstdint>
+#include <exception>
 #include <fstream>
 #include <functional>
 #include <iomanip>
