@@ -14,7 +14,7 @@ namespace rr::graphics {
 Text::Text(const std::u32string& text,
            std::weak_ptr<Font> font,
            math::ivec2 textBounds_px)
-    : m_Text(text), m_Font(font) {
+    : Texture(this), m_Text(text), m_Font(font) {
     if (text.empty())
         return;
 

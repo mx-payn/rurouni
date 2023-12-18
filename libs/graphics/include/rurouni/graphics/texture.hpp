@@ -10,6 +10,7 @@
 // std
 #include <exception>
 #include <optional>
+#include <typeinfo>
 
 namespace rr::graphics {
 
@@ -65,6 +66,19 @@ class Texture {
     Texture(const DataTextureSpecification& spec);
     Texture(const ImageTextureSpecification& spec);
 
+    template <typename T>
+    Texture(T*) : Texture() {
+        m_TypeHash = typeid(T).hash_code();
+    }
+    template <typename T>
+    Texture(T*, const DataTextureSpecification& spec) : Texture(spec) {
+        m_TypeHash = typeid(T).hash_code();
+    }
+    template <typename T>
+    Texture(T*, const ImageTextureSpecification& spec) : Texture(spec) {
+        m_TypeHash = typeid(T).hash_code();
+    }
+
     virtual ~Texture();
 
     /** GPU call to Bind / Select a Texture for further processing.
@@ -110,6 +124,7 @@ class Texture {
    protected:
     math::ivec2 m_Size = {0.0f, 0.0f};  //!< The texture size in pixel
     UUID m_UUID = UUID();
+    size_t m_TypeHash = typeid(Texture).hash_code();
 
     std::optional<uint32_t> m_RendererID =
         {};  //!< The unique identifier for data in GPU memory.

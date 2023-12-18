@@ -2,6 +2,7 @@
 #define RR_LIB_GRPAHICS_FRAMEBUFFER_H
 
 // rurouni
+#include "rurouni/graphics/texture.hpp"
 #include "rurouni/graphics/vertex_array.hpp"
 #include "rurouni/math.hpp"
 
@@ -55,7 +56,8 @@ struct FramebufferSpecification {
     bool swapChainTarget = false;
 };
 
-class Framebuffer {
+// TODO should be a Texture
+class Framebuffer : public Texture {
    public:
     Framebuffer(const FramebufferSpecification& spec);
     ~Framebuffer();
@@ -64,7 +66,9 @@ class Framebuffer {
     void unbind();
 
     uint32_t get_color_attachment_renderer_id(uint32_t index = 0) const;
-    uint32_t get_renderer_id() const { return m_RendererID; }
+    virtual std::optional<uint32_t> get_renderer_id() const override {
+        return m_RendererID;
+    }
     uint32_t get_render_buffer_object() const { return m_RenderBufferObject; }
     const math::ivec2& get_size() const { return m_Specification.size; }
 

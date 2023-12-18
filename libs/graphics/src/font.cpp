@@ -12,7 +12,7 @@
 
 namespace rr::graphics {
 
-Font::Font(const FontSpecification& spec) : Texture(spec.TextureSpec) {
+Font::Font(const FontSpecification& spec) : Texture(this, spec.TextureSpec) {
     m_Shader = spec.FontShader;
     load_spec_from_file(spec.FontSpecPath);
     save_spec_to_file(spec.FontSpecPath.parent_path() / "test.json");

@@ -117,7 +117,7 @@ BufferLayout quadLayout = {{ShaderDataType::Float2, "a_Position"},
                            {ShaderDataType::Float2, "a_TexCoords"}};
 
 Framebuffer::Framebuffer(const FramebufferSpecification& spec)
-    : m_Specification(spec) {
+    : Texture(this), m_Specification(spec) {
     for (auto spec : m_Specification.attachements.Attachements) {
         if (!is_depth_format(spec.TextureFormat))
             m_ColorAttachementSpecifications.emplace_back(spec.TextureFormat);
