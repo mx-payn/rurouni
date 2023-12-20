@@ -14,8 +14,8 @@ class Sprite : public Texture {
    public:
     Sprite(const glm::ivec2& index,
            std::weak_ptr<Texture> spritesheet,
-           const glm::ivec2& size_px,
            const UUID& uuid,
+           const math::ivec2& pxSize,
            const std::array<math::vec2, 4>& uvCoords);
 
     virtual std::optional<uint32_t> get_renderer_id() const override;

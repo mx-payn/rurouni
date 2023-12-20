@@ -34,6 +34,9 @@ void copy(const Path& from, const Path& to);
 /** copies contents of source to target path */
 void copy(const Path& from, const Path& to, copy_options options);
 
+/** moves from one to the other path */
+void rename(const Path& from, const Path& to);
+
 /** returns the running executables absolute path */
 Path get_current_executable_path();
 

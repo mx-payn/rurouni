@@ -1,4 +1,5 @@
 #include "cereal/details/helpers.hpp"
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/pch.hpp"
 
 #include "rurouni/core/logger.hpp"
@@ -12,8 +13,12 @@ namespace rr::core {
 
 Module::Module(std::shared_ptr<graphics::Window> window,
                std::shared_ptr<graphics::BatchRenderer> renderer,
+               std::shared_ptr<AssetManager> assetManager,
                std::shared_ptr<event::EventSystem> eventSystem)
-    : m_Window(window), m_Renderer(renderer), m_EventSystem(eventSystem) {}
+    : m_Window(window),
+      m_Renderer(renderer),
+      m_AssetManager(assetManager),
+      m_EventSystem(eventSystem) {}
 
 Module::~Module() {}
 
@@ -99,7 +104,8 @@ void Module::on_update(float dt) {
 
 void Module::on_render() {
     if (m_CurrentScene != nullptr) {
-        m_CurrentScene->on_render(*m_Renderer);
+        m_CurrentScene->on_render(*m_Renderer, *m_AssetManager);
     }
 }
+
 }  // namespace rr::core

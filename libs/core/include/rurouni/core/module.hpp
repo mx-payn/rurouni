@@ -1,6 +1,7 @@
 #ifndef RR_LIBS_CORE_MODULE_H
 #define RR_LIBS_CORE_MODULE_H
 
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/core/scene.hpp"
 #include "rurouni/error.hpp"
 #include "rurouni/event/event_system.hpp"
@@ -19,6 +20,7 @@ class Module {
    public:
     Module(std::shared_ptr<graphics::Window> window,
            std::shared_ptr<graphics::BatchRenderer> renderer,
+           std::shared_ptr<AssetManager> assetManager,
            std::shared_ptr<event::EventSystem> eventSystem);
     ~Module();
 
@@ -49,6 +51,7 @@ class Module {
     std::unique_ptr<Scene> m_CurrentScene;
     std::shared_ptr<graphics::Window> m_Window;
     std::shared_ptr<graphics::BatchRenderer> m_Renderer;
+    std::shared_ptr<AssetManager> m_AssetManager;
     std::shared_ptr<event::EventSystem> m_EventSystem;
 
     system::Path m_RootPath;

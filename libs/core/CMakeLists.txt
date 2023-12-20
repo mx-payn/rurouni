@@ -28,6 +28,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PROJECT_NAME} 
     src/scene.cpp
     src/module.cpp
+    src/asset_manager.cpp
     src/layers/grid_layer.cpp
     )
 add_library(rurouni::core ALIAS ${PROJECT_NAME})

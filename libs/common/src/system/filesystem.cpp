@@ -7,6 +7,7 @@
 
 #include <unistd.h>
 #include <cstdlib>
+#include <filesystem>
 
 namespace rr::system {
 
@@ -60,6 +61,10 @@ void copy(const Path& from, const Path& to) {
 
 void copy(const Path& from, const Path& to, copy_options options) {
     return std::filesystem::copy(from, to, options);
+}
+
+void rename(const Path& from, const Path& to) {
+    return std::filesystem::rename(from, to);
 }
 
 Path get_current_executable_path() {

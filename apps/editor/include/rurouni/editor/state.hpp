@@ -23,6 +23,8 @@ struct UIState {
 
     bool ShowModuleCreateModal = false;
     bool ShowPanelSceneViewport = true;
+    bool ShowPanelAssets = true;
+    bool ShowPanelProperties = true;
 };
 
 }  // namespace rr::editor

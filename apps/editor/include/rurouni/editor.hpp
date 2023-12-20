@@ -2,6 +2,7 @@
 #define RR_EDITOR_H
 
 // editor
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/editor/ui.hpp"
 #include "rurouni/editor/ui_modals/error.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
@@ -71,6 +72,7 @@ class Editor : public event::Subscriber {
     std::shared_ptr<graphics::Window> m_Window;
     std::shared_ptr<event::EventSystem> m_EventSystem;
     std::shared_ptr<graphics::BatchRenderer> m_Renderer;
+    std::shared_ptr<core::AssetManager> m_AssetManager;
 
     // modals
     std::unique_ptr<ui::ModuleCreateModal> m_ModuleCreateModal;

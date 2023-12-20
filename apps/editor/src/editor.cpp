@@ -1,5 +1,6 @@
 // editor
 #include "rurouni/editor.hpp"
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/core/module.hpp"
 #include "rurouni/core/scene.hpp"
 #include "rurouni/editor/config.h"
@@ -8,6 +9,8 @@
 #include "rurouni/editor/ui.hpp"
 #include "rurouni/editor/ui_modals/error.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
+#include "rurouni/editor/ui_panels/asset_manager.hpp"
+#include "rurouni/editor/ui_panels/properties.hpp"
 #include "rurouni/editor/ui_panels/scene_viewport.hpp"
 #include "rurouni/editor/ui_panels/startup_splash.hpp"
 
@@ -139,7 +142,13 @@ void Editor::render() {
                 m_UIState, *m_CurrentScenes.back(),
                 std::bind(&Editor::draw_scene, this),
                 std::bind(&Editor::change_scene, this, std::placeholders::_1));
+
+            ui::PropertiesPanel::draw(m_UIState,
+                                      m_CurrentScenes.back()->get_registry(),
+                                      *m_AssetManager);
         }
+
+        ui::AssetManager::draw(m_UIState, *m_AssetManager);
     } else {
         ui::StartupSplash::draw(
             m_UIState, *m_EventSystem, m_ModuleHistory,
@@ -279,7 +288,12 @@ void Editor::open_module(const UUID& id) {
         return;
     }
 
-    m_CurrentModule.emplace(m_Window, m_Renderer, m_EventSystem);
+    m_AssetManager =
+        std::make_shared<core::AssetManager>(moduleHistoryItem.RootPath);
+    m_AssetManager->read_asset_configuration();
+
+    m_CurrentModule.emplace(m_Window, m_Renderer, m_AssetManager,
+                            m_EventSystem);
     auto error = m_CurrentModule->load_from_file(moduleHistoryItem.RootPath /
                                                  "module.json");
 
@@ -376,7 +390,7 @@ void Editor::change_scene(const system::Path& path) {
 
 void Editor::draw_scene() {
     if (!m_CurrentScenes.empty()) {
-        m_CurrentScenes.back()->on_render(*m_Renderer);
+        m_CurrentScenes.back()->on_render(*m_Renderer, *m_AssetManager);
     }
 }
 

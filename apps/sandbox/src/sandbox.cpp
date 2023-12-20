@@ -1,7 +1,8 @@
 // sandbox
+#include "rurouni/sandbox.hpp"
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/graphics/shader.hpp"
 #include "rurouni/sandbox/config.h"
-#include "rurouni/sandbox.hpp"
 #include "rurouni/sandbox/logger.hpp"
 
 // rurouni
@@ -75,6 +76,31 @@ namespace rr {
                 graphics::DEFAULT_POST_FX_SHADER_VERTEX_SRC,
                 graphics::DEFAULT_POST_FX_SHADER_FRAGMENT_SRC
                 );
+
+        m_AssetManager = std::make_shared<core::AssetManager>(
+            system::Path("/home/mx/Projects/rurouni/examples/test"));
+
+        core::TextureSpecification chernoSpec;
+        chernoSpec.Id = UUID("69a85774-2c62-42b4-858d-14a9e2d48542");
+        chernoSpec.Name = "cherno_logo";
+        chernoSpec.Filepath = "textures/cherno_logo.png";
+        m_AssetManager->register_texture(chernoSpec);
+
+        core::TextureSpecification frogblockSpec;
+        frogblockSpec.Name = "frogblock";
+        chernoSpec.Id = UUID("9aae02ee-22fe-4637-96fc-4a5ccab6f18a");
+        frogblockSpec.SpriteCount = math::ivec2(16);
+        frogblockSpec.Filepath = "textures/frogblock.png";
+        m_AssetManager->register_texture(frogblockSpec);
+
+        core::SpriteSpecification spriteSpec;
+        chernoSpec.Id = UUID("1a4222af-0d35-4fb2-b147-7e94f12ce2cd");
+        spriteSpec.Name = "sword";
+        spriteSpec.TextureId = frogblockSpec.Id;
+        spriteSpec.Cell_Idx = math::ivec2(0, 1);
+        m_AssetManager->register_sprite(spriteSpec);
+
+        m_AssetManager->write_asset_configuration();
     }
 
     Sandbox::~Sandbox() {
@@ -108,7 +134,7 @@ namespace rr {
         graphics::api::set_clear_color({0.0f, 0.0f, 0.0f, 0.0f});
         graphics::api::clear();
 
-        m_CurrentScene->on_render(*m_Renderer);
+        m_CurrentScene->on_render(*m_Renderer, *m_AssetManager);
 
         // draw scene to default framebuffer
         graphics::api::set_viewport(

@@ -25,20 +25,21 @@ void GridLayer::on_render(graphics::BatchRenderer& renderer,
         auto projectionPtr = std::get<1>(components);
 
         float startX =
-            transformPtr->get_translation().x + projectionPtr->get_left() - 1;
+            transformPtr->get_translation().x + projectionPtr->get_left();
         float startY =
-            transformPtr->get_translation().y + projectionPtr->get_top() - 1;
+            transformPtr->get_translation().y + projectionPtr->get_top();
 
         float endX =
-            transformPtr->get_translation().x + projectionPtr->get_right() + 1;
+            transformPtr->get_translation().x + projectionPtr->get_right();
         float endY =
-            transformPtr->get_translation().y + projectionPtr->get_bottom() + 1;
+            transformPtr->get_translation().y + projectionPtr->get_bottom();
 
         float f;
         float offsetX = std::modf(endX, &f);
+        float offsetY = std::modf(endY, &f);
 
         math::mat4 gridCellTransform;
-        for (float y = startY; y < endY; y++) {
+        for (float y = startY + offsetY; y < endY; y++) {
             for (float x = startX + offsetX; x < endX; x++) {
                 gridCellTransform =
                     math::translate(math::mat4(1.0f), math::vec3(x, y, 0.0f));

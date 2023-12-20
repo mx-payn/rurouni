@@ -12,8 +12,17 @@
 
 namespace rr::graphics {
 
+Font::Font(const ImageTextureSpecification& textureSpec,
+           const FontMetrics& fontMetrics,
+           const AtlasMetrics& atlasMetrics,
+           const std::map<unicode_t, GlyphMetrics>& glyphMetrics)
+    : Texture(textureSpec),
+      m_FontMetrics(fontMetrics),
+      m_AtlasMetrics(atlasMetrics),
+      m_GlyphMetrics(glyphMetrics) {}
+
 Font::Font(const FontSpecification& spec) : Texture(this, spec.TextureSpec) {
-    m_Shader = spec.FontShader;
+    // m_Shader = spec.FontShader;
     load_spec_from_file(spec.FontSpecPath);
     save_spec_to_file(spec.FontSpecPath.parent_path() / "test.json");
 }

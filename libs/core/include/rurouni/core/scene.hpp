@@ -3,6 +3,7 @@
 
 // rurouni
 #include "entt/entity/fwd.hpp"
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/core/scene_state.hpp"
 #include "rurouni/error.hpp"
@@ -30,7 +31,8 @@ class Scene {
     std::optional<Error> write_to_file(const system::Path& path);
 
     void on_update(float dt);
-    void on_render(graphics::BatchRenderer& renderer);
+    void on_render(graphics::BatchRenderer& renderer,
+                   AssetManager& assetManager);
 
     void push_layer(std::unique_ptr<Layer> layer);
     void pop_layer();

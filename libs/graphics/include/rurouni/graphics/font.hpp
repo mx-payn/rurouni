@@ -73,12 +73,16 @@ struct GlyphRenderSpecification {
 struct FontSpecification {
     ImageTextureSpecification TextureSpec;
     system::Path FontSpecPath;
-    std::optional<std::weak_ptr<Shader>> FontShader;
+    // std::optional<std::weak_ptr<Shader>> FontShader;
 };
 
 class Font : public Texture {
    public:
     Font(const FontSpecification& spec);
+    Font(const ImageTextureSpecification& textureSpec,
+         const FontMetrics& fontMetrics,
+         const AtlasMetrics& m_AtlasMetrics,
+         const std::map<unicode_t, GlyphMetrics>& m_GlyphMetrics);
     ~Font() = default;
 
     const FontMetrics& get_font_metrics() const;

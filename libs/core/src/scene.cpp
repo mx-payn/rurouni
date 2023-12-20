@@ -1,4 +1,5 @@
 // pch
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/pch.hpp"
 //-----------------------
 
@@ -38,7 +39,8 @@ Scene::~Scene() {}
 
 void Scene::on_update(float dt) {}
 
-void Scene::on_render(graphics::BatchRenderer& renderer) {
+void Scene::on_render(graphics::BatchRenderer& renderer,
+                      AssetManager& assetManager) {
     m_Framebuffer->bind();
 
     graphics::api::set_clear_color({0.1f, 0.1f, 0.25f, 1.0f});
@@ -60,6 +62,14 @@ void Scene::on_render(graphics::BatchRenderer& renderer) {
         for (int i = 0; i < m_Layers.size(); i++) {
             m_Layers[i]->on_render(renderer, m_Registry, m_SceneState);
         }
+
+        components::Transform transform = components::Transform(
+            math::vec3(12.0f, 12.0f, 1.0f), math::vec3(1.0f), math::vec3(0.0f));
+        renderer.draw_texture(transform.get_transform(),
+                              assetManager.get_texture(
+                                  UUID("1a4222af-0d35-4fb2-b147-7e94f12ce2cd")),
+                              math::vec4(1.0f), 1337);
+
         renderer.end();
     }
 

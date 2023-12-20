@@ -59,6 +59,30 @@ struct fmt::formatter<rr::math::vec4> : fmt::formatter<std::string> {
     }
 };
 
+template <>
+struct fmt::formatter<rr::math::ivec2> : fmt::formatter<std::string> {
+    auto format(rr::math::ivec2 vec, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(vec));
+    }
+};
+
+template <>
+struct fmt::formatter<rr::math::ivec3> : fmt::formatter<std::string> {
+    auto format(rr::math::ivec3 vec, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(vec));
+    }
+};
+
+template <>
+struct fmt::formatter<rr::math::ivec4> : fmt::formatter<std::string> {
+    auto format(rr::math::ivec4 vec, format_context& ctx) const
+        -> decltype(ctx.out()) {
+        return format_to(ctx.out(), "{}", glm::to_string(vec));
+    }
+};
+
 /////////////////////////////////////////////////////////////////
 ///////////////////  serialization  /////////////////////////////
 /////////////////////////////////////////////////////////////////

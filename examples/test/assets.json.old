@@ -1,0 +1,50 @@
+{
+    "textures": [
+        {
+            "key": "7a7b8cee-079d-4cf9-9f3a-0e44103ae882",
+            "value": {
+                "name": "frogblock",
+                "id": "7a7b8cee-079d-4cf9-9f3a-0e44103ae882",
+                "filepath": "textures/frogblock.png",
+                "sprite_count": {
+                    "nullopt": false,
+                    "data": {
+                        "x": 16,
+                        "y": 16
+                    }
+                }
+            }
+        },
+        {
+            "key": "db225593-20fd-4609-aac5-d512e6588175",
+            "value": {
+                "name": "cherno_logo",
+                "id": "db225593-20fd-4609-aac5-d512e6588175",
+                "filepath": "textures/cherno_logo.png",
+                "sprite_count": {
+                    "nullopt": true
+                }
+            }
+        }
+    ],
+    "sprites": [
+        {
+            "key": "cb76e778-3eda-47eb-a325-2cc67dc9aa6b",
+            "value": {
+                "name": "sword",
+                "id": "cb76e778-3eda-47eb-a325-2cc67dc9aa6b",
+                "texture_id": "00000000-0000-0000-0000-000000000000",
+                "cell_index": {
+                    "x": 0,
+                    "y": 1
+                },
+                "cell_spread": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        }
+    ],
+    "shaders": [],
+    "fonts": []
+}
