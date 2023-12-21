@@ -23,7 +23,6 @@ class PropertyTab {
     std::string m_Name;
 };
 
-/*
 class EntityProperty : public PropertyTab {
    public:
     EntityProperty(entt::registry& registry,
@@ -47,7 +46,6 @@ identification.Uuid;
     entt::entity m_Entity;
     UUID m_Id;
 };
-*/
 
 class TextureProperty : public PropertyTab {
    public:

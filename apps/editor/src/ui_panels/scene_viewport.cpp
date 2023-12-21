@@ -3,6 +3,8 @@
 #include "entt/entity/entity.hpp"
 #include "rurouni/core/components/identifier.hpp"
 #include "rurouni/core/scene.hpp"
+#include "rurouni/editor/logger.hpp"
+#include "rurouni/editor/ui_panels/properties.hpp"
 
 #include <imgui/imgui.h>
 
@@ -50,19 +52,18 @@ void SceneViewportPanel::draw(
         ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
         // TODO getter for entity attachment index
         framebuffer.bind();
-        m_HoveredEntity = framebuffer.read_pixel_data<uint32_t>(
-            1, {mousePosition.x, mousePosition.y});
+        m_HoveredEntity =
+            framebuffer.read_pixel_data(1, {mousePosition.x, mousePosition.y})
+                .UnsignedInt;
         framebuffer.unbind();
 
         if (m_HoveredEntity != (uint32_t)entt::null) {
             state.m_SelectedEntity = (entt::entity)m_HoveredEntity;
             auto& registry = scene.get_registry();
-            auto identification =
-                registry.try_get<core::components::Identifier>(
-                    state.m_SelectedEntity.value());
-            // ui::add_tab(std::make_unique<EntityProperty>(
-            //     registry, state.m_SelectedEntity.value(),
-            //     identification.Name));
+            auto identification = registry.get<core::components::Identifier>(
+                state.m_SelectedEntity.value());
+            ui::PropertiesPanel::add_tab(std::make_unique<EntityProperty>(
+                registry, state.m_SelectedEntity.value(), identification.Name));
         }
     }
 

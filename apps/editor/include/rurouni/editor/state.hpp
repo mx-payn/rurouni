@@ -19,12 +19,13 @@ struct ModuleHistoryItem {
 struct UIState {
     math::ivec2 SceneViewportSize = math::ivec2(1.0f);
 
-    std::optional<entt::entity> m_SelectedEntity;
+    std::optional<entt::entity> m_SelectedEntity = {};
 
     bool ShowModuleCreateModal = false;
     bool ShowPanelSceneViewport = true;
     bool ShowPanelAssets = true;
     bool ShowPanelProperties = true;
+    bool ShowPanelScene = true;
 };
 
 }  // namespace rr::editor

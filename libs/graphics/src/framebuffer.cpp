@@ -21,13 +21,29 @@ static bool is_depth_format(FramebufferTextureFormat format) {
     }
 }
 
-static GLenum rurouni_fb_texture_format_to_gl(FramebufferTextureFormat format) {
+static GLenum rurouni_fb_texture_format_to_gl_format(
+    FramebufferTextureFormat format) {
     switch (format) {
         case FramebufferTextureFormat::RGBA8:
-            return GL_RGBA8;
+            return GL_RGBA;
         case FramebufferTextureFormat::ENTITY_ID:
         case FramebufferTextureFormat::RED_INTEGER:
             return GL_RED_INTEGER;
+        default:
+            require(false, "Unknown FramebufferTextureFormat!");
+            return 0;
+    }
+}
+
+static GLenum rurouni_fb_texture_format_to_gl_type(
+    FramebufferTextureFormat format) {
+    switch (format) {
+        case FramebufferTextureFormat::RGBA8:
+            return GL_FLOAT;
+        case FramebufferTextureFormat::ENTITY_ID:
+            return GL_UNSIGNED_INT;
+        case FramebufferTextureFormat::RED_INTEGER:
+            return GL_INT;
         default:
             require(false, "Unknown FramebufferTextureFormat!");
             return 0;
@@ -235,40 +251,51 @@ void Framebuffer::resize(const math::ivec2& size) {
     m_Specification.size = size;
     invalidate();
 }
+//
+// template <>
+// int32_t Framebuffer::read_pixel_data<int32_t>(uint32_t attachementIndex,
+//                                               const math::ivec2& position) {
+//     require(attachementIndex < m_ColorAttachements.size(), "");
+//
+//     auto& spec = m_ColorAttachementSpecifications[attachementIndex];
+//     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
+//     int32_t pixelData;
+//     glReadPixels(position.x, position.y, 1, 1,
+//                     rurouni_fb_texture_format_to_gl_format(spec.TextureFormat),
+//                     rurouni_fb_texture_format_to_gl_type(spec.TextureFormat),
+//                  &pixelData);
+//
+//     return pixelData;
+// }
+//
+// template <>
+// uint32_t Framebuffer::read_pixel_data<uint32_t>(uint32_t attachementIndex,
+//                                                 const math::ivec2& position)
+//                                                 {
+//     require(attachementIndex < m_ColorAttachements.size(), "");
+//
+//     auto& spec = m_ColorAttachementSpecifications[attachementIndex];
+//     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
+//     uint32_t pixelData;
+//     glReadPixels(position.x, position.y, 1, 1,
+//             rurouni_fb_texture_format_to_gl_format(spec.TextureFormat),
+//             rurouni_fb_texture_format_to_gl_type(spec.TextureFormat),
+//                  &pixelData);
+//
+//     return pixelData;
+// }
 
-template <>
-int32_t Framebuffer::read_pixel_data<int32_t>(uint32_t attachementIndex,
-                                              const math::ivec2& position) {
+PixelData Framebuffer::read_pixel_data(uint32_t attachementIndex,
+                                       const math::ivec2& position) {
     require(attachementIndex < m_ColorAttachements.size(), "");
+
+    auto& spec = m_ColorAttachementSpecifications[attachementIndex];
     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
-    int32_t pixelData;
-    glReadPixels(position.x, position.y, 1, 1, GL_RED_INTEGER, GL_INT,
+    PixelData pixelData;
+    glReadPixels(position.x, position.y, 1, 1,
+                 rurouni_fb_texture_format_to_gl_format(spec.TextureFormat),
+                 rurouni_fb_texture_format_to_gl_type(spec.TextureFormat),
                  &pixelData);
-
-    return pixelData;
-}
-
-template <>
-uint32_t Framebuffer::read_pixel_data<uint32_t>(uint32_t attachementIndex,
-                                                const math::ivec2& position) {
-    require(attachementIndex < m_ColorAttachements.size(), "");
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
-    uint32_t pixelData;
-    glReadPixels(position.x, position.y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT,
-                 &pixelData);
-
-    return pixelData;
-}
-
-template <>
-math::vec4 Framebuffer::read_pixel_data<math::vec4>(
-    uint32_t attachementIndex,
-    const math::ivec2& position) {
-    require(attachementIndex < m_ColorAttachements.size(), "");
-    glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
-    math::vec4 pixelData;
-    glReadPixels(position.x, position.y, 1, 1, GL_RGBA, GL_FLOAT,
-                 math::value_ptr(pixelData));
 
     return pixelData;
 }
@@ -278,7 +305,8 @@ void Framebuffer::clear_attachement(uint32_t attachementIndex, int value) {
 
     auto& spec = m_ColorAttachementSpecifications[attachementIndex];
     glClearTexImage(m_ColorAttachements[attachementIndex], 0,
-                    rurouni_fb_texture_format_to_gl(spec.TextureFormat), GL_INT,
+                    rurouni_fb_texture_format_to_gl_format(spec.TextureFormat),
+                    rurouni_fb_texture_format_to_gl_type(spec.TextureFormat),
                     &value);
 }
 

@@ -57,11 +57,13 @@ add_executable(${PROJECT_NAME}
     src/ui.cpp
     # items
     src/ui_items/property_tab.cpp
+    src/ui_items/components.cpp
     ## panels
     src/ui_panels/startup_splash.cpp
     src/ui_panels/scene_viewport.cpp
     src/ui_panels/asset_manager.cpp
     src/ui_panels/properties.cpp
+    src/ui_panels/scene.cpp
     # modals
     src/ui_modals/module_create.cpp
     src/ui_modals/error.cpp

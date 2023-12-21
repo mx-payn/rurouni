@@ -20,7 +20,7 @@ static const BufferLayout QUAD_SHADER_BUFFER_LAYOUT = {
     {ShaderDataType::Float4, "a_Color"},
     {ShaderDataType::Float2, "a_TexCoord"},
     {ShaderDataType::Float, "a_TexIndex"},
-    {ShaderDataType::Int, "a_EntityID"}};
+    {ShaderDataType::UInt, "a_EntityID"}};
 
 class BatchRenderer {
    public:

@@ -1,6 +1,7 @@
 #ifndef RR_EDITOR_PANELS_SCENE_VIEWPORT_H
 #define RR_EDITOR_PANELS_SCENE_VIEWPORT_H
 
+#include "entt/entity/entity.hpp"
 #include "rurouni/core/scene.hpp"
 #include "rurouni/editor/state.hpp"
 

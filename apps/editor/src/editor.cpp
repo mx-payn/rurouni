@@ -11,6 +11,7 @@
 #include "rurouni/editor/ui_modals/module_create.hpp"
 #include "rurouni/editor/ui_panels/asset_manager.hpp"
 #include "rurouni/editor/ui_panels/properties.hpp"
+#include "rurouni/editor/ui_panels/scene.hpp"
 #include "rurouni/editor/ui_panels/scene_viewport.hpp"
 #include "rurouni/editor/ui_panels/startup_splash.hpp"
 
@@ -146,6 +147,10 @@ void Editor::render() {
             ui::PropertiesPanel::draw(m_UIState,
                                       m_CurrentScenes.back()->get_registry(),
                                       *m_AssetManager);
+
+            ui::ScenePanel::draw(
+                m_UIState, *m_CurrentScenes.back(),
+                std::bind(&Editor::change_scene, this, std::placeholders::_1));
         }
 
         ui::AssetManager::draw(m_UIState, *m_AssetManager);

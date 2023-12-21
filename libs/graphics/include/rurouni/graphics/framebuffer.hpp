@@ -56,6 +56,12 @@ struct FramebufferSpecification {
     bool swapChainTarget = false;
 };
 
+union PixelData {
+    int32_t SignedInt;
+    uint32_t UnsignedInt;
+    math::vec4 Vec4;
+};
+
 // TODO should be a Texture
 class Framebuffer : public Texture {
    public:
@@ -78,8 +84,8 @@ class Framebuffer : public Texture {
     void generate_screen_va();
     void draw_color_attachement(uint32_t index = 0);
 
-    template <typename T>
-    T read_pixel_data(uint32_t attachementIndex, const math::ivec2& position);
+    PixelData read_pixel_data(uint32_t attachementIndex,
+                              const math::ivec2& position);
 
    private:
     void cleanup();

@@ -8,7 +8,7 @@
 
 namespace rr::core {
 
-GridLayer::GridLayer() : Layer() {}
+GridLayer::GridLayer() : Layer("grid_layer") {}
 
 GridLayer::~GridLayer() {}
 

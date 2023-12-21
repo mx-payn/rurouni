@@ -1,6 +1,8 @@
 #ifndef RR_LIBS_COMMON_ERROR_H
 #define RR_LIBS_COMMON_ERROR_H
 
+#include <fmt/core.h>
+
 namespace rr {
 
 struct Error {

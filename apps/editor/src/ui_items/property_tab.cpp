@@ -1,13 +1,12 @@
 #include "rurouni/editor/ui_items/property_tab.hpp"
-// #include "rurouni/editor/ui_items/components.hpp"
+#include "rurouni/editor/ui_items/components.hpp"
 
-// #include "rurouni/core/components.hpp"
+#include "rurouni/core/components.hpp"
 
 #include <imgui/imgui.h>
 
 namespace rr::editor::ui {
 
-/*
 void EntityProperty::draw(entt::registry& registry,
                       core::AssetManager& assetManager) {
 // header buttons
@@ -19,44 +18,38 @@ draw_component_add_popup(registry, m_Entity);
 ImGui::Separator();
 
 // identification component
-auto& identification = registry.get<components::Identifier>(m_Entity);
-imgui_draw_component_identification(identification);
+auto& identification = registry.get<core::components::Identifier>(m_Entity);
+draw_component_identification(identification);
 
 ImGui::Separator();
 
 // Components
-imgui_draw_component<components::Transform>(
-    registry, m_Entity, "Transform", false, imgui_draw_component_transform);
-imgui_draw_component<components::Texture>(
-    registry, m_Entity, "Texture", true, imgui_draw_component_texture);
-imgui_draw_component<components::Sprite>(registry, m_Entity, "Sprite", true,
-                                         imgui_draw_component_sprite);
-imgui_draw_component<components::OrthographicProjection>(
+draw_component<core::components::Transform>(registry, m_Entity, "Transform",
+                                            false, draw_component_transform);
+draw_component<core::components::Texture>(registry, m_Entity, "Texture", true,
+                                          draw_component_texture);
+draw_component<core::components::OrthographicProjection>(
     registry, m_Entity, "Orthigraphic Projection", true,
-    imgui_draw_component_ortho_projection);
+    draw_component_ortho_projection);
 }
 
 void EntityProperty::draw_component_add_popup(entt::registry& registry,
                                           entt::entity entityId) {
 if (ImGui::BeginPopup("AddComponent")) {
     if (ImGui::MenuItem("Identifier")) {
-        registry.emplace<components::Identifier>(entityId);
+        registry.emplace<core::components::Identifier>(entityId);
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("Orthographic Projection")) {
-        registry.emplace<components::OrthographicProjection>(entityId);
+        registry.emplace<core::components::OrthographicProjection>(entityId);
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("Transform")) {
-        registry.emplace<components::Transform>(entityId);
+        registry.emplace<core::components::Transform>(entityId);
         ImGui::CloseCurrentPopup();
     }
     if (ImGui::MenuItem("Texture")) {
-        registry.emplace<components::Texture>(entityId);
-        ImGui::CloseCurrentPopup();
-    }
-    if (ImGui::MenuItem("Sprite")) {
-        registry.emplace<components::Sprite>(entityId);
+        registry.emplace<core::components::Texture>(entityId);
         ImGui::CloseCurrentPopup();
     }
 
@@ -64,10 +57,9 @@ if (ImGui::BeginPopup("AddComponent")) {
 }
 }
 
-const types::UUID& EntityProperty::get_id() const {
-return m_Id;
+const UUID& EntityProperty::get_id() const {
+    return m_Id;
 }
-*/
 const UUID& TextureProperty::get_id() const {
     return m_Id;
 }

@@ -45,6 +45,7 @@ void Scene::on_render(graphics::BatchRenderer& renderer,
 
     graphics::api::set_clear_color({0.1f, 0.1f, 0.25f, 1.0f});
     graphics::api::clear();
+    m_Framebuffer->clear_attachement(1, (uint32_t)entt::null);
 
     math::mat4 cameraTransform;
     math::mat4 cameraProjection;
@@ -62,13 +63,6 @@ void Scene::on_render(graphics::BatchRenderer& renderer,
         for (int i = 0; i < m_Layers.size(); i++) {
             m_Layers[i]->on_render(renderer, m_Registry, m_SceneState);
         }
-
-        components::Transform transform = components::Transform(
-            math::vec3(12.0f, 12.0f, 1.0f), math::vec3(1.0f), math::vec3(0.0f));
-        renderer.draw_texture(transform.get_transform(),
-                              assetManager.get_texture(
-                                  UUID("1a4222af-0d35-4fb2-b147-7e94f12ce2cd")),
-                              math::vec4(1.0f), 1337);
 
         renderer.end();
     }
@@ -162,6 +156,12 @@ std::optional<Error> Scene::write_to_file(const system::Path& path) {
     }
 
     return {};
+}
+
+entt::entity Scene::create_entity(const std::string& name) {
+    entt::entity entity = m_Registry.create();
+    m_Registry.emplace<components::Identifier>(entity, UUID::create(), name);
+    return entity;
 }
 
 void Scene::push_layer(std::unique_ptr<Layer> layer) {

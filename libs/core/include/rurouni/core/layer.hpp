@@ -13,7 +13,7 @@ namespace rr::core {
 
 class Layer {
    public:
-    Layer() {}
+    Layer(const std::string& name) : m_Name(name) {}
     virtual ~Layer() {}
 
     virtual void on_attach() {}
@@ -22,6 +22,11 @@ class Layer {
     virtual void on_render(graphics::BatchRenderer& renderer,
                            const entt::registry& registry,
                            const SceneState& sceneState) = 0;
+
+    const std::string& get_name() const { return m_Name; }
+
+   private:
+    std::string m_Name;
 
    private:
     friend class cereal::access;

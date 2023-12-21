@@ -19,7 +19,6 @@ int PropertiesPanel::m_ForceTabIndexOpen = -1;
 void PropertiesPanel::add_tab(std::unique_ptr<PropertyTab> tab) {
     for (int i = 0; i < m_Tabs.size(); i++) {
         if (m_Tabs[i]->get_id() == tab->get_id()) {
-            // TODO set tab open and return
             m_ForceTabIndexOpen = i;
             return;
         }

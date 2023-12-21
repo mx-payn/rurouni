@@ -40,10 +40,22 @@ class Scene {
     void pop_overlay();
     void set_debug_layer(std::shared_ptr<Layer> layer);
 
+    // ecs
+    entt::entity create_entity(const std::string& name);
+
     void set_viewport_size(const math::ivec2& size);
 
     graphics::Framebuffer& get_framebuffer() const { return *m_Framebuffer; }
     entt::registry& get_registry() { return m_Registry; }
+    const std::string& get_name() const { return m_Name; }
+    void set_name(const std::string& name) { m_Name = name; }
+    SceneState& get_scene_state() { return m_SceneState; }
+
+    std::vector<std::unique_ptr<Layer>>& get_layer_stack() { return m_Layers; }
+    std::vector<std::unique_ptr<Layer>>& get_overlay_stack() {
+        return m_Overlays;
+    }
+    std::shared_ptr<Layer> get_debug_layer() { return m_DebugLayer; }
 
    private:
     void update_camera_data();
