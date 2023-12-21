@@ -43,6 +43,9 @@ Texture::Texture(const DataTextureSpecification& spec) {
     m_RendererID = rendererId;
 }
 
+Texture::Texture(const system::Path& path)
+    : Texture(ImageTextureSpecification{path, path.filename().string()}) {}
+
 Texture::Texture(const ImageTextureSpecification& spec) {
     m_UUID = spec.id;
 

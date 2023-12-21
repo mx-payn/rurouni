@@ -91,6 +91,16 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
 
     ui::init(*m_Window, m_SharedDataDir, m_UserDataDir, m_UserConfigDir);
 
+    // load icons
+    m_UIState.Icons.File = std::make_shared<graphics::Texture>(
+        m_SharedDataDir / "textures/icons/file.png");
+    m_UIState.Icons.FileImport = std::make_shared<graphics::Texture>(
+        m_SharedDataDir / "textures/icons/file-import.png");
+    m_UIState.Icons.Folder = std::make_shared<graphics::Texture>(
+        m_SharedDataDir / "textures/icons/folder.png");
+    m_UIState.Icons.Save = std::make_shared<graphics::Texture>(
+        m_SharedDataDir / "textures/icons/floppy-pen.png");
+
     // modals
     m_ModuleCreateModal = std::make_unique<ui::ModuleCreateModal>();
     m_ErrorModal = std::make_unique<ui::ErrorModal>();
@@ -139,18 +149,22 @@ void Editor::render() {
         ui::draw_dockspace(m_UIState);
 
         if (!m_CurrentScenes.empty()) {
+            // this is the scene for the frame
+            // scene_change() might push a different scene, which could get
+            // weird for following draw calls
+            auto& currentScene = m_CurrentScenes.back();
+
             ui::SceneViewportPanel::draw(
-                m_UIState, *m_CurrentScenes.back(),
-                std::bind(&Editor::draw_scene, this),
+                m_UIState, *currentScene, std::bind(&Editor::draw_scene, this),
                 std::bind(&Editor::change_scene, this, std::placeholders::_1));
 
-            ui::PropertiesPanel::draw(m_UIState,
-                                      m_CurrentScenes.back()->get_registry(),
+            ui::PropertiesPanel::draw(m_UIState, currentScene->get_registry(),
                                       *m_AssetManager);
 
             ui::ScenePanel::draw(
-                m_UIState, *m_CurrentScenes.back(),
-                std::bind(&Editor::change_scene, this, std::placeholders::_1));
+                m_UIState, *currentScene,
+                std::bind(&Editor::change_scene, this, std::placeholders::_1),
+                std::bind(&Editor::save_scene, this, std::placeholders::_1));
         }
 
         ui::AssetManager::draw(m_UIState, *m_AssetManager);
@@ -325,7 +339,7 @@ void Editor::open_module(const UUID& id) {
         return;
     }
 
-    auto scene = std::make_unique<core::Scene>(math::ivec2(1.0f));
+    auto scene = std::make_unique<core::Scene>(m_UIState.SceneViewportSize);
     scene->read_from_file(absStartScenePath, m_UIState.SceneViewportSize);
     m_CurrentScenes.push_back(std::move(scene));
 }
@@ -390,7 +404,22 @@ void Editor::cleanup_module_history() {
 }
 
 void Editor::change_scene(const system::Path& path) {
-    // TODO
+    auto scene = std::make_unique<core::Scene>(m_UIState.SceneViewportSize);
+    scene->read_from_file(path, m_UIState.SceneViewportSize);
+    m_CurrentScenes.push_back(std::move(scene));
+}
+
+void Editor::save_scene(const system::Path& path) {
+    if (path.empty()) {
+        m_CurrentScenes.back()->write_to_file(
+            m_CurrentScenes.back()->get_filepath());
+    } else {
+        if (system::exists(path)) {
+            warn("path already exists and will be overwritten. path: {}", path);
+        }
+        // TODO check not a directory
+        m_CurrentScenes.back()->write_to_file(path);
+    }
 }
 
 void Editor::draw_scene() {

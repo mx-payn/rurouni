@@ -50,6 +50,7 @@ class Scene {
     const std::string& get_name() const { return m_Name; }
     void set_name(const std::string& name) { m_Name = name; }
     SceneState& get_scene_state() { return m_SceneState; }
+    const system::Path& get_filepath() const { return m_Filepath; }
 
     std::vector<std::unique_ptr<Layer>>& get_layer_stack() { return m_Layers; }
     std::vector<std::unique_ptr<Layer>>& get_overlay_stack() {

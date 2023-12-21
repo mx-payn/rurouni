@@ -23,6 +23,13 @@ void draw_component_identification(core::components::Identifier& component) {
 }
 
 void draw_component_texture(core::components::Texture& component) {
+    char buffer[256];
+    memset(buffer, 0, sizeof(buffer));
+    strcpy(buffer, component.TextureUUID.to_string().c_str());
+    if (ImGui::InputText("UUID", buffer, sizeof(buffer))) {
+        component.TextureUUID = UUID(std::string(buffer));
+    }
+
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload* payload =
                 ImGui::AcceptDragDropPayload("TEXTURE_SPECIFICATION")) {
@@ -33,14 +40,16 @@ void draw_component_texture(core::components::Texture& component) {
 
             component.TextureUUID = spec.Id;
         }
-        ImGui::EndDragDropTarget();
-    }
+        if (const ImGuiPayload* payload =
+                ImGui::AcceptDragDropPayload("SPRITE_SPECIFICATION")) {
+            require(payload->DataSize == sizeof(core::SpriteSpecification),
+                    "errororororo");
+            core::SpriteSpecification spec =
+                *(const core::SpriteSpecification*)payload->Data;
 
-    char buffer[256];
-    memset(buffer, 0, sizeof(buffer));
-    strcpy(buffer, component.TextureUUID.to_string().c_str());
-    if (ImGui::InputText("UUID", buffer, sizeof(buffer))) {
-        component.TextureUUID = UUID(std::string(buffer));
+            component.TextureUUID = spec.Id;
+        }
+        ImGui::EndDragDropTarget();
     }
 }
 
@@ -64,13 +73,12 @@ void draw_component_ortho_projection(
 
 void draw_component_transform(core::components::Transform& component) {
     glm::vec3 translation = component.get_translation();
-    if (ImGui::DragFloat3("Translation", math::value_ptr(translation),
-                          0.125f)) {
+    if (ImGui::DragFloat3("Translation", math::value_ptr(translation), 1.0f)) {
         component.set_translation(translation);
     }
 
     glm::vec3 scale = component.get_scale();
-    if (ImGui::DragFloat3("Scale", math::value_ptr(scale), 0.125f)) {
+    if (ImGui::DragFloat3("Scale", math::value_ptr(scale), 1.0f)) {
         component.set_scale(scale);
     }
 

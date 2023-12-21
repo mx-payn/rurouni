@@ -191,8 +191,8 @@ void BatchRenderer::draw_rect(const math::mat4& transform,
 
 void BatchRenderer::draw_texture(const math::mat4& transform,
                                  std::weak_ptr<Texture> texture,
-                                 math::vec4 color,
-                                 uint32_t entityId) {
+                                 uint32_t entityId,
+                                 math::vec4 color) {
     if (m_QuadVertexArrayData.size() >= MAX_VERTICES) {
         // start new batch
         flush_quads();

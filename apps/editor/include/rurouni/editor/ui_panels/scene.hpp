@@ -13,7 +13,8 @@ class ScenePanel {
    public:
     static void draw(UIState& state,
                      core::Scene& scene,
-                     std::function<void(const system::Path&)> changeSceneFn);
+                     std::function<void(const system::Path&)> changeSceneFn,
+                     std::function<void(const system::Path&)> saveSceneFn);
 
    private:
     static void draw_entity_node(UIState& state,

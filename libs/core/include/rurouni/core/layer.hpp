@@ -2,7 +2,9 @@
 #define RR_LIBS_CORE_LAYER_H
 
 // rurouni
+#include "cereal/cereal.hpp"
 #include "entt/entity/fwd.hpp"
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/core/scene_state.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
 
@@ -20,7 +22,8 @@ class Layer {
     virtual void on_detach() {}
 
     virtual void on_render(graphics::BatchRenderer& renderer,
-                           const entt::registry& registry,
+                           AssetManager& assetManager,
+                           entt::registry& registry,
                            const SceneState& sceneState) = 0;
 
     const std::string& get_name() const { return m_Name; }
@@ -31,7 +34,9 @@ class Layer {
    private:
     friend class cereal::access;
     template <typename Archive>
-    void serialize(Archive& archive) {}
+    void serialize(Archive& archive) {
+        archive(cereal::make_nvp("name", m_Name));
+    }
 };
 
 }  // namespace rr::core

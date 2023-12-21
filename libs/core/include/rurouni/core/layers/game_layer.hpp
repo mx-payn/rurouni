@@ -1,5 +1,5 @@
-#ifndef RR_LIBS_CORE_LAYERS_GRID_LAYER_H
-#define RR_LIBS_CORE_LAYERS_GRID_LAYER_H
+#ifndef RR_LIBS_CORE_LAYERS_GAME_LAYER_H
+#define RR_LIBS_CORE_LAYERS_GAME_LAYER_H
 
 // rurouni
 #include "cereal/cereal.hpp"
@@ -17,10 +17,10 @@
 
 namespace rr::core {
 
-class GridLayer : public Layer {
+class GameLayer : public Layer {
    public:
-    GridLayer();
-    ~GridLayer();
+    GameLayer();
+    ~GameLayer();
 
     virtual void on_render(graphics::BatchRenderer& renderer,
                            AssetManager& assetManager,
@@ -28,14 +28,10 @@ class GridLayer : public Layer {
                            const SceneState& sceneState) override;
 
    private:
-    math::vec4 m_GridColor = {0.2, 0.2, 0.2, 1.0f};
-
-   private:
     friend class cereal::access;
     template <typename Archive>
     void serialize(Archive& archive) {
-        archive(cereal::base_class<Layer>(this),
-                cereal::make_nvp("grid_color", m_GridColor));
+        archive(cereal::base_class<Layer>(this));
     }
 };
 
@@ -49,6 +45,6 @@ class GridLayer : public Layer {
 #include <cereal/archives/json.hpp>
 
 // Register DerivedClassOne
-CEREAL_REGISTER_TYPE(rr::core::GridLayer);
+CEREAL_REGISTER_TYPE(rr::core::GameLayer);
 
 #endif  // !RR_LIBS_CORE_LAYERS_GRID_LAYER_H

@@ -1,5 +1,5 @@
 {
-    "name": "",
+    "name": "default-scene",
     "layers": [
         {
             "polymorphic_id": 2147483649,
@@ -7,11 +7,26 @@
             "ptr_wrapper": {
                 "valid": 1,
                 "data": {
+                    "value0": {
+                        "name": "test"
+                    },
                     "grid_color": {
-                        "x": 0.2,
-                        "y": 0.2,
-                        "z": 0.2,
+                        "x": 0.20000000298023225,
+                        "y": 0.20000000298023225,
+                        "z": 0.20000000298023225,
                         "w": 1.0
+                    }
+                }
+            }
+        },
+        {
+            "polymorphic_id": 2147483650,
+            "polymorphic_name": "rr::core::GameLayer",
+            "ptr_wrapper": {
+                "valid": 1,
+                "data": {
+                    "value0": {
+                        "name": "game_layer"
                     }
                 }
             }
@@ -19,23 +34,29 @@
     ],
     "overlays": [],
     "scene_state": {
-        "cell_count_y": 45,
         "layer_camera_entt_id": 0,
-        "overlay_camera_entt_id": 4294967295
+        "overlay_camera_entt_id": 4294967295,
+        "cell_count_y": 45
     },
     "registry": {
-        "value0": 1,
-        "value1": 1,
+        "value0": 2,
+        "value1": 2,
         "value2": 0,
         "value3": 1,
-        "value4": 0,
-        "value5": {
+        "value4": 2,
+        "value5": 0,
+        "value6": {
             "uuid": "f3ac6599-80f9-4f78-a564-b1fae3760320",
             "name": "camera"
         },
-        "value6": 1,
-        "value7": 0,
+        "value7": 1,
         "value8": {
+            "uuid": "5f68e792-bdae-4ed0-8eb6-9295b4446b73",
+            "name": "sword"
+        },
+        "value9": 2,
+        "value10": 0,
+        "value11": {
             "translation": {
                 "x": 12.0,
                 "y": 12.0,
@@ -52,12 +73,34 @@
                 "z": 0.0
             }
         },
-        "value9": 0,
-        "value10": 1,
-        "value11": 0,
-        "value12": {
+        "value12": 1,
+        "value13": {
+            "translation": {
+                "x": 10.0,
+                "y": 12.0,
+                "z": 1.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "value14": 1,
+        "value15": 1,
+        "value16": {
+            "texture_uuid": "1a4222af-0d35-4fb2-b147-7e94f12ce2cd"
+        },
+        "value17": 1,
+        "value18": 0,
+        "value19": {
             "unit_type": "Cell",
-            "size": 44.0,
+            "size": 45.0,
             "near": -32.0,
             "far": 32.0
         }

@@ -1,13 +1,12 @@
 // pch
-#include "rurouni/core/asset_manager.hpp"
+#include <memory>
+#include "rurouni/core/layers/game_layer.hpp"
 #include "rurouni/pch.hpp"
 //-----------------------
 
 // rurouni
-#include "rurouni/core/components/identifier.hpp"
-#include "rurouni/core/components/orthographic_projection.hpp"
-#include "rurouni/core/components/texture.hpp"
-#include "rurouni/core/components/transform.hpp"
+#include "rurouni/core/asset_manager.hpp"
+#include "rurouni/core/components.hpp"
 #include "rurouni/core/layer.hpp"
 #include "rurouni/core/layers/grid_layer.hpp"
 #include "rurouni/core/logger.hpp"
@@ -61,7 +60,8 @@ void Scene::on_render(graphics::BatchRenderer& renderer,
 
         renderer.begin(cameraProjection, cameraTransform);
         for (int i = 0; i < m_Layers.size(); i++) {
-            m_Layers[i]->on_render(renderer, m_Registry, m_SceneState);
+            m_Layers[i]->on_render(renderer, assetManager, m_Registry,
+                                   m_SceneState);
         }
 
         renderer.end();
@@ -78,14 +78,16 @@ void Scene::on_render(graphics::BatchRenderer& renderer,
 
         renderer.begin(cameraProjection, cameraTransform);
         for (int i = 0; i < m_Overlays.size(); i++) {
-            m_Overlays[i]->on_render(renderer, m_Registry, m_SceneState);
+            m_Overlays[i]->on_render(renderer, assetManager, m_Registry,
+                                     m_SceneState);
         }
         renderer.end();
 
         // rendering debug layer
         if (m_DebugLayer != nullptr) {
             renderer.begin(cameraProjection, cameraTransform);
-            m_DebugLayer->on_render(renderer, m_Registry, m_SceneState);
+            m_DebugLayer->on_render(renderer, assetManager, m_Registry,
+                                    m_SceneState);
             renderer.end();
         }
     }
@@ -95,8 +97,8 @@ void Scene::on_render(graphics::BatchRenderer& renderer,
 
 std::optional<Error> Scene::read_from_file(const system::Path& filepath,
                                            const math::ivec2& viewportSize_px) {
+    std::ifstream is(filepath);
     try {
-        std::ifstream is(filepath);
         cereal::JSONInputArchive input(is);
         input(cereal::make_nvp("name", m_Name),
               cereal::make_nvp("layers", m_Layers),
@@ -112,7 +114,6 @@ std::optional<Error> Scene::read_from_file(const system::Path& filepath,
             .get<components::Texture>(input)
             .get<components::OrthographicProjection>(input);
         input.finishNode();
-        is.close();
     } catch (cereal::Exception e) {
         error("failed deserializing scene. path: {}", filepath);
         error("cereal: {}", e.what());
@@ -121,15 +122,17 @@ std::optional<Error> Scene::read_from_file(const system::Path& filepath,
                      "failed deserializing scene. path: {}, what: {}", filepath,
                      e.what());
     }
+    is.close();
 
     set_viewport_size(viewportSize_px);
+    m_Filepath = filepath;
 
     return {};
 }
 
 std::optional<Error> Scene::write_to_file(const system::Path& path) {
+    std::ofstream os(path);
     try {
-        std::ofstream os(path);
         cereal::JSONOutputArchive out(os);
         out(cereal::make_nvp("name", m_Name),
             cereal::make_nvp("layers", m_Layers),
@@ -145,7 +148,6 @@ std::optional<Error> Scene::write_to_file(const system::Path& path) {
             .get<components::Texture>(out)
             .get<components::OrthographicProjection>(out);
         out.finishNode();
-        os.close();
     } catch (cereal::Exception e) {
         error("failed serializing scene. path: {}", path);
         error("cereal: {}", e.what());
@@ -154,6 +156,7 @@ std::optional<Error> Scene::write_to_file(const system::Path& path) {
                      "failed serializing scene. path: {}, what: {}", path,
                      e.what());
     }
+    os.close();
 
     return {};
 }

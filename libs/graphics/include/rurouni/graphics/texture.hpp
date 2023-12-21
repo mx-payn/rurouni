@@ -63,6 +63,7 @@ struct ImageTextureSpecification {
 class Texture {
    public:
     Texture() = default;
+    Texture(const system::Path& path);
     Texture(const DataTextureSpecification& spec);
     Texture(const ImageTextureSpecification& spec);
 

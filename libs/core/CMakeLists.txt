@@ -30,6 +30,7 @@ add_library(${PROJECT_NAME}
     src/module.cpp
     src/asset_manager.cpp
     src/layers/grid_layer.cpp
+    src/layers/game_layer.cpp
     )
 add_library(rurouni::core ALIAS ${PROJECT_NAME})
 

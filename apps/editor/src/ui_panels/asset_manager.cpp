@@ -48,18 +48,21 @@ void AssetManager::draw(UIState& state, core::AssetManager& assetManager) {
     ImGui::BeginChild("contents");
 
     if (ImGui::CollapsingHeader("Textures")) {
-        for (auto& [k, v] : assetManager.get_texture_registry()) {
-            if (ImGui::Selectable(v.Name.c_str())) {
-                ui::PropertiesPanel::add_tab(
-                    std::make_unique<TextureProperty>(k, v.Name));
+        for (auto& [textureId, textureSpec] :
+             assetManager.get_texture_registry()) {
+            ImGui::PushID(textureId.to_string().append("##textures").c_str());
+            if (ImGui::Selectable(textureSpec.Name.c_str())) {
+                ui::PropertiesPanel::add_tab(std::make_unique<TextureProperty>(
+                    textureId, textureSpec.Name));
             }
 
             if (ImGui::BeginDragDropSource()) {
-                ImGui::SetDragDropPayload("TEXTURE_SPECIFICATION", &v,
-                                          sizeof(v));
+                ImGui::SetDragDropPayload("TEXTURE_SPECIFICATION", &textureSpec,
+                                          sizeof(textureSpec));
 
                 ImGui::EndDragDropSource();
             }
+            ImGui::PopID();
         }
     }
 
@@ -74,11 +77,14 @@ void AssetManager::draw(UIState& state, core::AssetManager& assetManager) {
         }
 
         for (auto& [textureId, spriteEntry] : subTextureMap) {
+            ImGui::PushID(textureId.to_string().append("##sprites").c_str());
             auto& textureSpec = assetManager.get_texture_registry()[textureId];
 
             auto flags = ImGuiTreeNodeFlags_SpanFullWidth;
             if (ImGui::TreeNodeEx(textureSpec.Name.c_str(), flags)) {
                 for (auto& [spriteId, spriteSpecPtr] : spriteEntry) {
+                    ImGui::PushID(
+                        spriteId.to_string().append("##sprites").c_str());
                     if (ImGui::Selectable(spriteSpecPtr->Name.c_str())) {
                         ui::PropertiesPanel::add_tab(
                             std::make_unique<SpriteProperty>(
@@ -93,10 +99,13 @@ void AssetManager::draw(UIState& state, core::AssetManager& assetManager) {
 
                         ImGui::EndDragDropSource();
                     }
+                    ImGui::PopID();
                 }
 
                 ImGui::TreePop();
             }
+
+            ImGui::PopID();
         }
     }
 

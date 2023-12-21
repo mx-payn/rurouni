@@ -13,7 +13,8 @@ GridLayer::GridLayer() : Layer("grid_layer") {}
 GridLayer::~GridLayer() {}
 
 void GridLayer::on_render(graphics::BatchRenderer& renderer,
-                          const entt::registry& registry,
+                          AssetManager& assetManager,
+                          entt::registry& registry,
                           const SceneState& sceneState) {
     auto components =
         registry

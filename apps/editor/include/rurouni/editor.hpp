@@ -54,6 +54,7 @@ class Editor : public event::Subscriber {
     void cleanup_module_history();
 
     void change_scene(const system::Path& path);
+    void save_scene(const system::Path& path);
     void draw_scene();
 
    private:

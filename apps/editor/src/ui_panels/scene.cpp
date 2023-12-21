@@ -21,7 +21,8 @@ namespace rr::editor::ui {
 
 void ScenePanel::draw(UIState& state,
                       core::Scene& scene,
-                      std::function<void(const system::Path&)> changeSceneFn) {
+                      std::function<void(const system::Path&)> changeSceneFn,
+                      std::function<void(const system::Path&)> saveSceneFn) {
     ImGui::Begin("Scene", &state.ShowPanelScene);
 
     // dummy layer over whole content region to allow drag and drop
@@ -43,16 +44,28 @@ void ScenePanel::draw(UIState& state,
         ImGui::EndDragDropTarget();
     }
 
-    // ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-    // ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5, 0.5, 0.5,
-    // 0.8)); size_t image = state.Icons.Save->get_renderer_id(); if
-    // (ImGui::ImageButton((ImTextureID)image,
-    //                        {(float)state.IconSize.x,
-    //                        (float)state.IconSize.y}, {0, 1}, {1, 0})) {
-    //     scene.save_scene();
-    // }
-    // ImGui::SetItemTooltip("Save scene");
-    // ImGui::PopStyleColor(2);
+    auto imageId = state.Icons.Save->get_renderer_id();
+    if (imageId.has_value()) {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                              ImVec4(0.5, 0.5, 0.5, 0.8));
+
+        size_t imageIdCast = static_cast<size_t>(imageId.value());
+        if (ImGui::ImageButton(
+                (ImTextureID)imageIdCast,
+                {(float)state.IconSize.x, (float)state.IconSize.y}, {0, 1},
+                {1, 0})) {
+            saveSceneFn("");
+        }
+
+        ImGui::SetItemTooltip("Save scene");
+        ImGui::PopStyleColor(2);
+    } else {
+        if (ImGui::Button("Save")) {
+            saveSceneFn("");
+        }
+        ImGui::SetItemTooltip("Save scene");
+    }
 
     ImGui::Separator();
 

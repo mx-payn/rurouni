@@ -36,8 +36,8 @@ class BatchRenderer {
     // draw calls
     void draw_texture(const math::mat4& transform,
                       std::weak_ptr<Texture> texture,
-                      math::vec4 color,
-                      uint32_t entityId);
+                      uint32_t entityId,
+                      math::vec4 color = math::vec4(1.0f));
     void draw_quad(const math::mat4& transform,
                    const math::vec4& color,
                    uint32_t entityId);

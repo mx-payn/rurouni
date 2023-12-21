@@ -1,6 +1,7 @@
 #ifndef RR_EDITOR_STATE_H
 #define RR_EDITOR_STATE_H
 
+#include "rurouni/graphics/texture.hpp"
 #include "rurouni/math/vec.hpp"
 #include "rurouni/system/filesystem.hpp"
 
@@ -21,11 +22,24 @@ struct UIState {
 
     std::optional<entt::entity> m_SelectedEntity = {};
 
+    // panels / modals
     bool ShowModuleCreateModal = false;
     bool ShowPanelSceneViewport = true;
     bool ShowPanelAssets = true;
     bool ShowPanelProperties = true;
     bool ShowPanelScene = true;
+
+    // icons
+    struct {
+        std::shared_ptr<graphics::Texture> File;
+        std::shared_ptr<graphics::Texture> FileImport;
+        std::shared_ptr<graphics::Texture> Folder;
+        std::shared_ptr<graphics::Texture> Save;
+    } Icons;
+    math::ivec2 ThumbnailSize = {128, 128};
+    float ThumbnailPadding = 16.0f;
+    math::ivec2 IconSize = {32, 32};
+    float IconPadding = 4.0f;
 };
 
 }  // namespace rr::editor
