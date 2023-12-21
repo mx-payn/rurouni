@@ -5,6 +5,7 @@
 
 #include <imgui/imgui.h>
 #include <entt/entt.hpp>
+#include <string>
 
 namespace rr::editor {
 

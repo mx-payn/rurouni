@@ -6,6 +6,7 @@
 #include "rurouni/math.hpp"
 
 #include <imgui/imgui.h>
+#include <limits>
 
 namespace rr::editor {
 
@@ -73,23 +74,25 @@ void draw_component_ortho_projection(
 
 void draw_component_transform(core::components::Transform& component) {
     glm::vec3 translation = component.get_translation();
-    if (ImGui::DragFloat3("Translation", math::value_ptr(translation), 1.0f)) {
+    if (ImGui::DragFloat3("Translation", math::value_ptr(translation), 1.0f,
+                          -std::numeric_limits<float>::max(),
+                          std::numeric_limits<float>::max(), "%0.f")) {
         component.set_translation(translation);
     }
 
     glm::vec3 scale = component.get_scale();
-    if (ImGui::DragFloat3("Scale", math::value_ptr(scale), 1.0f)) {
+    if (ImGui::DragFloat3("Scale", math::value_ptr(scale), 1.0f,
+                          -std::numeric_limits<float>::max(),
+                          std::numeric_limits<float>::max(), "%0.f")) {
         component.set_scale(scale);
     }
 
-    glm::vec3 degrees = {math::degrees(component.get_rotation().x),
-                         math::degrees(component.get_rotation().y),
-                         math::degrees(component.get_rotation().z)};
-    if (ImGui::DragFloat3("Rotation", math::value_ptr(degrees), 0.2f, -360.0f,
-                          360.0f, "%1.f", ImGuiSliderFlags_AlwaysClamp)) {
-        component.set_rotation({math::radians(degrees[0]),
-                                math::radians(degrees[1]),
-                                math::radians(degrees[2])});
+    glm::vec3 degrees = math::degrees(component.get_rotation());
+    if (ImGui::DragFloat3("Rotation", math::value_ptr(degrees), 1.0f,
+                          -std::numeric_limits<float>::max(),
+                          std::numeric_limits<float>::max(), "%0.f",
+                          ImGuiSliderFlags_NoRoundToFormat)) {
+        component.set_rotation(math::radians(degrees));
     }
 }
 

@@ -9,28 +9,33 @@ namespace rr::editor::ui {
 
 void EntityProperty::draw(entt::registry& registry,
                       core::AssetManager& assetManager) {
-// header buttons
-if (ImGui::Button("Add")) {
-    ImGui::OpenPopup("AddComponent");
-}
-draw_component_add_popup(registry, m_Entity);
+    auto& identification = registry.get<core::components::Identifier>(m_Entity);
+    ImGui::PushID(
+        identification.Uuid.to_string().append("##property_tab").c_str());
 
-ImGui::Separator();
+    // header buttons
+    if (ImGui::Button("Add")) {
+        ImGui::OpenPopup("AddComponent");
+    }
+    draw_component_add_popup(registry, m_Entity);
 
-// identification component
-auto& identification = registry.get<core::components::Identifier>(m_Entity);
-draw_component_identification(identification);
+    ImGui::Separator();
 
-ImGui::Separator();
+    // identification component
+    draw_component_identification(identification);
 
-// Components
-draw_component<core::components::Transform>(registry, m_Entity, "Transform",
-                                            false, draw_component_transform);
-draw_component<core::components::Texture>(registry, m_Entity, "Texture", true,
-                                          draw_component_texture);
-draw_component<core::components::OrthographicProjection>(
-    registry, m_Entity, "Orthigraphic Projection", true,
-    draw_component_ortho_projection);
+    ImGui::Separator();
+
+    // Components
+    draw_component<core::components::Transform>(
+        registry, m_Entity, "Transform", false, draw_component_transform);
+    draw_component<core::components::Texture>(registry, m_Entity, "Texture",
+                                              true, draw_component_texture);
+    draw_component<core::components::OrthographicProjection>(
+        registry, m_Entity, "Orthigraphic Projection", true,
+        draw_component_ortho_projection);
+
+    ImGui::PopID();
 }
 
 void EntityProperty::draw_component_add_popup(entt::registry& registry,

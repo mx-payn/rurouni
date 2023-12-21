@@ -60,7 +60,7 @@ vec2 degrees(const vec2& vec) {
 }
 
 vec3 degrees(const vec3& vec) {
-    return glm::radians(vec);
+    return glm::degrees(vec);
 }
 
 vec4 degrees(const vec4& vec) {
