@@ -5,6 +5,7 @@
 #include "rurouni/core/asset_manager.hpp"
 #include "rurouni/editor/ui.hpp"
 #include "rurouni/editor/ui_modals/error.hpp"
+#include "rurouni/editor/ui_modals/import_assets.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
 
 // rurouni
@@ -57,6 +58,12 @@ class Editor : public event::Subscriber {
     void save_scene(const system::Path& path);
     void draw_scene();
 
+    void asset_import_texture(core::TextureSpecification& spec);
+    void asset_import_sprites(
+        std::unordered_map<int, core::SpriteSpecification>& specs);
+    void asset_import_shader(core::ShaderSpecification& spec);
+    void asset_import_font(core::FontSpecification& spec);
+
    private:
     // editor state
     bool m_Running;
@@ -78,6 +85,7 @@ class Editor : public event::Subscriber {
     // modals
     std::unique_ptr<ui::ModuleCreateModal> m_ModuleCreateModal;
     std::unique_ptr<ui::ErrorModal> m_ErrorModal;
+    std::unique_ptr<ui::ImportAssetsModal> m_ImportAssetsModal;
 
     // editor paths
     std::string m_AppName;

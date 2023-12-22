@@ -9,6 +9,7 @@
 #include "rurouni/editor/state.hpp"
 #include "rurouni/editor/ui.hpp"
 #include "rurouni/editor/ui_modals/error.hpp"
+#include "rurouni/editor/ui_modals/import_assets.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
 #include "rurouni/editor/ui_panels/asset_manager.hpp"
 #include "rurouni/editor/ui_panels/content_browser.hpp"
@@ -106,6 +107,11 @@ Editor::Editor(const graphics::WindowSpecification& windowSpec) {
     // modals
     m_ModuleCreateModal = std::make_unique<ui::ModuleCreateModal>();
     m_ErrorModal = std::make_unique<ui::ErrorModal>();
+    m_ImportAssetsModal = std::make_unique<ui::ImportAssetsModal>(
+        std::bind(&Editor::asset_import_texture, this, std::placeholders::_1),
+        std::bind(&Editor::asset_import_sprites, this, std::placeholders::_1),
+        std::bind(&Editor::asset_import_shader, this, std::placeholders::_1),
+        std::bind(&Editor::asset_import_font, this, std::placeholders::_1));
 
     // read project history
     read_module_history();
@@ -185,6 +191,7 @@ void Editor::render() {
     m_ModuleCreateModal->draw(
         m_UIState, std::bind(&Editor::create_module, this,
                              std::placeholders::_1, std::placeholders::_2));
+    m_ImportAssetsModal->draw(m_UIState, *m_AssetManager);
 
     ui::end();
     m_Window->swap_buffers();
@@ -431,5 +438,70 @@ void Editor::draw_scene() {
         m_CurrentScene->on_render(*m_Renderer, *m_AssetManager);
     }
 }
+
+void Editor::asset_import_texture(core::TextureSpecification& spec) {
+    if (!system::exists(spec.Filepath.string())) {
+        error("texture import");
+        error("file not found: {}", spec.Filepath.string());
+        ui::ErrorModal::push_error(
+            "asset import", "file not found",
+            fmt::format(
+                "the requested file to import was not found at path: {}",
+                spec.Filepath.string()));
+        return;
+    }
+
+    if (!system::is_regular_file(spec.Filepath.string())) {
+        error("texture import");
+        error("not a file: {}", spec.Filepath.string());
+        ui::ErrorModal::push_error(
+            "asset import", "not a file",
+            fmt::format("the requested file to import is not a file. path: {}",
+                        spec.Filepath.string()));
+
+        return;
+    }
+
+    if (spec.Filepath.parent_path() !=
+        m_CurrentModule->get_root_path() / "textures") {
+        // import texture into assets dir
+        system::Path texturePath = spec.Filepath;
+        system::Path importPath = m_CurrentModule->get_root_path() /
+                                  "textures" / spec.Filepath.filename();
+
+        if (!system::exists(importPath)) {
+            system::copy(texturePath, importPath);
+        }
+
+        spec.Filepath = importPath;
+    }
+
+    spec.Id.generate();
+    m_AssetManager->get_texture_registry()[spec.Id] = spec;
+    // m_AssetManager->write_asset_configuration(m_CurrentModule->get_root_path()
+    // / "assets.json");
+    m_AssetManager->write_asset_configuration();
+}
+
+void Editor::asset_import_sprites(
+    std::unordered_map<int, core::SpriteSpecification>& specs) {
+    if (specs.empty()) {
+        return;
+    }
+
+    auto& spriteSpecs = m_AssetManager->get_sprite_registry();
+
+    for (auto& [idx, spec] : specs) {
+        spriteSpecs[spec.Id] = spec;
+    }
+
+    // m_AssetManager->write_asset_configuration(m_CurrentProject.ProjectPath /
+    //                                           "assets.json");
+    m_AssetManager->write_asset_configuration();
+}
+
+void Editor::asset_import_shader(core::ShaderSpecification& spec) {}
+
+void Editor::asset_import_font(core::FontSpecification& spec) {}
 
 }  // namespace rr::editor

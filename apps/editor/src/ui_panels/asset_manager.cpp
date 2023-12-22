@@ -16,35 +16,32 @@ void AssetManager::draw(UIState& state, core::AssetManager& assetManager) {
 
     ImGui::Begin("Assets", &state.ShowPanelAssets);
 
-    /*
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5, 0.5, 0.5, 0.8));
-    // size_t image = state.Icons.FileImport->get_renderer_id();
-    // if (ImGui::ImageButton((ImTextureID)image,
-    //                        {(float)state.IconSize.x,
-    (float)state.IconSize.y},
-    //                        {0, 1}, {1, 0})) {
-    //     state.ShowModalImportAsset = true;
-    // }
-    // ImGui::SetItemTooltip("Open import asset modal");
+    size_t image = state.Icons.FileImport->get_renderer_id().value();
+    if (ImGui::ImageButton((ImTextureID)image,
+                           {(float)state.IconSize.x, (float)state.IconSize.y},
+                           {0, 1}, {1, 0})) {
+        state.ShowModalImportAsset = true;
+    }
+    ImGui::SetItemTooltip("Open import asset modal");
     ImGui::PopStyleColor(2);
 
     ImGui::SameLine();
 
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5, 0.5, 0.5, 0.8));
-    // image = state.Icons.Save->get_renderer_id();
-    // if (ImGui::ImageButton((ImTextureID)image,
-    //                        {(float)state.IconSize.x,
-    (float)state.IconSize.y},
-    //                        {0, 1}, {1, 0})) {
-    //     assetManager.write_asset_configuration();
-    // }
-    // ImGui::SetItemTooltip("Save asset specifications");
+    image = state.Icons.Save->get_renderer_id().value();
+    if (ImGui::ImageButton((ImTextureID)image,
+                           {(float)state.IconSize.x, (float)state.IconSize.y},
+                           {0, 1}, {1, 0})) {
+        assetManager.write_asset_configuration();
+    }
+    ImGui::SetItemTooltip("Save asset specifications");
     ImGui::PopStyleColor(2);
 
     ImGui::Separator();
-*/
+
     ImGui::BeginChild("contents");
 
     if (ImGui::CollapsingHeader("Textures")) {

@@ -29,6 +29,54 @@
     ],
     "sprites": [
         {
+            "key": "2ce95f8f-40bf-472d-991c-900271d2b77c",
+            "value": {
+                "name": "smiley-fill",
+                "id": "2ce95f8f-40bf-472d-991c-900271d2b77c",
+                "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+                "cell_index": {
+                    "x": 2,
+                    "y": 0
+                },
+                "cell_spread": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        },
+        {
+            "key": "1661c626-df15-4a8e-a1bd-81170c12218f",
+            "value": {
+                "name": "cat",
+                "id": "1661c626-df15-4a8e-a1bd-81170c12218f",
+                "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+                "cell_index": {
+                    "x": 1,
+                    "y": 1
+                },
+                "cell_spread": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        },
+        {
+            "key": "b6e21ce1-1c1c-44c1-8083-cd2efc4cda11",
+            "value": {
+                "name": "smiley",
+                "id": "b6e21ce1-1c1c-44c1-8083-cd2efc4cda11",
+                "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+                "cell_index": {
+                    "x": 1,
+                    "y": 0
+                },
+                "cell_spread": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        },
+        {
             "key": "1a4222af-0d35-4fb2-b147-7e94f12ce2cd",
             "value": {
                 "name": "sword",

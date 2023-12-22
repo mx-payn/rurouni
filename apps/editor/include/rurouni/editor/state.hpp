@@ -22,13 +22,15 @@ struct UIState {
 
     std::optional<entt::entity> m_SelectedEntity = {};
 
-    // panels / modals
-    bool ShowModuleCreateModal = false;
+    // panels
     bool ShowPanelSceneViewport = true;
     bool ShowPanelAssets = true;
     bool ShowPanelProperties = true;
     bool ShowPanelScene = true;
     bool ShowPanelContentBrowser = true;
+    // modals
+    bool ShowModuleCreateModal = false;
+    bool ShowModalImportAsset = false;
 
     // icons
     struct {

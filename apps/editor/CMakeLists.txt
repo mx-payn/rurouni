@@ -68,6 +68,7 @@ add_executable(${PROJECT_NAME}
     # modals
     src/ui_modals/module_create.cpp
     src/ui_modals/error.cpp
+    src/ui_modals/import_assets.cpp
     ## imgui
     src/imgui/imgui.cpp
     src/imgui/imgui_demo.cpp
