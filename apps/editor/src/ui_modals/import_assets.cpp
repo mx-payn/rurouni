@@ -135,36 +135,37 @@ void ImportAssetsModal::get_existing_sprites(core::AssetManager& assetManager) {
 }
 
 void ImportAssetsModal::draw_import_texture(core::AssetManager& assetManager) {
-    // core::TextureSpecification& spec,
-    // std::function<void(core::TextureSpecification&)> importTextureFunc) {
-    // static char name[32] = "";
-    // if (ImGui::InputText("name", name, 32)) {
-    //     spec.Name = std::string(name);
-    // }
-    //
-    // static char path[256] = "";
-    // if (ImGui::InputText("path", path, 256)) {
-    //     spec.Filepath = std::string(path);
-    // }
-    //
-    // ImGui::SameLine();
-    //
-    // if (ImGui::Button("Open")) {
-    //     std::string result = system::execute_command("zenity
-    //     --file-selection"); result.copy(path, result.size()); spec.Filepath =
-    //     result;
-    // }
-    //
-    // static math::ivec2 spriteCount = glm::ivec2(0.0f);
-    // if (ImGui::DragInt2("Sprite Count", math::value_ptr(spriteCount), 0.25f,
-    // 0,
-    //                     std::numeric_limits<int32_t>::max())) {
-    //     if (spriteCount == glm::ivec2(0.0f)) {
-    //         spec.SpriteCount = {};
-    //     } else {
-    //         spec.SpriteCount = spriteCount;
-    //     }
-    // }
+    static core::TextureSpecification spec;
+
+    static char name[32] = "";
+    if (ImGui::InputText("name", name, 32)) {
+        spec.Name = std::string(name);
+    }
+
+    static char path[256] = "";
+    if (ImGui::InputText("path", path, 256)) {
+        spec.Filepath = std::string(path);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Open")) {
+        std::string result = system::execute_command("zenity --file-selection");
+        result.copy(path, result.size());
+        spec.Filepath = result;
+    }
+
+    static math::ivec2 spriteCount = glm::ivec2(0.0f);
+    if (ImGui::DragInt2("Sprite Count", math::value_ptr(spriteCount), 0.25f, 0,
+                        std::numeric_limits<int32_t>::max())) {
+        if (spriteCount == glm::ivec2(0.0f)) {
+            spec.SpriteCount = {};
+        } else {
+            spec.SpriteCount = spriteCount;
+        }
+    }
+
+    m_SelectedTextureSpec = spec;
 }
 void ImportAssetsModal::draw_import_shader(core::AssetManager& assetManager) {}
 void ImportAssetsModal::draw_import_font(core::AssetManager& assetManager) {}
