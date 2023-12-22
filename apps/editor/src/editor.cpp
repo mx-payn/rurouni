@@ -440,6 +440,9 @@ void Editor::draw_scene() {
 }
 
 void Editor::asset_import_texture(core::TextureSpecification& spec) {
+    if (spec.Filepath.empty())
+        return;
+
     if (!system::exists(spec.Filepath.string())) {
         error("texture import");
         error("file not found: {}", spec.Filepath.string());

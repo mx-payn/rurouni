@@ -1,13 +1,17 @@
 {
     "textures": [
         {
-            "key": "77d94af4-bf50-4559-8c46-04074019f3b1",
+            "key": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
             "value": {
-                "name": "floppy-pen",
-                "id": "77d94af4-bf50-4559-8c46-04074019f3b1",
-                "filepath": "/home/mx/Projects/rurouni/examples/test/textures/floppy-pen.png",
+                "name": "frogblock",
+                "id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+                "filepath": "textures/frogblock.png",
                 "sprite_count": {
-                    "nullopt": true
+                    "nullopt": false,
+                    "data": {
+                        "x": 16,
+                        "y": 16
+                    }
                 }
             }
         },
@@ -23,31 +27,27 @@
             }
         },
         {
-            "key": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+            "key": "77d94af4-bf50-4559-8c46-04074019f3b1",
             "value": {
-                "name": "frogblock",
-                "id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
-                "filepath": "textures/frogblock.png",
+                "name": "floppy-pen",
+                "id": "77d94af4-bf50-4559-8c46-04074019f3b1",
+                "filepath": "/home/mx/Projects/rurouni/examples/test/textures/floppy-pen.png",
                 "sprite_count": {
-                    "nullopt": false,
-                    "data": {
-                        "x": 16,
-                        "y": 16
-                    }
+                    "nullopt": true
                 }
             }
         }
     ],
     "sprites": [
         {
-            "key": "1a4222af-0d35-4fb2-b147-7e94f12ce2cd",
+            "key": "5fb232a6-2ac3-4745-b350-7a7b27eebe92",
             "value": {
-                "name": "sword",
-                "id": "1a4222af-0d35-4fb2-b147-7e94f12ce2cd",
+                "name": "alien",
+                "id": "5fb232a6-2ac3-4745-b350-7a7b27eebe92",
                 "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
                 "cell_index": {
-                    "x": 0,
-                    "y": 1
+                    "x": 8,
+                    "y": 0
                 },
                 "cell_spread": {
                     "x": 1,
@@ -56,13 +56,13 @@
             }
         },
         {
-            "key": "b6e21ce1-1c1c-44c1-8083-cd2efc4cda11",
+            "key": "2ce95f8f-40bf-472d-991c-900271d2b77c",
             "value": {
-                "name": "smiley",
-                "id": "b6e21ce1-1c1c-44c1-8083-cd2efc4cda11",
+                "name": "smiley-fill",
+                "id": "2ce95f8f-40bf-472d-991c-900271d2b77c",
                 "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
                 "cell_index": {
-                    "x": 1,
+                    "x": 2,
                     "y": 0
                 },
                 "cell_spread": {
@@ -88,14 +88,30 @@
             }
         },
         {
-            "key": "2ce95f8f-40bf-472d-991c-900271d2b77c",
+            "key": "b6e21ce1-1c1c-44c1-8083-cd2efc4cda11",
             "value": {
-                "name": "smiley-fill",
-                "id": "2ce95f8f-40bf-472d-991c-900271d2b77c",
+                "name": "smiley",
+                "id": "b6e21ce1-1c1c-44c1-8083-cd2efc4cda11",
                 "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
                 "cell_index": {
-                    "x": 2,
+                    "x": 1,
                     "y": 0
+                },
+                "cell_spread": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        },
+        {
+            "key": "1a4222af-0d35-4fb2-b147-7e94f12ce2cd",
+            "value": {
+                "name": "sword",
+                "id": "1a4222af-0d35-4fb2-b147-7e94f12ce2cd",
+                "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+                "cell_index": {
+                    "x": 0,
+                    "y": 1
                 },
                 "cell_spread": {
                     "x": 1,

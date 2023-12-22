@@ -8,6 +8,7 @@
 
 #include <imgui/imgui.h>
 #include <strings.h>
+#include <memory>
 #include <unordered_map>
 
 namespace rr::editor::ui {
@@ -21,7 +22,10 @@ ImportAssetsModal::ImportAssetsModal(
     : m_ImportTextureFunc(importTextureFunc),
       m_ImportSpritesFunc(importSpritesFunc),
       m_ImportShaderFunc(importShaderFunc),
-      m_ImportFontFunc(importFontFunc) {}
+      m_ImportFontFunc(importFontFunc) {
+    m_TextureTab = std::make_unique<ImportTextureTab>();
+    m_SpriteTab = std::make_unique<ImportSpriteTab>();
+}
 
 void ImportAssetsModal::draw(UIState& state, core::AssetManager& assetManager) {
     // draw nothing if this modal is turned off
@@ -41,12 +45,12 @@ void ImportAssetsModal::draw(UIState& state, core::AssetManager& assetManager) {
         if (ImGui::BeginTabBar("Asset Type", tab_bar_flags)) {
             if (ImGui::BeginTabItem("Texture")) {
                 m_SelectedTab = core::AssetType::Texture;
-                draw_import_texture(assetManager);
+                m_TextureTab->draw(assetManager);
                 ImGui::EndTabItem();
             }
             if (ImGui::BeginTabItem("Sprite")) {
                 m_SelectedTab = core::AssetType::Sprite;
-                draw_import_sprites(assetManager);
+                m_SpriteTab->draw(assetManager);
                 ImGui::EndTabItem();
             }
             if (ImGui::BeginTabItem("Shader")) {
@@ -68,12 +72,10 @@ void ImportAssetsModal::draw(UIState& state, core::AssetManager& assetManager) {
             // execute import function for current selected asset type
             switch (m_SelectedTab) {
                 case core::AssetType::Texture:
-                    if (m_SelectedTextureSpec.has_value())
-                        m_ImportTextureFunc(m_SelectedTextureSpec.value());
+                    m_ImportTextureFunc(m_TextureTab->get_texture_spec());
                     break;
                 case core::AssetType::Sprite:
-                    if (!m_MarkedSpritesMap.empty())
-                        m_ImportSpritesFunc(m_MarkedSpritesMap);
+                    m_ImportSpritesFunc(m_SpriteTab->get_marked_sprites());
                     break;
                 case core::AssetType::Shader:
                     if (m_SelectedShaderSpec.has_value())
@@ -110,41 +112,26 @@ void ImportAssetsModal::draw(UIState& state, core::AssetManager& assetManager) {
 void ImportAssetsModal::reset_state() {
     // reset local state
     m_SelectedTab = core::AssetType::Texture;
-    m_SelectedTextureSpec = {};
-    m_SelectedSpriteSpec = {};
-    m_MarkedSpritesMap.clear();
-    m_ExistingSpritesMap.clear();
     m_SelectedShaderSpec = {};
     m_SelectedFontSpec = {};
+
+    m_TextureTab = std::make_unique<ImportTextureTab>();
+    m_SpriteTab = std::make_unique<ImportSpriteTab>();
 }
 
-void ImportAssetsModal::get_existing_sprites(core::AssetManager& assetManager) {
-    auto& spriteRegistry = assetManager.get_sprite_registry();
-
-    // copy existing specs into local specMap
-    for (auto& [k, v] : spriteRegistry) {
-        // TODO make != operator for UUID
-        if (!(v.TextureId == m_SelectedTextureSpec->Id))
-            continue;
-
-        // calculate single digit index inside texture
-        int index = (v.Cell_Idx.y * m_SelectedTextureSpec->SpriteCount->x) +
-                    v.Cell_Idx.x;
-        m_ExistingSpritesMap[index] = v;
-    }
-}
-
-void ImportAssetsModal::draw_import_texture(core::AssetManager& assetManager) {
-    static core::TextureSpecification spec;
-
-    static char name[32] = "";
+void ImportTextureTab::draw(core::AssetManager& assetManager) {
+    char name[32] = "";
+    memset(name, 0, sizeof(name));
+    strcpy(name, m_TextureSpec.Name.c_str());
     if (ImGui::InputText("name", name, 32)) {
-        spec.Name = std::string(name);
+        m_TextureSpec.Name = std::string(name);
     }
 
-    static char path[256] = "";
+    char path[256] = "";
+    memset(path, 0, sizeof(path));
+    strcpy(path, m_TextureSpec.Filepath.c_str());
     if (ImGui::InputText("path", path, 256)) {
-        spec.Filepath = std::string(path);
+        m_TextureSpec.Filepath = std::string(path);
     }
 
     ImGui::SameLine();
@@ -152,25 +139,24 @@ void ImportAssetsModal::draw_import_texture(core::AssetManager& assetManager) {
     if (ImGui::Button("Open")) {
         std::string result = system::execute_command("zenity --file-selection");
         result.copy(path, result.size());
-        spec.Filepath = result;
+        m_TextureSpec.Filepath = result;
     }
 
     static math::ivec2 spriteCount = glm::ivec2(0.0f);
     if (ImGui::DragInt2("Sprite Count", math::value_ptr(spriteCount), 0.25f, 0,
                         std::numeric_limits<int32_t>::max())) {
         if (spriteCount == glm::ivec2(0.0f)) {
-            spec.SpriteCount = {};
+            m_TextureSpec.SpriteCount = {};
         } else {
-            spec.SpriteCount = spriteCount;
+            m_TextureSpec.SpriteCount = spriteCount;
         }
     }
-
-    m_SelectedTextureSpec = spec;
 }
+
 void ImportAssetsModal::draw_import_shader(core::AssetManager& assetManager) {}
 void ImportAssetsModal::draw_import_font(core::AssetManager& assetManager) {}
 
-void ImportAssetsModal::draw_import_sprites(core::AssetManager& assetManager) {
+void ImportSpriteTab::draw(core::AssetManager& assetManager) {
     ImGui::BeginGroup();
 
     // texture selection
@@ -321,23 +307,12 @@ void ImportAssetsModal::draw_import_sprites(core::AssetManager& assetManager) {
             if (ImGui::Button("##button", ImVec2(spriteSizeX, spriteSizeY))) {
                 if (!isInExistingMap && !isInMarkedMap) {  // add sprite to map
                     // flipped y index
-                    int _y = spriteCountY - 1 - y;
                     core::SpriteSpecification spec;
                     spec.Name = fmt::format("x[{}]y[{}]", x, y);
                     spec.Id = UUID::create();
                     spec.Cell_Idx = math::ivec2(x, y);
                     spec.TextureId = m_SelectedTextureSpec->Id;
                     spec.CellSpread = math::ivec2(1.0f);
-
-                    float uv_x = (float)x / spriteCountX;
-                    float uv_y = (float)_y / spriteCountY;
-
-                    // spec.TextureCoords_UV = {
-                    //     math::vec2(uv_x, uv_y),
-                    //     math::vec2(uv_x + spriteSizeX_uv, uv_y),
-                    //     math::vec2(uv_x + spriteSizeX_uv,
-                    //                uv_y + spriteSizeY_uv),
-                    //     math::vec2(uv_x, uv_y + spriteSizeY_uv)};
 
                     m_MarkedSpritesMap[index] = spec;
                     m_SelectedSpriteSpec = spec;
@@ -356,6 +331,22 @@ void ImportAssetsModal::draw_import_sprites(core::AssetManager& assetManager) {
         }
         positionX = imagePosition.x;
         positionY += spriteSizeY;
+    }
+}
+
+void ImportSpriteTab::get_existing_sprites(core::AssetManager& assetManager) {
+    auto& spriteRegistry = assetManager.get_sprite_registry();
+
+    // copy existing specs into local specMap
+    for (auto& [k, v] : spriteRegistry) {
+        // TODO make != operator for UUID
+        if (!(v.TextureId == m_SelectedTextureSpec->Id))
+            continue;
+
+        // calculate single digit index inside texture
+        int index = (v.Cell_Idx.y * m_SelectedTextureSpec->SpriteCount->x) +
+                    v.Cell_Idx.x;
+        m_ExistingSpritesMap[index] = v;
     }
 }
 

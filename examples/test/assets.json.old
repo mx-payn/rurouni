@@ -25,9 +25,36 @@
                     "nullopt": true
                 }
             }
+        },
+        {
+            "key": "77d94af4-bf50-4559-8c46-04074019f3b1",
+            "value": {
+                "name": "floppy-pen",
+                "id": "77d94af4-bf50-4559-8c46-04074019f3b1",
+                "filepath": "/home/mx/Projects/rurouni/examples/test/textures/floppy-pen.png",
+                "sprite_count": {
+                    "nullopt": true
+                }
+            }
         }
     ],
     "sprites": [
+        {
+            "key": "5fb232a6-2ac3-4745-b350-7a7b27eebe92",
+            "value": {
+                "name": "x[8]y[0]",
+                "id": "5fb232a6-2ac3-4745-b350-7a7b27eebe92",
+                "texture_id": "9aae02ee-22fe-4637-96fc-4a5ccab6f18a",
+                "cell_index": {
+                    "x": 8,
+                    "y": 0
+                },
+                "cell_spread": {
+                    "x": 1,
+                    "y": 1
+                }
+            }
+        },
         {
             "key": "2ce95f8f-40bf-472d-991c-900271d2b77c",
             "value": {
