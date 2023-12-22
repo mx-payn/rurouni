@@ -21,7 +21,7 @@ void AssetManager::draw(UIState& state, core::AssetManager& assetManager) {
     size_t image = state.Icons.FileImport->get_renderer_id().value();
     if (ImGui::ImageButton((ImTextureID)image,
                            {(float)state.IconSize.x, (float)state.IconSize.y},
-                           {0, 1}, {1, 0})) {
+                           {0, 0}, {1, 1})) {
         state.ShowModalImportAsset = true;
     }
     ImGui::SetItemTooltip("Open import asset modal");
@@ -34,7 +34,7 @@ void AssetManager::draw(UIState& state, core::AssetManager& assetManager) {
     image = state.Icons.Save->get_renderer_id().value();
     if (ImGui::ImageButton((ImTextureID)image,
                            {(float)state.IconSize.x, (float)state.IconSize.y},
-                           {0, 1}, {1, 0})) {
+                           {0, 0}, {1, 1})) {
         assetManager.write_asset_configuration();
     }
     ImGui::SetItemTooltip("Save asset specifications");

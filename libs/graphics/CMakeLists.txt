@@ -47,6 +47,7 @@ target_include_directories(
             $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
     PRIVATE $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/gladsources/glad/include>
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/external>
 )
 
 target_link_libraries(${PROJECT_NAME} 

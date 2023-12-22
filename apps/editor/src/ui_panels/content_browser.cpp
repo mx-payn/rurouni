@@ -65,7 +65,7 @@ void ContentBrowser::draw(UIState& state, const system::Path& rootDir) {
                 ImGui::ImageButton((ImTextureID)image,
                                    {(float)state.ThumbnailSize.x,
                                     (float)state.ThumbnailSize.y},
-                                   {0, 1}, {1, 0});
+                                   {0, 0}, {1, 1});
 
                 if (ImGui::IsItemHovered() &&
                     ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
@@ -78,7 +78,7 @@ void ContentBrowser::draw(UIState& state, const system::Path& rootDir) {
                 ImGui::ImageButton((ImTextureID)image,
                                    {(float)state.ThumbnailSize.x,
                                     (float)state.ThumbnailSize.y},
-                                   {0, 1}, {1, 0});
+                                   {0, 0}, {1, 1});
 
                 if (relativeRootName == "scenes") {
                     const char* pathStr = path.c_str();

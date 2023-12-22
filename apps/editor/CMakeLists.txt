@@ -70,13 +70,13 @@ add_executable(${PROJECT_NAME}
     src/ui_modals/error.cpp
     src/ui_modals/import_assets.cpp
     ## imgui
-    src/imgui/imgui.cpp
-    src/imgui/imgui_demo.cpp
-    src/imgui/imgui_draw.cpp
-    src/imgui/imgui_impl_glfw.cpp
-    src/imgui/imgui_impl_opengl3.cpp
-    src/imgui/imgui_tables.cpp
-    src/imgui/imgui_widgets.cpp
+    external/imgui/imgui.cpp
+    external/imgui/imgui_demo.cpp
+    external/imgui/imgui_draw.cpp
+    external/imgui/imgui_impl_glfw.cpp
+    external/imgui/imgui_impl_opengl3.cpp
+    external/imgui/imgui_tables.cpp
+    external/imgui/imgui_widgets.cpp
     )
 add_executable(rurouni::editor ALIAS ${PROJECT_NAME})
 
@@ -88,6 +88,7 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} 
     PRIVATE ${PROJECT_SOURCE_DIR}/include
+            ${PROJECT_SOURCE_DIR}/external
             ${PROJECT_BINARY_DIR}/include
             $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/gladsources/glad/include>
     )

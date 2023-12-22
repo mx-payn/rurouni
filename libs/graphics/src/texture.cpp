@@ -11,12 +11,12 @@
 
 // external
 #include <glad/gl.h>
-// NOTE: emmintrin.h drops a strange error in debug builds
+// TODO: emmintrin.h drops a strange error in debug builds
 // so no simd for now. Seems to not be an issue on release builds,
 // when problematic function propably gets inlined.
 #define STBI_NO_SIMD
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stbi/stb_image.h>
 
 namespace rr::graphics {
 

@@ -53,8 +53,8 @@ void ScenePanel::draw(UIState& state,
         size_t imageIdCast = static_cast<size_t>(imageId.value());
         if (ImGui::ImageButton(
                 (ImTextureID)imageIdCast,
-                {(float)state.IconSize.x, (float)state.IconSize.y}, {0, 1},
-                {1, 0})) {
+                {(float)state.IconSize.x, (float)state.IconSize.y}, {0, 0},
+                {1, 1})) {
             saveSceneFn("");
         }
 
