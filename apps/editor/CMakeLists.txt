@@ -64,6 +64,7 @@ add_executable(${PROJECT_NAME}
     src/ui_panels/asset_manager.cpp
     src/ui_panels/properties.cpp
     src/ui_panels/scene.cpp
+    src/ui_panels/content_browser.cpp
     # modals
     src/ui_modals/module_create.cpp
     src/ui_modals/error.cpp

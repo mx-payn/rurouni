@@ -66,7 +66,7 @@ class Editor : public event::Subscriber {
     // module state
     UIState m_UIState;
     std::optional<core::Module> m_CurrentModule;
-    std::vector<std::unique_ptr<core::Scene>> m_CurrentScenes;
+    std::unique_ptr<core::Scene> m_CurrentScene;
     std::unique_ptr<core::Scene> m_NextScene;
 
     // systems

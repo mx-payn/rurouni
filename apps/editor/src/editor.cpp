@@ -1,5 +1,6 @@
 // editor
 #include "rurouni/editor.hpp"
+#include "entt/entity/entity.hpp"
 #include "rurouni/core/asset_manager.hpp"
 #include "rurouni/core/module.hpp"
 #include "rurouni/core/scene.hpp"
@@ -10,6 +11,7 @@
 #include "rurouni/editor/ui_modals/error.hpp"
 #include "rurouni/editor/ui_modals/module_create.hpp"
 #include "rurouni/editor/ui_panels/asset_manager.hpp"
+#include "rurouni/editor/ui_panels/content_browser.hpp"
 #include "rurouni/editor/ui_panels/properties.hpp"
 #include "rurouni/editor/ui_panels/scene.hpp"
 #include "rurouni/editor/ui_panels/scene_viewport.hpp"
@@ -136,8 +138,14 @@ void Editor::update(float dt) {
     m_Window->update(dt);
     ui::update(dt, m_UserConfigDir);
 
-    if (!m_CurrentScenes.empty())
-        m_CurrentScenes.back()->on_update(dt);
+    if (m_NextScene != nullptr) {
+        m_CurrentScene = std::move(m_NextScene);
+        m_NextScene = nullptr;
+    }
+
+    if (m_CurrentScene != nullptr) {
+        m_CurrentScene->on_update(dt);
+    }
 }
 
 void Editor::render() {
@@ -148,26 +156,23 @@ void Editor::render() {
     if (m_CurrentModule.has_value()) {
         ui::draw_dockspace(m_UIState);
 
-        if (!m_CurrentScenes.empty()) {
-            // this is the scene for the frame
-            // scene_change() might push a different scene, which could get
-            // weird for following draw calls
-            auto& currentScene = m_CurrentScenes.back();
-
+        if (m_CurrentScene != nullptr) {
             ui::SceneViewportPanel::draw(
-                m_UIState, *currentScene, std::bind(&Editor::draw_scene, this),
+                m_UIState, *m_CurrentScene,
+                std::bind(&Editor::draw_scene, this),
                 std::bind(&Editor::change_scene, this, std::placeholders::_1));
 
-            ui::PropertiesPanel::draw(m_UIState, currentScene->get_registry(),
+            ui::PropertiesPanel::draw(m_UIState, m_CurrentScene->get_registry(),
                                       *m_AssetManager);
 
             ui::ScenePanel::draw(
-                m_UIState, *currentScene,
+                m_UIState, *m_CurrentScene,
                 std::bind(&Editor::change_scene, this, std::placeholders::_1),
                 std::bind(&Editor::save_scene, this, std::placeholders::_1));
         }
 
         ui::AssetManager::draw(m_UIState, *m_AssetManager);
+        ui::ContentBrowser::draw(m_UIState, m_CurrentModule->get_root_path());
     } else {
         ui::StartupSplash::draw(
             m_UIState, *m_EventSystem, m_ModuleHistory,
@@ -341,7 +346,7 @@ void Editor::open_module(const UUID& id) {
 
     auto scene = std::make_unique<core::Scene>(m_UIState.SceneViewportSize);
     scene->read_from_file(absStartScenePath, m_UIState.SceneViewportSize);
-    m_CurrentScenes.push_back(std::move(scene));
+    m_CurrentScene = std::move(scene);
 }
 
 void Editor::read_module_history() {
@@ -406,25 +411,24 @@ void Editor::cleanup_module_history() {
 void Editor::change_scene(const system::Path& path) {
     auto scene = std::make_unique<core::Scene>(m_UIState.SceneViewportSize);
     scene->read_from_file(path, m_UIState.SceneViewportSize);
-    m_CurrentScenes.push_back(std::move(scene));
+    m_NextScene = std::move(scene);
 }
 
 void Editor::save_scene(const system::Path& path) {
     if (path.empty()) {
-        m_CurrentScenes.back()->write_to_file(
-            m_CurrentScenes.back()->get_filepath());
+        m_CurrentScene->write_to_file(m_CurrentScene->get_filepath());
     } else {
         if (system::exists(path)) {
             warn("path already exists and will be overwritten. path: {}", path);
         }
         // TODO check not a directory
-        m_CurrentScenes.back()->write_to_file(path);
+        m_CurrentScene->write_to_file(path);
     }
 }
 
 void Editor::draw_scene() {
-    if (!m_CurrentScenes.empty()) {
-        m_CurrentScenes.back()->on_render(*m_Renderer, *m_AssetManager);
+    if (m_CurrentScene != nullptr) {
+        m_CurrentScene->on_render(*m_Renderer, *m_AssetManager);
     }
 }
 

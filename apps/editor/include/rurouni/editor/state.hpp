@@ -28,6 +28,7 @@ struct UIState {
     bool ShowPanelAssets = true;
     bool ShowPanelProperties = true;
     bool ShowPanelScene = true;
+    bool ShowPanelContentBrowser = true;
 
     // icons
     struct {
