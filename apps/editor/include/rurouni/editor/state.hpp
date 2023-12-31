@@ -17,34 +17,6 @@ struct ModuleHistoryItem {
     system::Path RootPath;
 };
 
-struct UIState {
-    math::ivec2 SceneViewportSize = math::ivec2(1.0f);
-
-    std::optional<entt::entity> m_SelectedEntity = {};
-
-    // panels
-    bool ShowPanelSceneViewport = true;
-    bool ShowPanelAssets = true;
-    bool ShowPanelProperties = true;
-    bool ShowPanelScene = true;
-    bool ShowPanelContentBrowser = true;
-    // modals
-    bool ShowModuleCreateModal = false;
-    bool ShowModalImportAsset = false;
-
-    // icons
-    struct {
-        std::shared_ptr<graphics::Texture> File;
-        std::shared_ptr<graphics::Texture> FileImport;
-        std::shared_ptr<graphics::Texture> Folder;
-        std::shared_ptr<graphics::Texture> Save;
-    } Icons;
-    math::ivec2 ThumbnailSize = {128, 128};
-    float ThumbnailPadding = 16.0f;
-    math::ivec2 IconSize = {32, 32};
-    float IconPadding = 4.0f;
-};
-
 }  // namespace rr::editor
 
 /// serialization

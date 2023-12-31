@@ -49,26 +49,30 @@ file(MAKE_DIRECTORY "${RR_APP_FILES_DIR}/${CMAKE_INSTALL_DATADIR}")
 file(CREATE_LINK "${CMAKE_CURRENT_SOURCE_DIR}/data" ${RR_DATA_DIR} SYMBOLIC)
 
 #############################################################
+###################  DEPENDENCIES  ##########################
+#############################################################
+include(FetchContent)
+# msdf-atlas-gen
+set(MSDF_ATLAS_BUILD_STANDALONE OFF)
+set(MSDF_ATLAS_USE_VCPKG OFF)
+set(MSDF_ATLAS_USE_SKIA OFF)
+set(MSDF_ATLAS_NO_ARTERY_FONT ON)
+set(MSDF_ATLAS_INSTALL OFF)
+set(MSDFGEN_DISABLE_SVG ON)
+FetchContent_Declare(
+  msdf-atlas-gen
+  GIT_REPOSITORY https://github.com/Chlumsky/msdf-atlas-gen.git
+  GIT_TAG master
+  )
+FetchContent_MakeAvailable(msdf-atlas-gen)
+
+#############################################################
 ######################  TARGET  #############################
 #############################################################
 add_executable(${PROJECT_NAME} 
     src/main.cpp 
     src/editor.cpp
     src/ui.cpp
-    # items
-    src/ui_items/property_tab.cpp
-    src/ui_items/components.cpp
-    ## panels
-    src/ui_panels/startup_splash.cpp
-    src/ui_panels/scene_viewport.cpp
-    src/ui_panels/asset_manager.cpp
-    src/ui_panels/properties.cpp
-    src/ui_panels/scene.cpp
-    src/ui_panels/content_browser.cpp
-    # modals
-    src/ui_modals/module_create.cpp
-    src/ui_modals/error.cpp
-    src/ui_modals/import_assets.cpp
     ## imgui
     external/imgui/imgui.cpp
     external/imgui/imgui_demo.cpp
@@ -84,6 +88,7 @@ target_link_libraries(${PROJECT_NAME}
     rurouni::libs
     glfw
     glad
+    msdf-atlas-gen::msdf-atlas-gen
     )
 
 target_include_directories(${PROJECT_NAME} 

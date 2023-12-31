@@ -2,13 +2,10 @@
 #define RR_EDITOR_H
 
 // editor
-#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/editor/ui.hpp"
-#include "rurouni/editor/ui_modals/error.hpp"
-#include "rurouni/editor/ui_modals/import_assets.hpp"
-#include "rurouni/editor/ui_modals/module_create.hpp"
 
 // rurouni
+#include "rurouni/core/asset_manager.hpp"
 #include "rurouni/core/module.hpp"
 #include "rurouni/core/scene.hpp"
 #include "rurouni/event/application_event.hpp"
@@ -45,24 +42,27 @@ class Editor : public event::Subscriber {
     void on_application_close_event(
         std::shared_ptr<event::ApplicationClose> event);
 
-   private:
-    void create_module(const system::Path& path, const std::string& name);
-    void import_module(const system::Path& path);
-    void open_module(const UUID& id);
+   private:  // function callbacks
+    void exit_application();
 
-    void read_module_history();
-    void write_module_history();
-    void cleanup_module_history();
+    bool create_module(const system::Path& path, const std::string& name);
+    bool import_module(const system::Path& path);
+    bool open_module(const UUID& id);
 
-    void change_scene(const system::Path& path);
-    void save_scene(const system::Path& path);
+    bool read_module_history();
+    bool write_module_history();
+    bool cleanup_module_history();
+
+    bool change_scene(const system::Path& path);
+    bool save_scene(const system::Path& path);
     void draw_scene();
 
-    void asset_import_texture(core::TextureSpecification& spec);
-    void asset_import_sprites(
+    bool asset_import_texture(core::TextureSpecification& spec);
+    bool asset_import_sprites(
         std::unordered_map<int, core::SpriteSpecification>& specs);
-    void asset_import_shader(core::ShaderSpecification& spec);
-    void asset_import_font(core::FontSpecification& spec);
+    bool asset_import_shader(core::ShaderSpecification& spec);
+    bool asset_import_font(ui::FontImportSpecification& fontInput,
+                           ui::FontImportConfiguration& config);
 
    private:
     // editor state
@@ -71,7 +71,6 @@ class Editor : public event::Subscriber {
     std::unordered_map<UUID, ModuleHistoryItem> m_ModuleHistory;
 
     // module state
-    UIState m_UIState;
     std::optional<core::Module> m_CurrentModule;
     std::unique_ptr<core::Scene> m_CurrentScene;
     std::unique_ptr<core::Scene> m_NextScene;
@@ -81,11 +80,6 @@ class Editor : public event::Subscriber {
     std::shared_ptr<event::EventSystem> m_EventSystem;
     std::shared_ptr<graphics::BatchRenderer> m_Renderer;
     std::shared_ptr<core::AssetManager> m_AssetManager;
-
-    // modals
-    std::unique_ptr<ui::ModuleCreateModal> m_ModuleCreateModal;
-    std::unique_ptr<ui::ErrorModal> m_ErrorModal;
-    std::unique_ptr<ui::ImportAssetsModal> m_ImportAssetsModal;
 
     // editor paths
     std::string m_AppName;

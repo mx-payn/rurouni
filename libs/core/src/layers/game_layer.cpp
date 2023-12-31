@@ -15,21 +15,11 @@ void GameLayer::on_render(graphics::BatchRenderer& renderer,
                           AssetManager& assetManager,
                           entt::registry& registry,
                           const SceneState& sceneState) {
-    // registry.view<components::Transform, components::Texture>().each(
-    //     [&renderer, &assetManager](entt::entity entity, auto& transform,
-    //                                      auto& texture) {
-    //         if (texture.TextureUUID.is_null())
-    //             return;
-    //         renderer.draw_texture(transform.get_transform(),
-    //                               assetManager.get_texture(texture.TextureUUID),
-    //                               static_cast<uint32_t>(entity));
-    //     });
-
     auto textureView =
         registry.view<components::Transform, components::Texture>();
     for (auto&& [entity, transform, texture] : textureView.each()) {
         if (texture.TextureUUID.is_null())
-            return;
+            continue;
 
         renderer.draw_texture(transform.get_transform(),
                               assetManager.get_texture(texture.TextureUUID),
