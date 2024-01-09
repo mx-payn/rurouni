@@ -49,6 +49,9 @@ struct FramebufferAttachementSpecification {
 struct FramebufferSpecification {
     FramebufferSpecification() = default;
 
+    std::string Name = "unnamed";
+    UUID Id;
+
     math::ivec2 size{0};
     FramebufferAttachementSpecification attachements{};
     uint32_t samples = 1;
@@ -72,9 +75,6 @@ class Framebuffer : public Texture {
     void unbind();
 
     uint32_t get_color_attachment_renderer_id(uint32_t index = 0) const;
-    virtual std::optional<uint32_t> get_renderer_id() const override {
-        return m_RendererID;
-    }
     uint32_t get_render_buffer_object() const { return m_RenderBufferObject; }
     const math::ivec2& get_size() const { return m_Specification.size; }
 
@@ -93,7 +93,6 @@ class Framebuffer : public Texture {
 
    private:
     FramebufferSpecification m_Specification;
-    uint32_t m_RendererID;
     uint32_t m_RenderBufferObject;
 
     std::unique_ptr<VertexArray> m_ScreenVA;

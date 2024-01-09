@@ -2,6 +2,9 @@
 #include "rurouni/sandbox.hpp"
 #include "rurouni/core/asset_manager.hpp"
 #include "rurouni/graphics/shader.hpp"
+#include "rurouni/graphics/sprite.hpp"
+#include "rurouni/graphics/spritesheet.hpp"
+#include "rurouni/graphics/texture.hpp"
 #include "rurouni/sandbox/config.h"
 #include "rurouni/sandbox/logger.hpp"
 
@@ -80,24 +83,30 @@ namespace rr {
         m_AssetManager = std::make_shared<core::AssetManager>(
             system::Path("/home/mx/Projects/rurouni/examples/test"));
 
-        core::TextureSpecification chernoSpec;
+        graphics::ImageTextureSpecification chernoSpec;
         chernoSpec.Id = UUID("69a85774-2c62-42b4-858d-14a9e2d48542");
         chernoSpec.Name = "cherno_logo";
         chernoSpec.Filepath = "textures/cherno_logo.png";
-        m_AssetManager->register_texture(chernoSpec);
+        m_AssetManager->register_image_texture(chernoSpec);
 
-        core::TextureSpecification frogblockSpec;
-        frogblockSpec.Name = "frogblock";
-        chernoSpec.Id = UUID("9aae02ee-22fe-4637-96fc-4a5ccab6f18a");
-        frogblockSpec.SpriteCount = math::ivec2(16);
-        frogblockSpec.Filepath = "textures/frogblock.png";
-        m_AssetManager->register_texture(frogblockSpec);
+        graphics::ImageTextureSpecification frogblockTextureSpec;
+        chernoSpec.Id = UUID("f7ba5907-bb8e-4009-a9cf-4e3dbd7f2645");
+        chernoSpec.Name = "frogblock_texture";
+        chernoSpec.Filepath = "textures/frogblock.png";
+        m_AssetManager->register_image_texture(frogblockTextureSpec);
 
-        core::SpriteSpecification spriteSpec;
+        graphics::SpritesheetSpecification frogblockSheetSpec;
+        frogblockSheetSpec.Name = "frogblock_sheet";
+        frogblockSheetSpec.Id = UUID("9aae02ee-22fe-4637-96fc-4a5ccab6f18a");
+        frogblockSheetSpec.TextureId = frogblockTextureSpec.Id;
+        frogblockSheetSpec.CellCount = math::ivec2(16);
+        m_AssetManager->register_spritesheet(frogblockSheetSpec);
+
+        graphics::SpriteSpecification spriteSpec;
         chernoSpec.Id = UUID("1a4222af-0d35-4fb2-b147-7e94f12ce2cd");
         spriteSpec.Name = "sword";
-        spriteSpec.TextureId = frogblockSpec.Id;
-        spriteSpec.Cell_Idx = math::ivec2(0, 1);
+        spriteSpec.SpritesheetId = frogblockSheetSpec.Id;
+        spriteSpec.CellIndex = math::ivec2(0, 1);
         m_AssetManager->register_sprite(spriteSpec);
 
         m_AssetManager->write_asset_configuration();

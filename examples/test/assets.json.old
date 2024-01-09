@@ -1,11 +1,11 @@
 {
     "image_textures": [
         {
-            "key": "8b1bc374-647a-41e6-8f26-8fe9d5317542",
+            "key": "1e9ce2f6-20f7-43dc-8353-812f445e37e0",
             "value": {
-                "name": "caskaydia_mono",
-                "id": "8b1bc374-647a-41e6-8f26-8fe9d5317542",
-                "filepath": "/home/mx/Projects/rurouni/examples/test/textures/cask_msdf.png",
+                "name": "cherno_logo",
+                "id": "1e9ce2f6-20f7-43dc-8353-812f445e37e0",
+                "filepath": "/home/mx/Projects/rurouni/examples/test/textures/cherno_logo.png",
                 "distance_field_type": 0
             }
         },
@@ -15,15 +15,6 @@
                 "name": "frogblock",
                 "id": "63e7b2fb-5ced-46f2-8d44-41c4f4485cbd",
                 "filepath": "/home/mx/Projects/rurouni/examples/test/textures/frogblock.png",
-                "distance_field_type": 0
-            }
-        },
-        {
-            "key": "1e9ce2f6-20f7-43dc-8353-812f445e37e0",
-            "value": {
-                "name": "cherno_logo",
-                "id": "1e9ce2f6-20f7-43dc-8353-812f445e37e0",
-                "filepath": "/home/mx/Projects/rurouni/examples/test/textures/cherno_logo.png",
                 "distance_field_type": 0
             }
         }
@@ -62,13 +53,13 @@
     ],
     "sprites": [
         {
-            "key": "e5027da4-6353-4a1d-812f-c86ef6dd1215",
+            "key": "449062f3-3309-467d-9610-f925bc150ad4",
             "value": {
-                "name": "x[1]y[1]",
-                "id": "e5027da4-6353-4a1d-812f-c86ef6dd1215",
+                "name": "x[0]y[1]",
+                "id": "449062f3-3309-467d-9610-f925bc150ad4",
                 "spritesheet_id": "db31368b-3232-4944-91c5-714196f091c0",
                 "cell_index": {
-                    "x": 1,
+                    "x": 0,
                     "y": 1
                 },
                 "cell_spread": {
@@ -78,13 +69,13 @@
             }
         },
         {
-            "key": "449062f3-3309-467d-9610-f925bc150ad4",
+            "key": "e5027da4-6353-4a1d-812f-c86ef6dd1215",
             "value": {
-                "name": "x[0]y[1]",
-                "id": "449062f3-3309-467d-9610-f925bc150ad4",
+                "name": "x[1]y[1]",
+                "id": "e5027da4-6353-4a1d-812f-c86ef6dd1215",
                 "spritesheet_id": "db31368b-3232-4944-91c5-714196f091c0",
                 "cell_index": {
-                    "x": 0,
+                    "x": 1,
                     "y": 1
                 },
                 "cell_spread": {

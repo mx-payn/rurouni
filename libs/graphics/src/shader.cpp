@@ -15,13 +15,15 @@ namespace rr::graphics {
 
 // TODO default shaders
 
-Shader::Shader(const system::Path& vertexPath,
-               const system::Path& fragmentPath) {
+Shader::Shader(const ShaderSpecification& spec)
+    : m_Name(spec.Name), m_Id(spec.Id) {
     uint32_t program = glCreateProgram();
 
-    compile_shader(vertexPath.filename(), get_shader_source(vertexPath),
-                   ShaderType::Vertex, program);
-    compile_shader(fragmentPath.filename(), get_shader_source(fragmentPath),
+    compile_shader(spec.VertexFilepath.filename(),
+                   get_shader_source(spec.VertexFilepath), ShaderType::Vertex,
+                   program);
+    compile_shader(spec.FragmentFilepath.filename(),
+                   get_shader_source(spec.FragmentFilepath),
                    ShaderType::Fragment, program);
 
     link_program(program);

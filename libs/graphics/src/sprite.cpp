@@ -3,23 +3,29 @@
 
 namespace rr::graphics {
 
-Sprite::Sprite(const glm::ivec2& index,
-               std::weak_ptr<Texture> spritesheet,
-               const UUID& uuid,
-               const math::ivec2& pxSize,
-               const std::array<math::vec2, 4>& uvCoords)
-    : Texture(this), m_Index(index), m_Spritesheet(spritesheet) {
-    m_UUID = uuid;
-    m_UVCoords = uvCoords;
-    m_Size = pxSize;
-}
+Sprite::Sprite(const SpriteSpecification& spec,
+               std::weak_ptr<Spritesheet> spritesheet)
+    : Texture(this, spec.Name, spec.Id),
+      m_CellIndex(spec.CellIndex),
+      m_CellSpread(spec.CellSpread),
+      m_Spritesheet(spritesheet) {
+    auto spritesheetPtr = spritesheet.lock();
 
-std::optional<uint32_t> Sprite::get_renderer_id() const {
-    if (m_Spritesheet.expired()) {
-        return {};
-    } else {
-        return m_Spritesheet.lock()->get_renderer_id();
-    }
+    m_Size.x = spritesheetPtr->get_cell_size_px().x * m_CellSpread.x;
+    m_Size.y = spritesheetPtr->get_cell_size_px().y * m_CellSpread.y;
+    m_RendererId = spritesheetPtr->get_renderer_id();
+    m_DistanceFieldType = spritesheetPtr->get_distance_field_type();
+
+    // following units are all UV
+    math::vec2 cellSize = spritesheetPtr->get_cell_size_uv();
+    math::vec2 min;
+    min.x = m_CellIndex.x * cellSize.x;
+    min.y = m_CellIndex.y * cellSize.y;
+    math::vec2 max;
+    max.x = min.x + cellSize.x;
+    max.y = min.y + cellSize.y;
+
+    m_TextureCoords = {min, {max.x, min.y}, max, {min.x, max.y}};
 }
 
 }  // namespace rr::graphics

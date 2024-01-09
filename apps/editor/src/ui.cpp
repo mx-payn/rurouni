@@ -12,6 +12,7 @@
 #include "rurouni/event/application_event.hpp"
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/graphics/font.hpp"
+#include "rurouni/graphics/spritesheet.hpp"
 #include "rurouni/graphics/texture.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/math.hpp"
@@ -129,18 +130,36 @@ void init(graphics::Window& window,
 
     // init icons
     // TODO FileOpen distinctive icon
-    g_rrContext->Icons.FileOpen = std::make_unique<graphics::Texture>(
-        sharedDataDir / "textures/icons/file-import.png");
-    g_rrContext->Icons.File = std::make_unique<graphics::Texture>(
-        sharedDataDir / "textures/icons/file.png");
-    g_rrContext->Icons.FileImport = std::make_unique<graphics::Texture>(
-        sharedDataDir / "textures/icons/file-import.png");
-    g_rrContext->Icons.Folder = std::make_unique<graphics::Texture>(
-        sharedDataDir / "textures/icons/folder.png");
-    g_rrContext->Icons.Save = std::make_unique<graphics::Texture>(
-        sharedDataDir / "textures/icons/floppy-pen.png");
-    g_rrContext->Icons.SquarePlus = std::make_unique<graphics::Texture>(
-        sharedDataDir / "textures/icons/square-plus.png");
+    g_rrContext->Icons.FileOpen =
+        std::make_unique<graphics::Texture>(graphics::ImageTextureSpecification{
+            "icon-file-open", UUID::create(),
+            sharedDataDir / "textures/icons/file-import.png",
+            graphics::TextureDistanceFieldType::None});
+    g_rrContext->Icons.File =
+        std::make_unique<graphics::Texture>(graphics::ImageTextureSpecification{
+            "icon-file", UUID::create(),
+            sharedDataDir / "textures/icons/file.png",
+            graphics::TextureDistanceFieldType::None});
+    g_rrContext->Icons.FileImport =
+        std::make_unique<graphics::Texture>(graphics::ImageTextureSpecification{
+            "icon-file-import", UUID::create(),
+            sharedDataDir / "textures/icons/file-import.png",
+            graphics::TextureDistanceFieldType::None});
+    g_rrContext->Icons.Folder =
+        std::make_unique<graphics::Texture>(graphics::ImageTextureSpecification{
+            "icon-folder", UUID::create(),
+            sharedDataDir / "textures/icons/folder.png",
+            graphics::TextureDistanceFieldType::None});
+    g_rrContext->Icons.Save =
+        std::make_unique<graphics::Texture>(graphics::ImageTextureSpecification{
+            "icon-floppy-pen", UUID::create(),
+            sharedDataDir / "textures/icons/floppy-pen.png",
+            graphics::TextureDistanceFieldType::None});
+    g_rrContext->Icons.SquarePlus =
+        std::make_unique<graphics::Texture>(graphics::ImageTextureSpecification{
+            "icon-square-plus", UUID::create(),
+            sharedDataDir / "textures/icons/square-plus.png",
+            graphics::TextureDistanceFieldType::None});
 
     // graphics context initialization
     const char* glsl_version = "#version 410";
@@ -470,10 +489,13 @@ void show_import_module_modal(
 
 void show_asset_manager(
     core::AssetManager& assetManager,
-    std::function<bool(core::TextureSpecification&)> importTextureFunc,
-    std::function<bool(std::unordered_map<int, core::SpriteSpecification>&)>
+    std::function<bool(graphics::ImageTextureSpecification&)>
+        importImageTextureFunc,
+    std::function<bool(graphics::SpritesheetSpecification&)>
+        importSpritesheetFunc,
+    std::function<bool(std::unordered_map<int, graphics::SpriteSpecification>&)>
         importSpritesFunc,
-    std::function<bool(core::ShaderSpecification&)> importShaderFunc,
+    std::function<bool(graphics::ShaderSpecification&)> importShaderFunc,
     std::function<bool(ui::FontImportSpecification&,
                        ui::FontImportConfiguration&)> importFontFunc) {
     if (!g_rrContext->ShowAssetManager)
@@ -483,23 +505,23 @@ void show_asset_manager(
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                               ImVec4(0.5, 0.5, 0.5, 0.8));
-        size_t image = g_rrContext->Icons.FileImport->get_renderer_id().value();
+        size_t image = g_rrContext->Icons.FileImport->get_renderer_id();
         if (ImGui::ImageButton((ImTextureID)image, g_rrContext->Style.IconSize,
                                {0, 0}, {1, 1})) {
             ImGui::OpenPopup("Import##Assets");
         }
         ImGui::SetItemTooltip("Open import asset modal");
         ImGui::PopStyleColor(2);
-        show_import_assets_modal(assetManager, importTextureFunc,
-                                 importSpritesFunc, importShaderFunc,
-                                 importFontFunc);
+        show_import_assets_modal(assetManager, importImageTextureFunc,
+                                 importSpritesheetFunc, importSpritesFunc,
+                                 importShaderFunc, importFontFunc);
 
         ImGui::SameLine();
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                               ImVec4(0.5, 0.5, 0.5, 0.8));
-        image = g_rrContext->Icons.Save->get_renderer_id().value();
+        image = g_rrContext->Icons.Save->get_renderer_id();
         if (ImGui::ImageButton((ImTextureID)image, g_rrContext->Style.IconSize,
                                {0, 0}, {1, 1})) {
             assetManager.write_asset_configuration();
@@ -511,15 +533,15 @@ void show_asset_manager(
 
         ImGui::BeginChild("contents");
 
-        if (ImGui::CollapsingHeader("Textures")) {
+        if (ImGui::CollapsingHeader("Texture")) {
             for (auto& [textureId, textureSpec] :
-                 assetManager.get_texture_registry()) {
+                 assetManager.get_image_texture_database()) {
                 ImGui::PushID(
                     textureId.to_string().append("##textures").c_str());
                 if (ImGui::Selectable(textureSpec.Name.c_str())) {
-                    ui::push_property_tab(
-                        PropertyTab(PropertyTabType::Texture, textureSpec.Name,
-                                    {textureSpec.Id}, textureSpec.Id));
+                    ui::push_property_tab(PropertyTab(PropertyTabType::Texture,
+                                                      {textureSpec.Id},
+                                                      textureSpec.Id));
                 }
 
                 if (ImGui::BeginDragDropSource()) {
@@ -533,31 +555,32 @@ void show_asset_manager(
             }
         }
 
+        // TODO DataTextures
+
         if (ImGui::CollapsingHeader("Sprites")) {
             std::unordered_map<
-                UUID, std::unordered_map<UUID, core::SpriteSpecification*>>
+                UUID, std::unordered_map<UUID, graphics::SpriteSpecification*>>
                 subTextureMap;
 
             for (auto& [spriteId, spriteSpec] :
-                 assetManager.get_sprite_registry()) {
-                subTextureMap[spriteSpec.TextureId][spriteId] = &spriteSpec;
+                 assetManager.get_sprite_database()) {
+                subTextureMap[spriteSpec.SpritesheetId][spriteId] = &spriteSpec;
             }
 
-            for (auto& [textureId, spriteEntry] : subTextureMap) {
-                ImGui::PushID(
-                    textureId.to_string().append("##sprites").c_str());
-                auto& textureSpec =
-                    assetManager.get_texture_registry()[textureId];
+            for (auto& [sheetId, spriteEntry] : subTextureMap) {
+                ImGui::PushID(sheetId.to_string().append("##sprites").c_str());
+                auto& sheetSpec =
+                    assetManager.get_spritesheet_database()[sheetId];
 
                 auto flags = ImGuiTreeNodeFlags_SpanFullWidth;
-                if (ImGui::TreeNodeEx(textureSpec.Name.c_str(), flags)) {
+                if (ImGui::TreeNodeEx(sheetSpec.Name.c_str(), flags)) {
                     for (auto& [spriteId, spriteSpecPtr] : spriteEntry) {
                         ImGui::PushID(
                             spriteId.to_string().append("##sprites").c_str());
                         if (ImGui::Selectable(spriteSpecPtr->Name.c_str())) {
                             ui::push_property_tab(PropertyTab(
-                                PropertyTabType::Sprite, spriteSpecPtr->Name,
-                                {spriteSpecPtr->Id}, spriteSpecPtr->Id));
+                                PropertyTabType::Sprite, {spriteSpecPtr->Id},
+                                spriteSpecPtr->Id));
                         }
 
                         if (ImGui::BeginDragDropSource()) {
@@ -578,17 +601,17 @@ void show_asset_manager(
         }
 
         if (ImGui::CollapsingHeader("Shaders")) {
-            for (auto& [k, v] : assetManager.get_shader_registry()) {
+            for (auto& [k, v] : assetManager.get_shader_database()) {
                 ImGui::Text("%s", v.Name.c_str());
             }
         }
 
         if (ImGui::CollapsingHeader("Fonts")) {
-            for (auto& [k, v] : assetManager.get_font_registry()) {
+            for (auto& [k, v] : assetManager.get_font_database()) {
                 ImGui::PushID(k.to_string().append("##fonts").c_str());
                 if (ImGui::Selectable(v.Name.c_str())) {
-                    ui::push_property_tab(PropertyTab(PropertyTabType::Font,
-                                                      v.Name, {v.Id}, v.Id));
+                    ui::push_property_tab(
+                        PropertyTab(PropertyTabType::Font, {v.Id}, v.Id));
                 }
 
                 ImGui::PopID();
@@ -603,13 +626,16 @@ void show_asset_manager(
 
 void show_import_assets_modal(
     core::AssetManager& assetManager,
-    std::function<bool(core::TextureSpecification&)> importTextureFunc,
-    std::function<bool(std::unordered_map<int, core::SpriteSpecification>&)>
+    std::function<bool(graphics::ImageTextureSpecification&)>
+        importImageTextureFunc,
+    std::function<bool(graphics::SpritesheetSpecification&)>
+        importSpritesheetFunc,
+    std::function<bool(std::unordered_map<int, graphics::SpriteSpecification>&)>
         importSpritesFunc,
-    std::function<bool(core::ShaderSpecification&)> importShaderFunc,
+    std::function<bool(graphics::ShaderSpecification&)> importShaderFunc,
     std::function<bool(ui::FontImportSpecification&,
                        ui::FontImportConfiguration&)> importFontFunc) {
-    static core::AssetType selectedTab = core::AssetType::Texture;
+    static size_t selectedTabTypeHash = typeid(graphics::Texture).hash_code();
 
     // Always center this window when appearing
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
@@ -620,24 +646,31 @@ void show_import_assets_modal(
     if (ImGui::BeginPopupModal("Import##Assets", NULL, flags)) {
         ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
         if (ImGui::BeginTabBar("Asset Type", tab_bar_flags)) {
+            // TODO how to handle data textures?
             if (ImGui::BeginTabItem("Texture")) {
-                selectedTab = core::AssetType::Texture;
-                // m_TextureTab->draw(m_AssetManagerRef);
-                show_import_assets_tab_texture(assetManager, importTextureFunc);
+                selectedTabTypeHash = typeid(graphics::Texture).hash_code();
+                show_import_assets_tab_texture(assetManager,
+                                               importImageTextureFunc);
+                ImGui::EndTabItem();
+            }
+            if (ImGui::BeginTabItem("Spritesheet")) {
+                selectedTabTypeHash = typeid(graphics::Texture).hash_code();
+                show_import_assets_tab_spritesheet(assetManager,
+                                                   importSpritesheetFunc);
                 ImGui::EndTabItem();
             }
             if (ImGui::BeginTabItem("Sprite")) {
-                selectedTab = core::AssetType::Sprite;
+                selectedTabTypeHash = typeid(graphics::Sprite).hash_code();
                 show_import_assets_tab_sprite(assetManager, importSpritesFunc);
                 ImGui::EndTabItem();
             }
             if (ImGui::BeginTabItem("Shader")) {
-                selectedTab = core::AssetType::Shader;
+                selectedTabTypeHash = typeid(graphics::Shader).hash_code();
                 show_import_assets_tab_shader(assetManager, importShaderFunc);
                 ImGui::EndTabItem();
             }
             if (ImGui::BeginTabItem("Font")) {
-                selectedTab = core::AssetType::Font;
+                selectedTabTypeHash = typeid(graphics::Font).hash_code();
                 show_import_assets_tab_font(assetManager, importFontFunc);
                 ImGui::EndTabItem();
             }
@@ -651,10 +684,11 @@ void show_import_assets_modal(
 
 void show_import_assets_tab_texture(
     core::AssetManager& assetManager,
-    std::function<bool(core::TextureSpecification&)> importTextureFunc) {
-    static core::TextureSpecification spec = core::TextureSpecification();
-    static math::ivec2 spriteCount = glm::ivec2(0.0f);
+    std::function<bool(graphics::ImageTextureSpecification&)>
+        importImageTextureFunc) {
     static std::unique_ptr<graphics::Texture> texture;
+    static graphics::ImageTextureSpecification spec;
+    static char path[256] = "";
 
     if (ImGui::BeginTable("Table##TextureImport", 3,
                           ImGuiTableFlags_SizingStretchProp)) {
@@ -670,21 +704,15 @@ void show_import_assets_tab_texture(
             spec.Name = std::string(name);
         }
 
-        char path[256] = "";
-        memset(path, 0, sizeof(path));
-        strcpy(path, spec.Filepath.c_str());
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         ImGui::Text("Path");
         ImGui::TableNextColumn();
         ImGui::SetNextItemWidth(-FLT_MIN);
         if (ImGui::InputText("##Path", path, 256)) {
-            spec.Filepath = std::string(path);
-
-            if (system::exists(spec.Filepath) &&
-                system::is_regular_file(spec.Filepath) &&
-                spec.Filepath.extension() == ".png") {
-                texture = std::make_unique<graphics::Texture>(spec.Filepath);
+            if (system::exists(path) && system::is_regular_file(path) &&
+                system::Path(path).extension() == ".png") {
+                texture = std::make_unique<graphics::Texture>(spec);
             } else {
                 texture.reset();
             }
@@ -699,13 +727,11 @@ void show_import_assets_tab_texture(
             std::string result =
                 system::execute_command("zenity --file-selection");
             result.copy(path, result.size());
-            spec.Filepath = result;
 
-            if (system::exists(spec.Filepath) &&
-                system::is_regular_file(spec.Filepath) &&
-                spec.Filepath.extension() == ".png") {
-                texture.reset();
-                texture = std::make_unique<graphics::Texture>(spec.Filepath);
+            if (system::exists(path) && system::is_regular_file(path) &&
+                system::Path(path).extension() == ".png") {
+                spec.Filepath = system::Path(path);
+                texture = std::make_unique<graphics::Texture>(spec);
             } else {
                 texture.reset();
             }
@@ -716,26 +742,12 @@ void show_import_assets_tab_texture(
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text("Sprite Count");
-        ImGui::TableNextColumn();
-        ImGui::SetNextItemWidth(240.0f);
-        if (ImGui::DragInt2("##SpriteCount", math::value_ptr(spriteCount),
-                            0.25f, 0, std::numeric_limits<int32_t>::max())) {
-            if (spriteCount == glm::ivec2(0.0f)) {
-                spec.SpriteCount = {};
-            } else {
-                spec.SpriteCount = spriteCount;
-            }
-        }
-
-        ImGui::TableNextRow();
-        ImGui::TableNextColumn();
         ImGui::Text("Preview");
         if (texture != nullptr) {
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(240.0f);
 
-            size_t textureId = texture->get_renderer_id().value();
+            size_t textureId = texture->get_renderer_id();
             auto textureSize = texture->get_size();
             ImVec2 uv_min = ImVec2(0.0f, 0.0f);  // Top-left
             ImVec2 uv_max = ImVec2(1.0f, 1.0f);  // Lower-right
@@ -752,11 +764,10 @@ void show_import_assets_tab_texture(
     ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.0f);
 
     if (ImGui::Button("OK", ImVec2(120, 0))) {
-        bool success = importTextureFunc(spec);
+        bool success = importImageTextureFunc(spec);
 
         if (success) {
-            spec = core::TextureSpecification();
-            spriteCount = glm::ivec2(0.0f);
+            spec = graphics::ImageTextureSpecification();
             texture.reset();
             ImGui::CloseCurrentPopup();
         } else {
@@ -769,52 +780,187 @@ void show_import_assets_tab_texture(
     ImGui::SameLine();
 
     if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-        spec = core::TextureSpecification();
-        spriteCount = glm::ivec2(0.0f);
+        spec = graphics::ImageTextureSpecification();
         texture.reset();
+        ImGui::CloseCurrentPopup();
+    }
+}
+
+void show_import_assets_tab_spritesheet(
+    core::AssetManager& assetManager,
+    std::function<bool(graphics::SpritesheetSpecification&)>
+        importSpritesheetFunc) {
+    static graphics::SpritesheetSpecification spec;
+    static std::string previewStr = "select texture";
+
+    if (ImGui::BeginTable("Table##TextureImport", 3,
+                          ImGuiTableFlags_SizingStretchProp)) {
+        char name[32] = "";
+        memset(name, 0, sizeof(name));
+        strcpy(name, spec.Name.c_str());
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::Text("Name");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        if (ImGui::InputText("##Name", name, 32)) {
+            spec.Name = std::string(name);
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::Text("Cell Count");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        // TODO doesn't clamp
+        if (ImGui::DragInt2("##CellCount", math::value_ptr(spec.CellCount), 1,
+                            0)) {
+        }
+
+        {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Texture");
+            ImGui::TableNextColumn();
+            auto& texSpecs = assetManager.get_image_texture_database();
+            if (ImGui::BeginCombo("##Type", previewStr.c_str())) {
+                for (auto& [id, texSpec] : texSpecs) {
+                    const bool is_selected = (id == spec.TextureId);
+                    if (ImGui::Selectable(texSpec.Name.c_str(), is_selected)) {
+                        spec.TextureId = id;
+                        previewStr = texSpec.Name;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling +
+                    // keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+        }
+
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::Text("Preview");
+        if (assetManager.has_image_texture_specification(spec.TextureId)) {
+            auto texturePtr = assetManager.get_texture(spec.TextureId).lock();
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(240.0f);
+
+            size_t textureId = texturePtr->get_renderer_id();
+            auto textureSize = texturePtr->get_size();
+            ImVec2 uv_min = ImVec2(0.0f, 0.0f);  // Top-left
+            ImVec2 uv_max = ImVec2(1.0f, 1.0f);  // Lower-right
+            float ar = (float)textureSize.x / (float)textureSize.y;
+            textureSize.x = 240.0f;
+            textureSize.y = 240.0f * ar;
+
+            ImVec2 imagePosition = ImGui::GetCursorScreenPos();
+            ImGui::SetNextItemAllowOverlap();
+            ImGui::Image((ImTextureID)textureId,
+                         ImVec2(textureSize.x, textureSize.y), uv_min, uv_max);
+
+            /////// grid
+            float spriteSizeX = (float)textureSize.x / spec.CellCount.x;
+            float spriteSizeY = (float)textureSize.y / spec.CellCount.y;
+
+            float positionX = imagePosition.x;
+            float positionY = imagePosition.y;
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
+            ImGui::PushStyleColor(ImGuiCol_Border,
+                                  ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_Button,
+                                  (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                                  (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+                                  (ImVec4)ImColor(0.0f, 0.0f, 0.0f, 0.0f));
+            for (int y = 0; y < spec.CellCount.y; y++) {
+                for (int x = 0; x < spec.CellCount.x; x++) {
+                    int index = (y * spec.CellCount.x) + x;
+
+                    ImGui::SetCursorScreenPos(ImVec2(positionX, positionY));
+                    ImGui::PushID(fmt::format("{}{}", x, y).c_str());
+                    if (ImGui::Button("##button",
+                                      ImVec2(spriteSizeX, spriteSizeY))) {
+                    }
+                    ImGui::PopID();
+
+                    positionX += spriteSizeX;
+                }
+                positionX = imagePosition.x;
+                positionY += spriteSizeY;
+            }
+            ImGui::PopStyleColor(4);
+            ImGui::PopStyleVar(1);
+        }
+
+        ImGui::EndTable();
+    }
+
+    ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.0f);
+
+    if (ImGui::Button("OK", ImVec2(120, 0))) {
+        bool success = importSpritesheetFunc(spec);
+
+        if (success) {
+            spec = graphics::SpritesheetSpecification();
+            previewStr = "select texture";
+            ImGui::CloseCurrentPopup();
+        } else {
+            push_toast(Toast(
+                ToastType::Error, "import texture",
+                "failed importing texture. see log for more information."));
+        }
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+        spec = graphics::SpritesheetSpecification();
+        previewStr = "select texture";
         ImGui::CloseCurrentPopup();
     }
 }
 
 void show_import_assets_tab_sprite(
     core::AssetManager& assetManager,
-    std::function<bool(std::unordered_map<int, core::SpriteSpecification>&)>
+    std::function<bool(std::unordered_map<int, graphics::SpriteSpecification>&)>
         importSpritesFunc) {
-    static std::unordered_map<int, core::SpriteSpecification> markedSpritesMap;
-    static std::unordered_map<int, core::SpriteSpecification>
+    static std::unordered_map<int, graphics::SpriteSpecification>
+        markedSpritesMap;
+    static std::unordered_map<int, graphics::SpriteSpecification>
         existingSpritesMap;
-    static std::optional<core::TextureSpecification> selectedTextureSpec;
-    static std::optional<core::SpriteSpecification> selectedSpriteSpec;
+    static std::optional<graphics::SpritesheetSpecification> selectedSheetSpec;
+    static std::optional<graphics::SpriteSpecification> selectedSpriteSpec;
 
     ImGui::BeginGroup();
 
     // texture selection
-    std::string comboHint = selectedTextureSpec.has_value()
-                                ? selectedTextureSpec->Name
+    std::string comboHint = selectedSheetSpec.has_value()
+                                ? selectedSheetSpec->Name
                                 : "Select Texture";
     if (ImGui::BeginCombo("Spritesheet", comboHint.c_str())) {
-        for (const auto& [id, texSpec] : assetManager.get_texture_registry()) {
-            // if texture has no sprites, dont show it
-            if (!texSpec.SpriteCount.has_value())
-                continue;
+        for (const auto& [id, sheetSpec] :
+             assetManager.get_spritesheet_database()) {
+            const bool is_selected = (selectedSheetSpec.has_value()) &&
+                                     (selectedSheetSpec->Id == id);
+            if (ImGui::Selectable(sheetSpec.Name.c_str(), is_selected)) {
+                selectedSheetSpec = sheetSpec;
 
-            const bool is_selected = (selectedTextureSpec.has_value()) &&
-                                     (selectedTextureSpec->Id == id);
-            if (ImGui::Selectable(texSpec.Name.c_str(), is_selected)) {
-                selectedTextureSpec = texSpec;
-
-                auto& spriteRegistry = assetManager.get_sprite_registry();
+                auto& spriteRegistry = assetManager.get_sprite_database();
 
                 // copy existing specs into local specMap
                 for (auto& [k, v] : spriteRegistry) {
                     // TODO make != operator for UUID
-                    if (!(v.TextureId == selectedTextureSpec->Id))
+                    if (!(v.SpritesheetId == selectedSheetSpec->Id))
                         continue;
 
                     // calculate single digit index inside texture
                     int index =
-                        (v.Cell_Idx.y * selectedTextureSpec->SpriteCount->x) +
-                        v.Cell_Idx.x;
+                        (v.CellIndex.y * selectedSheetSpec->CellCount.x) +
+                        v.CellIndex.x;
                     existingSpritesMap[index] = v;
                 }
             }
@@ -873,20 +1019,21 @@ void show_import_assets_tab_sprite(
     ImGui::EndGroup();
 
     // draw nothing else, if there are no sprites in texture
-    if (!selectedTextureSpec.has_value())
+    if (!selectedSheetSpec.has_value())
         return;
 
     ImGui::SameLine();
 
-    int spriteCountX = selectedTextureSpec->SpriteCount->x;
-    int spriteCountY = selectedTextureSpec->SpriteCount->y;
+    int spriteCountX = selectedSheetSpec->CellCount.x;
+    int spriteCountY = selectedSheetSpec->CellCount.y;
     float spriteSizeX_uv = 1.0f / spriteCountX;
     float spriteSizeY_uv = 1.0f / spriteCountY;
 
     // draw image
-    auto texture = assetManager.get_texture(selectedTextureSpec->Id).lock();
+    auto texture =
+        assetManager.get_texture(selectedSheetSpec->TextureId).lock();
     // TODO has_value() check?
-    size_t textureId = texture->get_renderer_id().value();
+    size_t textureId = texture->get_renderer_id();
     auto textureSize = texture->get_size();
     ImVec2 uv_min = ImVec2(0.0f, 0.0f);  // Top-left
     ImVec2 uv_max = ImVec2(1.0f, 1.0f);  // Lower-right
@@ -905,8 +1052,8 @@ void show_import_assets_tab_sprite(
                  uv_max);
 
     // TODO not-hardcoded values
-    float spriteSizeX = 512.0f / selectedTextureSpec->SpriteCount->x;
-    float spriteSizeY = 512.0f / selectedTextureSpec->SpriteCount->y;
+    float spriteSizeX = 512.0f / selectedSheetSpec->CellCount.x;
+    float spriteSizeY = 512.0f / selectedSheetSpec->CellCount.y;
 
     float positionX = imagePosition.x;
     float positionY = imagePosition.y;
@@ -949,11 +1096,11 @@ void show_import_assets_tab_sprite(
             if (ImGui::Button("##button", ImVec2(spriteSizeX, spriteSizeY))) {
                 if (!isInExistingMap && !isInMarkedMap) {  // add sprite to map
                     // flipped y index
-                    core::SpriteSpecification spec;
+                    graphics::SpriteSpecification spec;
                     spec.Name = fmt::format("x[{}]y[{}]", x, y);
                     spec.Id = UUID::create();
-                    spec.Cell_Idx = math::ivec2(x, y);
-                    spec.TextureId = selectedTextureSpec->Id;
+                    spec.CellIndex = math::ivec2(x, y);
+                    spec.SpritesheetId = selectedSheetSpec->Id;
                     spec.CellSpread = math::ivec2(1.0f);
 
                     markedSpritesMap[index] = spec;
@@ -981,7 +1128,7 @@ void show_import_assets_tab_sprite(
         bool success = importSpritesFunc(markedSpritesMap);
 
         if (success) {
-            selectedTextureSpec = std::nullopt;
+            selectedSheetSpec = std::nullopt;
             selectedSpriteSpec = std::nullopt;
             markedSpritesMap.clear();
             existingSpritesMap.clear();
@@ -996,7 +1143,7 @@ void show_import_assets_tab_sprite(
     ImGui::SameLine();
 
     if (ImGui::Button("Cancel", ImVec2(120, 0))) {
-        selectedTextureSpec = std::nullopt;
+        selectedSheetSpec = std::nullopt;
         selectedSpriteSpec = std::nullopt;
         markedSpritesMap.clear();
         existingSpritesMap.clear();
@@ -1207,9 +1354,9 @@ void show_import_assets_tab_font(
 
 void show_import_assets_tab_shader(
     core::AssetManager& assetManager,
-    std::function<bool(core::ShaderSpecification&)> importShaderFunc) {
+    std::function<bool(graphics::ShaderSpecification&)> importShaderFunc) {
     if (ImGui::Button("OK", ImVec2(120, 0))) {
-        core::ShaderSpecification spec;
+        graphics::ShaderSpecification spec;
         bool success = importShaderFunc(spec);
 
         if (success) {
@@ -1258,8 +1405,8 @@ void show_scene_manager(core::Scene& scene,
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
                               ImVec4(0.5, 0.5, 0.5, 0.8));
 
-        size_t textureId = static_cast<size_t>(
-            g_rrContext->Icons.Save->get_renderer_id().value());
+        size_t textureId =
+            static_cast<size_t>(g_rrContext->Icons.Save->get_renderer_id());
         if (ImGui::ImageButton((ImTextureID)textureId,
                                g_rrContext->Style.IconSize, {0, 0}, {1, 1})) {
             saveSceneFn("");
@@ -1320,8 +1467,7 @@ void show_scene_manager(core::Scene& scene,
                                 g_rrContext->SelectedEntity.value() == entityId;
                 if (ImGui::Selectable(identifier.Name.c_str(), selected)) {
                     push_property_tab(PropertyTab(PropertyTabType::Entity,
-                                                  identifier.Name, {entityId},
-                                                  identifier.Uuid));
+                                                  {entityId}, identifier.Uuid));
                 }
 
                 // popup when right clicking on entity
@@ -1381,33 +1527,29 @@ void show_properties(entt::registry& registry,
                 }
 
                 bool open = true;
-                if (ImGui::BeginTabItem(iter->Name.c_str(), &open, flags)) {
-                    switch (iter->Type) {
-                        case PropertyTabType::Entity:
-                            show_property_tab_entity(iter->Data.Entity,
-                                                     registry, assetManager);
-                            break;
-                        case PropertyTabType::Texture:
-                            show_property_tab_texture(iter->Data.AssetId,
-                                                      assetManager);
-                            break;
-                        case PropertyTabType::Sprite:
-                            show_property_tab_sprite(iter->Data.AssetId,
-                                                     assetManager);
-                            break;
-                        case PropertyTabType::Font:
-                            show_property_tab_font(iter->Data.AssetId,
-                                                   assetManager);
-                            break;
-                        case PropertyTabType::Shader:
-                            show_property_tab_shader();
-                            break;
-                        default:
-                            require(false, "unhandled property tab");
-                            break;
-                    }
-
-                    ImGui::EndTabItem();
+                switch (iter->Type) {
+                    case PropertyTabType::Entity:
+                        show_property_tab_entity(iter->Data.Entity, registry,
+                                                 assetManager, open, flags);
+                        break;
+                    case PropertyTabType::Texture:
+                        show_property_tab_texture(iter->Data.AssetId,
+                                                  assetManager, open, flags);
+                        break;
+                    case PropertyTabType::Sprite:
+                        show_property_tab_sprite(iter->Data.AssetId,
+                                                 assetManager, open, flags);
+                        break;
+                    case PropertyTabType::Font:
+                        show_property_tab_font(iter->Data.AssetId, assetManager,
+                                               open, flags);
+                        break;
+                    case PropertyTabType::Shader:
+                        show_property_tab_shader();
+                        break;
+                    default:
+                        require(false, "unhandled property tab");
+                        break;
                 }
 
                 if (!open) {
@@ -1471,436 +1613,270 @@ void remove_property_tab(PropertyTabType type,
 
 void show_property_tab_entity(entt::entity entity,
                               entt::registry& registry,
-                              core::AssetManager& assetManager) {
+                              core::AssetManager& assetManager,
+                              bool& open,
+                              ImGuiSelectableFlags flags) {
     auto& identification = registry.get<core::components::Identifier>(entity);
     ImGui::PushID(identification.Uuid.to_string().c_str());
 
-    ImGui::PushStyleVar(ImGuiStyleVar_SeparatorTextBorderSize, 5.0f);
+    if (ImGui::BeginTabItem(identification.Name.c_str(), &open, flags)) {
+        ImGui::PushStyleVar(ImGuiStyleVar_SeparatorTextBorderSize, 5.0f);
 
-    // header buttons
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5, 0.5, 0.5, 0.8));
+        // header buttons
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+                              ImVec4(0.5, 0.5, 0.5, 0.8));
 
-    size_t textureId = static_cast<size_t>(
-        g_rrContext->Icons.SquarePlus->get_renderer_id().value());
-    if (ImGui::ImageButton((ImTextureID)textureId, g_rrContext->Style.IconSize,
-                           {0, 0}, {1, 1})) {
-        ImGui::OpenPopup("AddComponent");
-    }
-    ImGui::SetItemTooltip("Add Component");
-    ImGui::PopStyleColor(2);
-
-    if (ImGui::BeginPopup("AddComponent")) {
-        if (ImGui::MenuItem("Identifier")) {
-            registry.emplace<core::components::Identifier>(entity);
-            ImGui::CloseCurrentPopup();
+        size_t textureId = static_cast<size_t>(
+            g_rrContext->Icons.SquarePlus->get_renderer_id());
+        if (ImGui::ImageButton((ImTextureID)textureId,
+                               g_rrContext->Style.IconSize, {0, 0}, {1, 1})) {
+            ImGui::OpenPopup("AddComponent");
         }
-        if (ImGui::MenuItem("Orthographic Projection")) {
-            registry.emplace<core::components::OrthographicProjection>(entity);
-            ImGui::CloseCurrentPopup();
-        }
-        if (ImGui::MenuItem("Transform")) {
-            registry.emplace<core::components::Transform>(entity);
-            ImGui::CloseCurrentPopup();
-        }
-        if (ImGui::MenuItem("Texture")) {
-            registry.emplace<core::components::Texture>(entity);
-            ImGui::CloseCurrentPopup();
-        }
+        ImGui::SetItemTooltip("Add Component");
+        ImGui::PopStyleColor(2);
 
-        ImGui::EndPopup();
-    }
-
-    ImGui::SeparatorText("Identification");
-
-    // identification component
-    char buffer[32];
-    memset(buffer, 0, sizeof(buffer));
-    strcpy(buffer, identification.Name.c_str());
-    if (ImGui::InputText("Tag##Tag", buffer, sizeof(buffer))) {
-        identification.Name = std::string(buffer);
-    }
-    ImGui::Text("%s", identification.Uuid.to_string().c_str());
-
-    ImGui::SeparatorText("Components");
-
-    if (ImGui::BeginTable("components", 2)) {
-        ImGui::TableSetupColumn("component",
-                                ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn("remove", ImGuiTableColumnFlags_WidthFixed);
-
-        // transform
-        auto transform = registry.try_get<core::components::Transform>(entity);
-        if (transform != nullptr) {
-            ImGui::PushID(std::string("transform##")
-                              .append(identification.Uuid.to_string())
-                              .c_str());
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-
-            if (ImGui::CollapsingHeader("Transform")) {
-                ImGui::PushStyleColor(ImGuiCol_FrameBg,
-                                      ImVec4(40.0f / 255.0f, 42.0f / 255.0f,
-                                             54.0f / 255.0f, 1.0f));
-
-                glm::vec3 translation = transform->get_translation();
-                if (ImGui::DragFloat3(
-                        "Translation", math::value_ptr(translation), 1.0f,
-                        -std::numeric_limits<float>::max(),
-                        std::numeric_limits<float>::max(), "%0.f")) {
-                    transform->set_translation(translation);
-                }
-
-                glm::vec3 scale = transform->get_scale();
-                if (ImGui::DragFloat3("Scale", math::value_ptr(scale), 1.0f,
-                                      -std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max(),
-                                      "%0.f")) {
-                    transform->set_scale(scale);
-                }
-
-                glm::vec3 degrees = math::degrees(transform->get_rotation());
-                if (ImGui::DragFloat3("Rotation", math::value_ptr(degrees),
-                                      1.0f, -std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max(), "%0.f",
-                                      ImGuiSliderFlags_NoRoundToFormat)) {
-                    transform->set_rotation(math::radians(degrees));
-                }
-
-                ImGui::PopStyleColor();
+        if (ImGui::BeginPopup("AddComponent")) {
+            if (ImGui::MenuItem("Identifier")) {
+                registry.emplace<core::components::Identifier>(entity);
+                ImGui::CloseCurrentPopup();
             }
-
-            ImGui::TableNextColumn();
-            ImGui::PushFont(g_rrContext->Fonts.Icon);
-            if (ImGui::Button(ICON_FA_TIMES)) {
-                registry.remove<core::components::Transform>(entity);
-            }
-            ImGui::PopFont();
-
-            ImGui::PopID();
-        }
-
-        // texture
-        auto texture = registry.try_get<core::components::Texture>(entity);
-        if (texture != nullptr) {
-            ImGui::PushID(std::string("texture##")
-                              .append(identification.Uuid.to_string())
-                              .c_str());
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-
-            if (ImGui::CollapsingHeader("Texture")) {
-                ImGui::PushStyleColor(ImGuiCol_FrameBg,
-                                      ImVec4(40.0f / 255.0f, 42.0f / 255.0f,
-                                             54.0f / 255.0f, 1.0f));
-
-                char buffer[256];
-                memset(buffer, 0, sizeof(buffer));
-                strcpy(buffer, texture->TextureUUID.to_string().c_str());
-                if (ImGui::InputText("UUID", buffer, sizeof(buffer))) {
-                    texture->TextureUUID = UUID(std::string(buffer));
-                }
-
-                if (ImGui::BeginDragDropTarget()) {
-                    if (const ImGuiPayload* payload =
-                            ImGui::AcceptDragDropPayload(
-                                "TEXTURE_SPECIFICATION")) {
-                        require(payload->DataSize ==
-                                    sizeof(core::TextureSpecification),
-                                "errororororo");
-                        core::TextureSpecification spec =
-                            *(const core::TextureSpecification*)payload->Data;
-
-                        texture->TextureUUID = spec.Id;
-                    }
-                    if (const ImGuiPayload* payload =
-                            ImGui::AcceptDragDropPayload(
-                                "SPRITE_SPECIFICATION")) {
-                        require(payload->DataSize ==
-                                    sizeof(core::SpriteSpecification),
-                                "errororororo");
-                        core::SpriteSpecification spec =
-                            *(const core::SpriteSpecification*)payload->Data;
-
-                        texture->TextureUUID = spec.Id;
-                    }
-                    ImGui::EndDragDropTarget();
-                }
-
-                ImGui::PopStyleColor();
-            }
-
-            ImGui::TableNextColumn();
-
-            ImGui::PushFont(g_rrContext->Fonts.Icon);
-            if (ImGui::Button(ICON_FA_TIMES)) {
-                registry.remove<core::components::Texture>(entity);
-            }
-            ImGui::PopFont();
-
-            ImGui::PopID();
-        }
-
-        // ortho projection
-        auto orthoProjection =
-            registry.try_get<core::components::OrthographicProjection>(entity);
-        if (orthoProjection != nullptr) {
-            ImGui::PushID(std::string("ortho_projection##")
-                              .append(identification.Uuid.to_string())
-                              .c_str());
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-
-            if (ImGui::CollapsingHeader("Orthographic Projection")) {
-                ImGui::PushStyleColor(ImGuiCol_FrameBg,
-                                      ImVec4(40.0f / 255.0f, 42.0f / 255.0f,
-                                             54.0f / 255.0f, 1.0f));
-
-                float size = orthoProjection->get_size();
-                if (ImGui::DragFloat("Size", &size, 0.05f, 0.01f, 50.0f, "%.3f",
-                                     ImGuiSliderFlags_AlwaysClamp)) {
-                    orthoProjection->set_size(size);
-                }
-
-                float near = orthoProjection->get_near_clip();
-                if (ImGui::DragFloat("Near Clip", &near, 0.05f)) {
-                    orthoProjection->set_near_clip(near);
-                }
-
-                float far = orthoProjection->get_far_clip();
-                if (ImGui::DragFloat("Far Clip", &far, 0.05f)) {
-                    orthoProjection->set_far_clip(far);
-                }
-
-                ImGui::PopStyleColor();
-            }
-
-            ImGui::TableNextColumn();
-
-            ImGui::PushFont(g_rrContext->Fonts.Icon);
-            if (ImGui::Button(ICON_FA_TIMES)) {
-                registry.remove<core::components::OrthographicProjection>(
+            if (ImGui::MenuItem("Orthographic Projection")) {
+                registry.emplace<core::components::OrthographicProjection>(
                     entity);
+                ImGui::CloseCurrentPopup();
             }
-            ImGui::PopFont();
+            if (ImGui::MenuItem("Transform")) {
+                registry.emplace<core::components::Transform>(entity);
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::MenuItem("Texture")) {
+                registry.emplace<core::components::Texture>(entity);
+                ImGui::CloseCurrentPopup();
+            }
 
-            ImGui::PopID();
+            ImGui::EndPopup();
         }
 
-        ImGui::EndTable();
+        ImGui::SeparatorText("Identification");
+
+        // identification component
+        char buffer[32];
+        memset(buffer, 0, sizeof(buffer));
+        strcpy(buffer, identification.Name.c_str());
+        if (ImGui::InputText("Tag##Tag", buffer, sizeof(buffer))) {
+            identification.Name = std::string(buffer);
+        }
+        ImGui::Text("%s", identification.Uuid.to_string().c_str());
+
+        ImGui::SeparatorText("Components");
+
+        if (ImGui::BeginTable("components", 2)) {
+            ImGui::TableSetupColumn("component",
+                                    ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("remove", ImGuiTableColumnFlags_WidthFixed);
+
+            // transform
+            auto transform =
+                registry.try_get<core::components::Transform>(entity);
+            if (transform != nullptr) {
+                ImGui::PushID(std::string("transform##")
+                                  .append(identification.Uuid.to_string())
+                                  .c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                if (ImGui::CollapsingHeader("Transform")) {
+                    ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                                          ImVec4(40.0f / 255.0f, 42.0f / 255.0f,
+                                                 54.0f / 255.0f, 1.0f));
+
+                    glm::vec3 translation = transform->get_translation();
+                    if (ImGui::DragFloat3(
+                            "Translation", math::value_ptr(translation), 1.0f,
+                            -std::numeric_limits<float>::max(),
+                            std::numeric_limits<float>::max(), "%0.f")) {
+                        transform->set_translation(translation);
+                    }
+
+                    glm::vec3 scale = transform->get_scale();
+                    if (ImGui::DragFloat3("Scale", math::value_ptr(scale), 1.0f,
+                                          -std::numeric_limits<float>::max(),
+                                          std::numeric_limits<float>::max(),
+                                          "%0.f")) {
+                        transform->set_scale(scale);
+                    }
+
+                    glm::vec3 degrees =
+                        math::degrees(transform->get_rotation());
+                    if (ImGui::DragFloat3(
+                            "Rotation", math::value_ptr(degrees), 1.0f,
+                            -std::numeric_limits<float>::max(),
+                            std::numeric_limits<float>::max(), "%0.f",
+                            ImGuiSliderFlags_NoRoundToFormat)) {
+                        transform->set_rotation(math::radians(degrees));
+                    }
+
+                    ImGui::PopStyleColor();
+                }
+
+                ImGui::TableNextColumn();
+                ImGui::PushFont(g_rrContext->Fonts.Icon);
+                if (ImGui::Button(ICON_FA_TIMES)) {
+                    registry.remove<core::components::Transform>(entity);
+                }
+                ImGui::PopFont();
+
+                ImGui::PopID();
+            }
+
+            // texture
+            auto texture = registry.try_get<core::components::Texture>(entity);
+            if (texture != nullptr) {
+                ImGui::PushID(std::string("texture##")
+                                  .append(identification.Uuid.to_string())
+                                  .c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                if (ImGui::CollapsingHeader("Texture")) {
+                    ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                                          ImVec4(40.0f / 255.0f, 42.0f / 255.0f,
+                                                 54.0f / 255.0f, 1.0f));
+
+                    char buffer[256];
+                    memset(buffer, 0, sizeof(buffer));
+                    strcpy(buffer, texture->TextureUUID.to_string().c_str());
+                    if (ImGui::InputText("UUID", buffer, sizeof(buffer))) {
+                        texture->TextureUUID = UUID(std::string(buffer));
+                    }
+
+                    if (ImGui::BeginDragDropTarget()) {
+                        if (const ImGuiPayload* payload =
+                                ImGui::AcceptDragDropPayload(
+                                    "TEXTURE_SPECIFICATION")) {
+                            require(
+                                payload->DataSize ==
+                                    sizeof(graphics::ImageTextureSpecification),
+                                "errororororo");
+                            graphics::ImageTextureSpecification spec =
+                                *(const graphics::ImageTextureSpecification*)
+                                     payload->Data;
+
+                            texture->TextureUUID = spec.Id;
+                        }
+                        if (const ImGuiPayload* payload =
+                                ImGui::AcceptDragDropPayload(
+                                    "SPRITE_SPECIFICATION")) {
+                            require(payload->DataSize ==
+                                        sizeof(graphics::SpriteSpecification),
+                                    "errororororo");
+                            graphics::SpriteSpecification spec =
+                                *(const graphics::SpriteSpecification*)
+                                     payload->Data;
+
+                            texture->TextureUUID = spec.Id;
+                        }
+                        ImGui::EndDragDropTarget();
+                    }
+
+                    ImGui::PopStyleColor();
+                }
+
+                ImGui::TableNextColumn();
+
+                ImGui::PushFont(g_rrContext->Fonts.Icon);
+                if (ImGui::Button(ICON_FA_TIMES)) {
+                    registry.remove<core::components::Texture>(entity);
+                }
+                ImGui::PopFont();
+
+                ImGui::PopID();
+            }
+
+            // ortho projection
+            auto orthoProjection =
+                registry.try_get<core::components::OrthographicProjection>(
+                    entity);
+            if (orthoProjection != nullptr) {
+                ImGui::PushID(std::string("ortho_projection##")
+                                  .append(identification.Uuid.to_string())
+                                  .c_str());
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+
+                if (ImGui::CollapsingHeader("Orthographic Projection")) {
+                    ImGui::PushStyleColor(ImGuiCol_FrameBg,
+                                          ImVec4(40.0f / 255.0f, 42.0f / 255.0f,
+                                                 54.0f / 255.0f, 1.0f));
+
+                    float size = orthoProjection->get_size();
+                    if (ImGui::DragFloat("Size", &size, 0.05f, 0.01f, 50.0f,
+                                         "%.3f",
+                                         ImGuiSliderFlags_AlwaysClamp)) {
+                        orthoProjection->set_size(size);
+                    }
+
+                    float near = orthoProjection->get_near_clip();
+                    if (ImGui::DragFloat("Near Clip", &near, 0.05f)) {
+                        orthoProjection->set_near_clip(near);
+                    }
+
+                    float far = orthoProjection->get_far_clip();
+                    if (ImGui::DragFloat("Far Clip", &far, 0.05f)) {
+                        orthoProjection->set_far_clip(far);
+                    }
+
+                    ImGui::PopStyleColor();
+                }
+
+                ImGui::TableNextColumn();
+
+                ImGui::PushFont(g_rrContext->Fonts.Icon);
+                if (ImGui::Button(ICON_FA_TIMES)) {
+                    registry.remove<core::components::OrthographicProjection>(
+                        entity);
+                }
+                ImGui::PopFont();
+
+                ImGui::PopID();
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::PopStyleVar(1);
+
+        ImGui::EndTabItem();
     }
 
-    ImGui::PopStyleVar(1);
     ImGui::PopID();
 }
 
 void show_property_tab_texture(const UUID& id,
-                               core::AssetManager& assetManager) {
-    auto& spec = assetManager.get_texture_registry()[id];
+                               core::AssetManager& assetManager,
+                               bool& open,
+                               ImGuiSelectableFlags flags) {
+    auto& spec = assetManager.get_image_texture_database()[id];
 
-    char buffer[32];
-    memset(buffer, 0, sizeof(buffer));
-    strcpy(buffer, spec.Name.c_str());
-    if (ImGui::InputText("Name##Name", buffer, sizeof(buffer))) {
-        spec.Name = std::string(buffer);
-    }
-
-    ImGui::Text("%s", spec.Id.to_string().c_str());
-
-    ImGui::Separator();
-
-    // image
-    auto texture = assetManager.get_texture(id).lock();
-    size_t textureId = texture->get_renderer_id().value();
-    auto textureSize = texture->get_size();
-    ImVec2 uv_min = ImVec2(0.0f, 0.0f);  // Top-left
-    ImVec2 uv_max = ImVec2(1.0f, 1.0f);  // Lower-right
-    ImVec2 region = ImGui::GetContentRegionAvail();
-    float ar = (float)textureSize.x / (float)textureSize.y;
-    textureSize.x = region.x;
-    textureSize.y = region.x * ar;
-    ImGui::Image((ImTextureID)textureId, ImVec2(textureSize.x, textureSize.y),
-                 uv_min, uv_max);
-}
-
-void show_property_tab_sprite(const UUID& id,
-                              core::AssetManager& assetManager) {
-    auto& spec = assetManager.get_sprite_registry()[id];
-
-    char buffer[32];
-    memset(buffer, 0, sizeof(buffer));
-    strcpy(buffer, spec.Name.c_str());
-    if (ImGui::InputText("Name##Name", buffer, sizeof(buffer))) {
-        spec.Name = std::string(buffer);
-    }
-
-    ImGui::Text("%s", spec.Id.to_string().c_str());
-
-    ImGui::Separator();
-
-    auto spritePtr = assetManager.get_texture(spec.Id).lock();
-    size_t textureId = spritePtr->get_renderer_id().value();
-    auto textureSize = spritePtr->get_size();
-    // top-left
-    ImVec2 uv_min = ImVec2(spritePtr->get_uv_coords()[0].x,
-                           spritePtr->get_uv_coords()[0].y);
-    // bot-right
-    ImVec2 uv_max = ImVec2(spritePtr->get_uv_coords()[2].x,
-                           spritePtr->get_uv_coords()[2].y);
-    ImVec2 region = ImGui::GetContentRegionAvail();
-    float ar = (float)textureSize.x / (float)textureSize.y;
-    textureSize.x = region.x;
-    textureSize.y = region.x * ar;
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
-    ImGui::Image((void*)textureId, ImVec2(textureSize.x, textureSize.y), uv_min,
-                 uv_max);
-    ImGui::PopStyleVar();
-}
-
-void show_property_tab_font(const UUID& id, core::AssetManager& assetManager) {
-    auto& spec = assetManager.get_font_registry()[id];
-
-    char buffer[32];
-    memset(buffer, 0, sizeof(buffer));
-    strcpy(buffer, spec.Name.c_str());
-    if (ImGui::InputText("Name##Name", buffer, sizeof(buffer))) {
-        spec.Name = std::string(buffer);
-    }
-
-    ImGui::Text("%s", spec.Id.to_string().c_str());
-
-    ImGui::Separator();
-
-    if (ImGui::CollapsingHeader("Font Metrics")) {
-        if (ImGui::BeginTable("Font Metrics", 2)) {
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("em size");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.FontMetrics.emSize);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("ascender");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.FontMetrics.ascender);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("descender");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.FontMetrics.descender);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("line height");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.FontMetrics.lineHeight);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("underline Y");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.FontMetrics.underlineY);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("underline thickness");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.FontMetrics.underlineThickness);
-
-            ImGui::EndTable();
+    if (ImGui::BeginTabItem(spec.Name.c_str(), &open, flags)) {
+        char buffer[32];
+        memset(buffer, 0, sizeof(buffer));
+        strcpy(buffer, spec.Name.c_str());
+        if (ImGui::InputText("Name##Name", buffer, sizeof(buffer))) {
+            spec.Name = std::string(buffer);
         }
-    }
 
-    if (ImGui::CollapsingHeader("Atlas Metrics")) {
-        if (ImGui::BeginTable("Atlas Metrics", 2)) {
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("atlas type");
-            ImGui::TableNextColumn();
-            {
-                auto name = magic_enum::enum_name(spec.AtlasMetrics.type);
-                std::string nameStr = std::string{name};
-                std::transform(
-                    nameStr.begin(), nameStr.end(), nameStr.begin(),
-                    [](unsigned char c) { return std::tolower(c); }  // correct
-                );
-                ImGui::Text("%s", nameStr.c_str());
-            }
+        ImGui::Text("%s", spec.Id.to_string().c_str());
 
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("distance range");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.AtlasMetrics.distanceRange);
+        ImGui::Separator();
 
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("size");
-            ImGui::TableNextColumn();
-            ImGui::Text("%f", spec.AtlasMetrics.size);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("width");
-            ImGui::TableNextColumn();
-            ImGui::Text("%d", spec.AtlasMetrics.width);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("height");
-            ImGui::TableNextColumn();
-            ImGui::Text("%d", spec.AtlasMetrics.height);
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::Text("y origin");
-            ImGui::TableNextColumn();
-            {
-                auto name = magic_enum::enum_name(spec.AtlasMetrics.yOrigin);
-                std::string nameStr = std::string{name};
-                std::transform(
-                    nameStr.begin(), nameStr.end(), nameStr.begin(),
-                    [](unsigned char c) { return std::tolower(c); }  // correct
-                );
-                ImGui::Text("%s", nameStr.c_str());
-            }
-
-            ImGui::EndTable();
-        }
-    }
-
-    if (ImGui::CollapsingHeader("Glyph Metrics")) {
-        if (ImGui::BeginTable("Glyph Metrics", 3)) {
-            ImGui::TableSetupColumn("codepoint");
-            ImGui::TableSetupColumn("character");
-            ImGui::TableSetupColumn("advance");
-            ImGui::TableHeadersRow();
-
-            for (auto& [codepoint, metrics] : spec.GlyphMetrics) {
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("%d", codepoint);
-
-                ImGui::TableNextColumn();
-                ImGui::Text("%c", static_cast<char>(codepoint));
-
-                ImGui::TableNextColumn();
-                ImGui::Text("%f", metrics.advance);
-            }
-
-            ImGui::EndTable();
-        }
-    }
-
-    if (ImGui::CollapsingHeader("Atlas Preview")) {
         // image
         auto texture = assetManager.get_texture(id).lock();
-        size_t textureId = texture->get_renderer_id().value();
+        size_t textureId = texture->get_renderer_id();
         auto textureSize = texture->get_size();
         ImVec2 uv_min = ImVec2(0.0f, 0.0f);  // Top-left
         ImVec2 uv_max = ImVec2(1.0f, 1.0f);  // Lower-right
@@ -1910,6 +1886,212 @@ void show_property_tab_font(const UUID& id, core::AssetManager& assetManager) {
         textureSize.y = region.x * ar;
         ImGui::Image((ImTextureID)textureId,
                      ImVec2(textureSize.x, textureSize.y), uv_min, uv_max);
+
+        ImGui::EndTabItem();
+    }
+}
+
+void show_property_tab_sprite(const UUID& id,
+                              core::AssetManager& assetManager,
+                              bool& open,
+                              ImGuiSelectableFlags flags) {
+    auto& spec = assetManager.get_sprite_database()[id];
+
+    if (ImGui::BeginTabItem(spec.Name.c_str(), &open, flags)) {
+        char buffer[32];
+        memset(buffer, 0, sizeof(buffer));
+        strcpy(buffer, spec.Name.c_str());
+        if (ImGui::InputText("Name##Name", buffer, sizeof(buffer))) {
+            spec.Name = std::string(buffer);
+        }
+
+        ImGui::Text("%s", spec.Id.to_string().c_str());
+
+        ImGui::Separator();
+
+        auto spritePtr = assetManager.get_texture(spec.Id).lock();
+        size_t textureId = spritePtr->get_renderer_id();
+        auto textureSize = spritePtr->get_size();
+        // top-left
+        ImVec2 uv_min = ImVec2(spritePtr->get_texture_coords()[0].x,
+                               spritePtr->get_texture_coords()[0].y);
+        // bot-right
+        ImVec2 uv_max = ImVec2(spritePtr->get_texture_coords()[2].x,
+                               spritePtr->get_texture_coords()[2].y);
+        ImVec2 region = ImGui::GetContentRegionAvail();
+        float ar = (float)textureSize.x / (float)textureSize.y;
+        textureSize.x = region.x;
+        textureSize.y = region.x * ar;
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
+        ImGui::Image((void*)textureId, ImVec2(textureSize.x, textureSize.y),
+                     uv_min, uv_max);
+        ImGui::PopStyleVar();
+
+        ImGui::EndTabItem();
+    }
+}
+
+void show_property_tab_font(const UUID& id,
+                            core::AssetManager& assetManager,
+                            bool& open,
+                            ImGuiSelectableFlags flags) {
+    auto& spec = assetManager.get_font_database()[id];
+    if (ImGui::BeginTabItem(spec.Name.c_str(), &open, flags)) {
+        char buffer[32];
+        memset(buffer, 0, sizeof(buffer));
+        strcpy(buffer, spec.Name.c_str());
+        if (ImGui::InputText("Name##Name", buffer, sizeof(buffer))) {
+            spec.Name = std::string(buffer);
+        }
+
+        ImGui::Text("%s", spec.Id.to_string().c_str());
+
+        ImGui::Separator();
+
+        if (ImGui::CollapsingHeader("Font Metrics")) {
+            if (ImGui::BeginTable("Font Metrics", 2)) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("em size");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.FontMetrics.emSize);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("ascender");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.FontMetrics.ascender);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("descender");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.FontMetrics.descender);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("line height");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.FontMetrics.lineHeight);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("underline Y");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.FontMetrics.underlineY);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("underline thickness");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.FontMetrics.underlineThickness);
+
+                ImGui::EndTable();
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Atlas Metrics")) {
+            if (ImGui::BeginTable("Atlas Metrics", 2)) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("atlas type");
+                ImGui::TableNextColumn();
+                {
+                    auto name = magic_enum::enum_name(spec.AtlasMetrics.type);
+                    std::string nameStr = std::string{name};
+                    std::transform(nameStr.begin(), nameStr.end(),
+                                   nameStr.begin(),
+                                   [](unsigned char c) {
+                                       return std::tolower(c);
+                                   }  // correct
+                    );
+                    ImGui::Text("%s", nameStr.c_str());
+                }
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("distance range");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.AtlasMetrics.distanceRange);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("size");
+                ImGui::TableNextColumn();
+                ImGui::Text("%f", spec.AtlasMetrics.size);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("width");
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", spec.AtlasMetrics.width);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("height");
+                ImGui::TableNextColumn();
+                ImGui::Text("%d", spec.AtlasMetrics.height);
+
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("y origin");
+                ImGui::TableNextColumn();
+                {
+                    auto name =
+                        magic_enum::enum_name(spec.AtlasMetrics.yOrigin);
+                    std::string nameStr = std::string{name};
+                    std::transform(nameStr.begin(), nameStr.end(),
+                                   nameStr.begin(),
+                                   [](unsigned char c) {
+                                       return std::tolower(c);
+                                   }  // correct
+                    );
+                    ImGui::Text("%s", nameStr.c_str());
+                }
+
+                ImGui::EndTable();
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Glyph Metrics")) {
+            if (ImGui::BeginTable("Glyph Metrics", 3)) {
+                ImGui::TableSetupColumn("codepoint");
+                ImGui::TableSetupColumn("character");
+                ImGui::TableSetupColumn("advance");
+                ImGui::TableHeadersRow();
+
+                for (auto& [codepoint, metrics] : spec.GlyphMetrics) {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%d", codepoint);
+
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%c", static_cast<char>(codepoint));
+
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%f", metrics.advance);
+                }
+
+                ImGui::EndTable();
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Atlas Preview")) {
+            // image
+            auto texture = assetManager.get_texture(id).lock();
+            size_t textureId = texture->get_renderer_id();
+            auto textureSize = texture->get_size();
+            ImVec2 uv_min = ImVec2(0.0f, 0.0f);  // Top-left
+            ImVec2 uv_max = ImVec2(1.0f, 1.0f);  // Lower-right
+            ImVec2 region = ImGui::GetContentRegionAvail();
+            float ar = (float)textureSize.x / (float)textureSize.y;
+            textureSize.x = region.x;
+            textureSize.y = region.x * ar;
+            ImGui::Image((ImTextureID)textureId,
+                         ImVec2(textureSize.x, textureSize.y), uv_min, uv_max);
+        }
+
+        ImGui::EndTabItem();
     }
 }
 
@@ -1969,11 +2151,7 @@ void show_file_browser(const system::Path& rootDir) {
                     system::relative_root_name(path, rootDir);
                 size_t image;
                 if (p.is_directory()) {
-                    require(g_rrContext->Icons.Folder->get_renderer_id()
-                                .has_value(),
-                            "folder icon not loaded");
-                    image =
-                        g_rrContext->Icons.Folder->get_renderer_id().value();
+                    image = g_rrContext->Icons.Folder->get_renderer_id();
                     ImGui::ImageButton((ImTextureID)image,
                                        g_rrContext->Style.ThumbnailSize, {0, 0},
                                        {1, 1});
@@ -1983,10 +2161,7 @@ void show_file_browser(const system::Path& rootDir) {
                         currentDir = path;
                     }
                 } else if (p.is_regular_file()) {
-                    require(
-                        g_rrContext->Icons.File->get_renderer_id().has_value(),
-                        "file icon not loaded");
-                    image = g_rrContext->Icons.File->get_renderer_id().value();
+                    image = g_rrContext->Icons.File->get_renderer_id();
                     ImGui::ImageButton((ImTextureID)image,
                                        g_rrContext->Style.ThumbnailSize, {0, 0},
                                        {1, 1});
@@ -2063,8 +2238,8 @@ void show_scene_viewport(
                         (entt::entity)selectedEntity);
 
                 ui::push_property_tab(PropertyTab(
-                    PropertyTabType::Entity, identification.Name,
-                    {(entt::entity)selectedEntity}, identification.Uuid));
+                    PropertyTabType::Entity, {(entt::entity)selectedEntity},
+                    identification.Uuid));
             }
         }
 

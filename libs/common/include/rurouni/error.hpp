@@ -10,7 +10,9 @@ struct Error {
     Error(fmt::format_string<Args...> fmt, Args&&... args) {
         Message = fmt::format(fmt, std::forward<Args>(args)...);
     }
-    std::string Message;
+    std::string Message = std::string();
+
+    explicit operator bool() const { return Message.empty(); }
 };
 
 }  // namespace rr

@@ -15,9 +15,9 @@ class Text : public Texture {
     Text(const std::u32string& text,
          std::weak_ptr<Font> font,
          math::ivec2 lineMetrics_px);
+    ~Text() { m_RendererId = 0; }
 
-    virtual void update(float dt);
-    virtual std::optional<uint32_t> get_renderer_id() const override;
+    void update(float dt);
 
    private:
     std::u32string m_Text;

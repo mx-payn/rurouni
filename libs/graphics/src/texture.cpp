@@ -20,18 +20,19 @@
 
 namespace rr::graphics {
 
-Texture::Texture(const DataTextureSpecification& spec) {
-    m_Size = spec.size;
-    m_UUID = spec.id;
-    m_PixelFormat = spec.pixelFormat;
-    m_DataFormat = spec.dataFormat;
-
-    if (m_UUID.is_null())
-        m_UUID.generate();
+Texture::Texture(const DataTextureSpecification& spec)
+    : m_Name(spec.Name),
+      m_Id(spec.Id),
+      m_Size(spec.Size),
+      m_PixelFormat(spec.PixelFormat),
+      m_DataFormat(spec.DataFormat),
+      m_DistanceFieldType(spec.DistanceFieldType) {
+    if (m_Id.is_null())
+        m_Id.generate();
 
     uint32_t rendererId;
     glCreateTextures(GL_TEXTURE_2D, 1, &rendererId);
-    glTextureStorage2D(rendererId, 1, static_cast<uint32_t>(m_PixelFormat),
+    glTextureStorage2D(rendererId, 1, rrPixelFormatToGl(m_PixelFormat),
                        m_Size.x, m_Size.y);
 
     glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -40,30 +41,57 @@ Texture::Texture(const DataTextureSpecification& spec) {
     glTextureParameteri(rendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTextureParameteri(rendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    m_RendererID = rendererId;
+    m_RendererId = rendererId;
+
+    set_data(spec.get_data(), spec.get_data_size());
 }
 
-Texture::Texture(const system::Path& path)
-    : Texture(ImageTextureSpecification{path, path.filename().string()}) {}
+Texture::Texture(const std::string& name, const UUID& id)
+    : m_Name(name), m_Id(id) {}
 
-Texture::Texture(const ImageTextureSpecification& spec) {
-    m_UUID = spec.id;
-
-    if (m_UUID.is_null())
-        m_UUID.generate();
+Texture::Texture(const ImageTextureSpecification& spec)
+    : m_Name(spec.Name),
+      m_Id(spec.Id),
+      m_DistanceFieldType(spec.DistanceFieldType) {
+    if (m_Id.is_null())
+        m_Id.generate();
 
     // -- loading image data using stbi --
     int width, height, channels;
     // image is upside down without flip
+    // we don't flip to have automatic y index 0 at top
     // stbi_set_flip_vertically_on_load(1);
     stbi_uc* data =
         stbi_load(spec.Filepath.c_str(), &width, &height, &channels, 0);
     trace("loaded image_data: {} . channels: {}", spec.Filepath, channels);
-    require(data != nullptr, "Failed to load image!");
     if (!data) {
         error("failed loading image! path: '{}', uuid: '{}'", spec.Filepath,
-              m_UUID);
-        throw TextureException();
+              m_Id);
+        require(data != nullptr, "Failed to load image!");
+
+        std::string name = spec.Name;
+        m_Name = name.append("##FAILED");
+        m_Id = spec.Id;
+        m_Size = math::ivec2{1, 1};
+        m_DataFormat = TextureDataFormat::RGBA;
+        m_PixelFormat = TexturePixelFormat::RGBA8;
+
+        uint32_t rendererId;
+        glCreateTextures(GL_TEXTURE_2D, 1, &rendererId);
+        glTextureStorage2D(rendererId, 1, rrPixelFormatToGl(m_PixelFormat),
+                           m_Size.x, m_Size.y);
+
+        glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(rendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTextureParameteri(rendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(rendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        m_RendererId = rendererId;
+
+        uint32_t purpleTextureData = 0xFFFFFFFF;
+        set_data(&purpleTextureData, sizeof(purpleTextureData));
+        return;
     }
 
     m_Size = {width, height};
@@ -84,57 +112,68 @@ Texture::Texture(const ImageTextureSpecification& spec) {
         error(
             "the texture format of the loaded image is not supported! path: "
             "'{}', uuid: '{}'",
-            spec.Filepath, m_UUID);
-        throw TextureException();
+            spec.Filepath, m_Id);
+
+        DataTextureSpecification purpleSpec;
+        std::string name = spec.Name;
+        m_Name = name.append("##FAILED");
+        m_Id = spec.Id;
+        m_Size = math::ivec2{1, 1};
+        m_DataFormat = TextureDataFormat::RGBA;
+        m_PixelFormat = TexturePixelFormat::RGBA8;
+
+        uint32_t rendererId;
+        glCreateTextures(GL_TEXTURE_2D, 1, &rendererId);
+        glTextureStorage2D(rendererId, 1, rrPixelFormatToGl(m_PixelFormat),
+                           m_Size.x, m_Size.y);
+
+        glTextureParameteri(rendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(rendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTextureParameteri(rendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(rendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        m_RendererId = rendererId;
+
+        uint32_t purpleTextureData = 0xFFFFFFFF;
+        set_data(&purpleTextureData, sizeof(purpleTextureData));
+        return;
     }
 
-    m_RendererID = 0;
+    m_RendererId = 0;
 
     // -- uploading image data to GPU memory --
     // reserving memory space on GPU and getting unique identifier for space
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID.value());
-    glTextureStorage2D(m_RendererID.value(), 1,
-                       static_cast<uint32_t>(m_PixelFormat), m_Size.x,
-                       m_Size.y);
+    glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
+    glTextureStorage2D(m_RendererId, 1, rrPixelFormatToGl(m_PixelFormat),
+                       m_Size.x, m_Size.y);
 
     // setting texture parameters for rendering
-    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_MAG_FILTER,
-                        GL_NEAREST);
-    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTextureParameteri(m_RendererID.value(), GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // uploading image data to reserved GPU memory space
-    glTextureSubImage2D(m_RendererID.value(), 0, 0, 0, m_Size.x, m_Size.y,
-                        static_cast<uint32_t>(m_DataFormat), GL_UNSIGNED_BYTE,
-                        data);
+    glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Size.x, m_Size.y,
+                        rrDataFormatToGl(m_DataFormat), GL_UNSIGNED_BYTE, data);
 
     // image data not needed anymore
     stbi_image_free(data);
 }
 
 Texture::~Texture() {
-    if (m_RendererID.has_value()) {
-        glDeleteTextures(1, &m_RendererID.value());
-    }
+    glDeleteTextures(1, &m_RendererId);
 }
 
-// TODO checking the validity of renderer_id may be caller
-//      responsibility to handle invalid textures with special
-//      texture drawing
 void Texture::bind(uint32_t slot) const {
-    if (auto id = get_renderer_id()) {
-        glBindTextureUnit(slot, id.value());
-    } else {
-        error("tried to bind an invalid texture");
-    }
+    glBindTextureUnit(slot, m_RendererId);
 }
 
-void Texture::set_data(void* data, uint32_t size) {
+void Texture::set_data(const void* data, uint32_t size) {
     // uploading image data to reserved GPU memory space
-    glTextureSubImage2D(m_RendererID.value(), 0, 0, 0, m_Size.x, m_Size.y,
-                        static_cast<uint32_t>(m_DataFormat), GL_UNSIGNED_BYTE,
-                        data);
+    glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Size.x, m_Size.y,
+                        rrDataFormatToGl(m_DataFormat), GL_UNSIGNED_BYTE, data);
 }
 
 }  // namespace rr::graphics

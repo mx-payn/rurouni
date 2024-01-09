@@ -5,6 +5,7 @@
 #include "rurouni/math/mat.hpp"
 #include "rurouni/math/vec.hpp"
 #include "rurouni/system/filesystem.hpp"
+#include "rurouni/types/uuid.hpp"
 
 // std
 #include <vector>
@@ -21,11 +22,19 @@ enum class ShaderType : uint32_t {
     Compute = 0x91B9
 };
 
+struct ShaderSpecification {
+    std::string Name = "unnamed";
+    UUID Id = UUID();
+
+    system::Path VertexFilepath = system::Path();
+    system::Path FragmentFilepath = system::Path();
+};
+
 /** creates a shader program from vertex and fragment source. */
 class Shader {
    public:
     /** reads and compiles the given shader sources and uploads them to GPU */
-    Shader(const system::Path& vertexPath, const system::Path& fragmentPath);
+    Shader(const ShaderSpecification& spec);
 
     /** compiles the given shader sources and uploads them to GPU */
     Shader(const std::string& vertexSource, const std::string& fragmentSource);
@@ -113,10 +122,10 @@ class Shader {
     void link_program(uint32_t& program);
 
    private:
-    system::Path
-        m_VertexPath;  //!< the absolute path to the shader source file stem.
-    system::Path
-        m_FragmentPath;  //!< the absolute path to the shader source file stem.
+    std::string m_Name;
+    UUID m_Id;
+    system::Path m_VertexPath;
+    system::Path m_FragmentPath;
     std::vector<uint32_t> m_ShaderIDs;
 
     uint32_t m_RendererID;  //!< the unique identifier for data in GPU memory.

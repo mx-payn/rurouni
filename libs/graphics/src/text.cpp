@@ -11,10 +11,11 @@
 
 namespace rr::graphics {
 
+// TODO: fix this class
 Text::Text(const std::u32string& text,
            std::weak_ptr<Font> font,
            math::ivec2 textBounds_px)
-    : Texture(this), m_Text(text), m_Font(font) {
+    : Texture(this, "", UUID()), m_Text(text), m_Font(font) {
     if (text.empty())
         return;
 
@@ -72,13 +73,5 @@ Text::Text(const std::u32string& text,
 }
 
 void Text::update(float dt) {}
-
-std::optional<uint32_t> Text::get_renderer_id() const {
-    if (m_Font.expired()) {
-        return {};
-    } else {
-        return m_Font.lock()->get_renderer_id();
-    }
-}
 
 }  // namespace rr::graphics

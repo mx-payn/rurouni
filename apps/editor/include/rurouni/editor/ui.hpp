@@ -6,6 +6,7 @@
 #include "rurouni/core/scene.hpp"
 #include "rurouni/editor/state.hpp"
 #include "rurouni/graphics/font.hpp"
+#include "rurouni/graphics/spritesheet.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
 #include "rurouni/types/uuid.hpp"
@@ -90,10 +91,13 @@ void show_properties(entt::registry& registry,
                      core::AssetManager& assetManager);
 void show_asset_manager(
     core::AssetManager& assetManager,
-    std::function<bool(core::TextureSpecification&)> importTextureFunc,
-    std::function<bool(std::unordered_map<int, core::SpriteSpecification>&)>
+    std::function<bool(graphics::ImageTextureSpecification&)>
+        importImageTextureFunc,
+    std::function<bool(graphics::SpritesheetSpecification&)>
+        importSpritesheetFunc,
+    std::function<bool(std::unordered_map<int, graphics::SpriteSpecification>&)>
         importSpritesFunc,
-    std::function<bool(core::ShaderSpecification&)> importShaderFunc,
+    std::function<bool(graphics::ShaderSpecification&)> importShaderFunc,
     std::function<bool(ui::FontImportSpecification&,
                        ui::FontImportConfiguration&)> importFontFunc);
 void show_scene_manager(core::Scene& scene,
@@ -117,10 +121,13 @@ void show_import_module_modal(
     std::function<bool(const system::Path&)> importModuleFunc);
 void show_import_assets_modal(
     core::AssetManager& assetManager,
-    std::function<bool(core::TextureSpecification&)> importTextureFunc,
-    std::function<bool(std::unordered_map<int, core::SpriteSpecification>&)>
+    std::function<bool(graphics::ImageTextureSpecification&)>
+        importImageTextureFunc,
+    std::function<bool(graphics::SpritesheetSpecification&)>
+        importSpritesheetFunc,
+    std::function<bool(std::unordered_map<int, graphics::SpriteSpecification>&)>
         importSpritesFunc,
-    std::function<bool(core::ShaderSpecification&)> importShaderFunc,
+    std::function<bool(graphics::ShaderSpecification&)> importShaderFunc,
     std::function<bool(ui::FontImportSpecification&,
                        ui::FontImportConfiguration&)> importFontFunc);
 
@@ -128,10 +135,15 @@ void show_import_assets_modal(
 //  IMPORT ASSETS TABS
 void show_import_assets_tab_texture(
     core::AssetManager& assetManager,
-    std::function<bool(core::TextureSpecification&)> importTextureFunc);
+    std::function<bool(graphics::ImageTextureSpecification&)>
+        importImageTextureFunc);
+void show_import_assets_tab_spritesheet(
+    core::AssetManager& assetManager,
+    std::function<bool(graphics::SpritesheetSpecification&)>
+        importSpritesheetFunc);
 void show_import_assets_tab_sprite(
     core::AssetManager& assetManager,
-    std::function<bool(std::unordered_map<int, core::SpriteSpecification>&)>
+    std::function<bool(std::unordered_map<int, graphics::SpriteSpecification>&)>
         importSpritesFunc);
 void show_import_assets_tab_font(
     core::AssetManager& assetManager,
@@ -139,17 +151,27 @@ void show_import_assets_tab_font(
                        ui::FontImportConfiguration&)> importFontFunc);
 void show_import_assets_tab_shader(
     core::AssetManager& assetManager,
-    std::function<bool(core::ShaderSpecification&)> importShaderFunc);
+    std::function<bool(graphics::ShaderSpecification&)> importShaderFunc);
 
 /////////////////////////////
 //  PROPERTY TABS
 void show_property_tab_entity(entt::entity entity,
                               entt::registry& registry,
-                              core::AssetManager& assetManager);
+                              core::AssetManager& assetManager,
+                              bool& open,
+                              ImGuiSelectableFlags flags);
 void show_property_tab_texture(const UUID& id,
-                               core::AssetManager& assetManager);
-void show_property_tab_sprite(const UUID& id, core::AssetManager& assetManager);
-void show_property_tab_font(const UUID& id, core::AssetManager& assetManager);
+                               core::AssetManager& assetManager,
+                               bool& open,
+                               ImGuiSelectableFlags flags);
+void show_property_tab_sprite(const UUID& id,
+                              core::AssetManager& assetManager,
+                              bool& open,
+                              ImGuiSelectableFlags flags);
+void show_property_tab_font(const UUID& id,
+                            core::AssetManager& assetManager,
+                            bool& open,
+                            ImGuiSelectableFlags flags);
 // TODO
 void show_property_tab_shader();
 
@@ -185,7 +207,6 @@ void push_toast(const Toast& toast);
 enum class PropertyTabType { Entity, Texture, Sprite, Font, Shader };
 struct PropertyTab {
     PropertyTabType Type;
-    std::string Name;
     UUID Id;
 
     union data_t {
@@ -197,10 +218,9 @@ struct PropertyTab {
     } Data;
 
     PropertyTab(PropertyTabType type,
-                const std::string& name,
                 const data_t& data,
                 const UUID& id = UUID::create())
-        : Type(type), Name(name), Data(data), Id(id) {}
+        : Type(type), Data(data), Id(id) {}
 };
 void push_property_tab(const PropertyTab& tab);
 void remove_property_tab(PropertyTabType type, const PropertyTab::data_t& data);
@@ -263,6 +283,7 @@ struct RRUIContext {
 
     std::optional<entt::entity> SelectedEntity;
     std::optional<UUID> SelectedPropertyTabId;
+    std::optional<size_t> SelectedAssetImportTextureSpecification;
 
     math::ivec2 SceneViewportSize = math::ivec2(1.0f);
 

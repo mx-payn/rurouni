@@ -22,6 +22,7 @@
 #include "rurouni/graphics/font.hpp"
 #include "rurouni/graphics/logger.hpp"
 #include "rurouni/graphics/render_api.hpp"
+#include "rurouni/graphics/texture.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
 #include "rurouni/time.hpp"
@@ -155,6 +156,8 @@ void Editor::render() {
         ui::show_asset_manager(
             *m_AssetManager,
             std::bind(&Editor::asset_import_texture, this,
+                      std::placeholders::_1),
+            std::bind(&Editor::asset_import_spritesheet, this,
                       std::placeholders::_1),
             std::bind(&Editor::asset_import_sprites, this,
                       std::placeholders::_1),
@@ -556,7 +559,7 @@ void Editor::draw_scene() {
     }
 }
 
-bool Editor::asset_import_texture(core::TextureSpecification& spec) {
+bool Editor::asset_import_texture(graphics::ImageTextureSpecification& spec) {
     if (spec.Filepath.empty()) {
         error("texture import");
         error("empty texture import path");
@@ -608,16 +611,39 @@ bool Editor::asset_import_texture(core::TextureSpecification& spec) {
     }
 
     spec.Id.generate();
-    m_AssetManager->get_texture_registry()[spec.Id] = spec;
-    // m_AssetManager->write_asconfiguration(m_CurrentModule->get_root_path()
-    // / "assets.json");
-    m_AssetManager->write_asset_configuration();
+    m_AssetManager->register_image_texture(spec);
+    // m_AssetManager->get_image_texture_database()[spec.Id] = spec;
+    auto error = m_AssetManager->write_asset_configuration();
+
+    if (error.has_value()) {
+        editor::error("failed writing asset database: {}", error->Message);
+        ui::Toast toast(ui::ToastType::Error, "",
+                        "failed writing asset database:\n{}", error->Message);
+        ui::push_toast(toast);
+    }
+
+    return true;
+}
+
+bool Editor::asset_import_spritesheet(
+    graphics::SpritesheetSpecification& spec) {
+    spec.Id.generate();
+    m_AssetManager->register_spritesheet(spec);
+
+    auto error = m_AssetManager->write_asset_configuration();
+
+    if (error.has_value()) {
+        editor::error("failed writing asset database: {}", error->Message);
+        ui::Toast toast(ui::ToastType::Error, "",
+                        "failed writing asset database:\n{}", error->Message);
+        ui::push_toast(toast);
+    }
 
     return true;
 }
 
 bool Editor::asset_import_sprites(
-    std::unordered_map<int, core::SpriteSpecification>& specs) {
+    std::unordered_map<int, graphics::SpriteSpecification>& specs) {
     if (specs.empty()) {
         ui::Toast toast(ui::ToastType::Error, "",
                         "import sprite pack was empty");
@@ -626,7 +652,7 @@ bool Editor::asset_import_sprites(
         return false;
     }
 
-    auto& spriteSpecs = m_AssetManager->get_sprite_registry();
+    auto& spriteSpecs = m_AssetManager->get_sprite_database();
 
     for (auto& [idx, spec] : specs) {
         spriteSpecs[spec.Id] = spec;
@@ -645,8 +671,8 @@ bool Editor::asset_import_sprites(
     return true;
 }
 
-bool Editor::asset_import_shader(core::ShaderSpecification& spec) {
-    if (spec.VertexSourcePath.empty() || spec.FragmentSourcePath.empty()) {
+bool Editor::asset_import_shader(graphics::ShaderSpecification& spec) {
+    if (spec.VertexFilepath.empty() || spec.FragmentFilepath.empty()) {
         error("shader import");
         error("empty shader import path");
 
@@ -657,88 +683,88 @@ bool Editor::asset_import_shader(core::ShaderSpecification& spec) {
         return false;
     }
 
-    if (!system::exists(spec.VertexSourcePath)) {
+    if (!system::exists(spec.VertexFilepath)) {
         error("shader import");
-        error("file not found: {}", spec.VertexSourcePath);
+        error("file not found: {}", spec.VertexFilepath);
 
         ui::Toast toast(
             ui::ToastType::Error, "shader import",
             "the requested vertex shader to import was not found at path: {}",
-            spec.VertexSourcePath);
+            spec.VertexFilepath);
         ui::push_toast(toast);
 
         return false;
     }
 
-    if (!system::exists(spec.FragmentSourcePath)) {
+    if (!system::exists(spec.FragmentFilepath)) {
         error("shader import");
-        error("file not found: {}", spec.FragmentSourcePath);
+        error("file not found: {}", spec.FragmentFilepath);
 
         ui::Toast toast(
             ui::ToastType::Error, "shader import",
             "the requested fragment shader to import was not found at path: {}",
-            spec.FragmentSourcePath);
+            spec.FragmentFilepath);
         ui::push_toast(toast);
 
         return false;
     }
 
-    if (!system::is_regular_file(spec.VertexSourcePath)) {
+    if (!system::is_regular_file(spec.VertexFilepath)) {
         error("shader import");
-        error("not a file: {}", spec.VertexSourcePath);
+        error("not a file: {}", spec.VertexFilepath);
 
         ui::Toast toast(
             ui::ToastType::Error, "shader import",
             "the requested vertex shader to import is not a file. path: {}",
-            spec.VertexSourcePath);
+            spec.VertexFilepath);
         ui::push_toast(toast);
 
         return false;
     }
 
-    if (!system::is_regular_file(spec.FragmentSourcePath)) {
+    if (!system::is_regular_file(spec.FragmentFilepath)) {
         error("shader import");
-        error("not a file: {}", spec.FragmentSourcePath);
+        error("not a file: {}", spec.FragmentFilepath);
 
         ui::Toast toast(
             ui::ToastType::Error, "shader import",
             "the requested fragment shader to import is not a file. path: {}",
-            spec.FragmentSourcePath);
+            spec.FragmentFilepath);
         ui::push_toast(toast);
 
         return false;
     }
 
-    if (spec.VertexSourcePath.parent_path() !=
+    if (spec.VertexFilepath.parent_path() !=
         m_CurrentModule->get_root_path() / "shaders") {
         // import texture into assets dir
-        system::Path shaderPath = spec.VertexSourcePath;
+        system::Path shaderPath = spec.VertexFilepath;
         system::Path importPath = m_CurrentModule->get_root_path() / "shaders" /
-                                  spec.VertexSourcePath.filename();
+                                  spec.VertexFilepath.filename();
 
         if (!system::exists(importPath)) {
             system::copy(shaderPath, importPath);
         }
 
-        spec.VertexSourcePath = importPath;
+        spec.VertexFilepath = importPath;
     }
 
-    if (spec.FragmentSourcePath.parent_path() !=
+    if (spec.FragmentFilepath.parent_path() !=
         m_CurrentModule->get_root_path() / "shaders") {
         // import texture into assets dir
-        system::Path shaderPath = spec.FragmentSourcePath;
+        system::Path shaderPath = spec.FragmentFilepath;
         system::Path importPath = m_CurrentModule->get_root_path() / "shaders" /
-                                  spec.FragmentSourcePath.filename();
+                                  spec.FragmentFilepath.filename();
 
         if (!system::exists(importPath)) {
             system::copy(shaderPath, importPath);
         }
 
-        spec.FragmentSourcePath = importPath;
+        spec.FragmentFilepath = importPath;
     }
 
     spec.Id.generate();
-    m_AssetManager->get_shader_registry()[spec.Id] = spec;
+    m_AssetManager->get_shader_database()[spec.Id] = spec;
     auto error = m_AssetManager->write_asset_configuration();
 
     if (error.has_value()) {
@@ -784,7 +810,6 @@ template <typename T,
           int N,
           msdf_atlas::GeneratorFunction<S, N> GEN_FN>
 static bool makeAtlas(const std::vector<msdf_atlas::GlyphGeometry>& glyphs,
-                      const std::vector<msdf_atlas::FontGeometry>& fonts,
                       const ui::FontImportConfiguration& config) {
     msdf_atlas::ImmediateAtlasGenerator<S, N, GEN_FN,
                                         msdf_atlas::BitmapAtlasStorage<T, N> >
@@ -800,40 +825,48 @@ static bool makeAtlas(const std::vector<msdf_atlas::GlyphGeometry>& glyphs,
     if (!config.ImageFilepath.empty()) {
         if (msdf_atlas::saveImage(bitmap, config.ImageFormat,
                                   config.ImageFilepath.c_str(),
-                                  config.YDirection))
-            fputs("Atlas image file saved.\n", stderr);
-        else {
+                                  config.YDirection)) {
+            info("Atlas image file saved.");
+        } else {
             success = false;
-            fputs("Failed to save the atlas as an image file.\n", stderr);
+            error("Failed to save the atlas as an image file.");
         }
     }
-
-    // #ifndef MSDF_ATLAS_NO_ARTERY_FONT
-    //     if (config.arteryFontFilename) {
-    //         ArteryFontExportProperties arfontProps;
-    //         arfontProps.fontSize = config.emSize;
-    //         arfontProps.pxRange = config.pxRange;
-    //         arfontProps.imageType = config.imageType;
-    //         arfontProps.imageFormat = config.imageFormat;
-    //         arfontProps.yDirection = config.yDirection;
-    //         if (exportArteryFont<float>(fonts.data(), fonts.size(), bitmap,
-    //         config.arteryFontFilename, arfontProps))
-    //             fputs("Artery Font file generated.\n", stderr);
-    //         else {
-    //             success = false;
-    //             fputs("Failed to generate Artery Font file.\n", stderr);
-    //         }
-    //     }
-    // #endif
 
     return success;
 }
 
 bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
                                ui::FontImportConfiguration& config) {
-    core::FontSpecification fontSpec;
+    // if (fontInputs.empty()) {
+    //     error("import font -> No font specified.");
+    //     ui::push_toast(
+    //         ui::Toast(ui::ToastType::Error, "", "No font path specified."));
+    //     return false;
+    // }
 
-    int fixedWidth = -1, fixedHeight = -1;
+    // if (!system::exists(fontInput.FontFilepath)) {
+    //     error("import font -> Specified font path doesn't exist. path: {}",
+    //     fontInput.FontFilepath); ui::push_toast(
+    //         ui::Toast(ui::ToastType::Error, "", "Specified font path doesn't
+    //         exist.\npath: {}", fontInput.FontFilepath));
+    //     return false;
+    // }
+    //
+    // if (!system::is_regular_file(fontInput.FontFilepath)) {
+    //     error("import font -> Specified font path isn't a file. path: {}",
+    //     fontInput.FontFilepath); ui::push_toast(
+    //         ui::Toast(ui::ToastType::Error, "", "Specified font path isn't a
+    //         file.\npath: {}", fontInput.FontFilepath));
+    //     return false;
+    // }
+
+    // TODO handle empty output path
+    // if (config.ImageFilepath.empty()) {
+    //     error("No output specified.\n", stderr);
+    //     return 0;
+    // }
+
     double minEmSize = 0;
     const char* imageFormatName = nullptr;
     config.GeneratorAttributes.config.overlapSupport =
@@ -851,22 +884,6 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
     } rangeMode = RANGE_PIXEL;
     double rangeValue = 0;
 
-    if (fontInput.FontFilepath.empty()) {
-        error("import font -> No font specified.");
-    ui:
-        ui::push_toast(
-            ui::Toast(ui::ToastType::Error, "", "No font specified."));
-        return false;
-    }
-
-    // TODO handle empty output path
-    // if (config.ImageFilepath.empty()) {
-    //     error("No output specified.\n", stderr);
-    //     return 0;
-    // }
-    // bool layoutOnly = !(config.arteryFontFilename || config.imageFilename);
-    bool layoutOnly = false;
-
     // Fix up configuration based on related values
     if (!(config.ImageType == msdf_atlas::ImageType::PSDF ||
           config.ImageType == msdf_atlas::ImageType::MSDF ||
@@ -874,9 +891,8 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
         config.MiterLimit = 0;
     if (config.EmSize > minEmSize)
         minEmSize = config.EmSize;
-    if (!(fixedWidth > 0 && fixedHeight > 0) && !(minEmSize > 0)) {
-        fputs("Neither atlas size nor glyph size selected, using default...\n",
-              stderr);
+    if (minEmSize <= 0) {
+        warn("Neither atlas size nor glyph size selected, using default...");
         minEmSize = MSDF_ATLAS_DEFAULT_EM_SIZE;
     }
     if (config.ImageType == msdf_atlas::ImageType::HARD_MASK ||
@@ -887,10 +903,6 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
         rangeMode = RANGE_PIXEL;
         rangeValue = DEFAULT_PIXEL_RANGE;
     }
-    // We always export json
-    // if (config.Kerning && !(config.arteryFontFilename || config.jsonFilename
-    // || config.shadronPreviewFilename))
-    //     config.Kerning = false;
     if (config.ThreadCount <= 0)
         config.ThreadCount =
             std::max((int)std::thread::hardware_concurrency(), 1);
@@ -944,27 +956,11 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
             config.ImageFormat = imageExtension;
     }
     if (config.ImageType == msdf_atlas::ImageType::MTSDF &&
-        config.ImageFormat == msdf_atlas::ImageFormat::BMP)
+        config.ImageFormat == msdf_atlas::ImageFormat::BMP) {
         require(false,
                 "Atlas type not compatible with image format. MTSDF requires a "
                 "format with alpha channel.");
-    // #ifndef MSDF_ATLAS_NO_ARTERY_FONT
-    //     if (config.arteryFontFilename && !(config.imageFormat ==
-    //     ImageFormat::PNG || config.imageFormat == ImageFormat::BINARY ||
-    //     config.imageFormat == ImageFormat::BINARY_FLOAT)) {
-    //         config.arteryFontFilename = nullptr;
-    //         result = 1;
-    //         fputs("Error: Unable to create an Artery Font file with the
-    //         specified image format!\n", stderr);
-    //         // Recheck whether there is anything else to do
-    //         if (!(config.arteryFontFilename || config.imageFilename ||
-    //         config.jsonFilename || config.csvFilename ||
-    //         config.shadronPreviewFilename))
-    //             return result;
-    //         layoutOnly = !(config.arteryFontFilename ||
-    //         config.imageFilename);
-    //     }
-    // #endif
+    }
     if (imageExtension != msdf_atlas::ImageFormat::UNSPECIFIED) {
         // Warn if image format mismatches -imageout extension
         bool mismatch = false;
@@ -1035,6 +1031,8 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
             }
             operator msdfgen::FontHandle*() const { return font; }
         } font;
+
+        // for (auto& fontInput : fontInputs) {
 
         // for (FontInput &fontInput : fontInputs) {
         if (!font.load(fontInput.FontFilepath.c_str(), fontInput.VariableFont))
@@ -1129,13 +1127,10 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
                 pxRange = rangeValue;
                 break;
         }
-        bool fixedDimensions = fixedWidth >= 0 && fixedHeight >= 0;
+        // bool fixedDimensions = fixedWidth >= 0 && fixedHeight >= 0;
         bool fixedScale = config.EmSize > 0;
         msdf_atlas::TightAtlasPacker atlasPacker;
-        if (fixedDimensions)
-            atlasPacker.setDimensions(fixedWidth, fixedHeight);
-        else
-            atlasPacker.setDimensionsConstraint(atlasSizeConstraint);
+        atlasPacker.setDimensionsConstraint(atlasSizeConstraint);
         atlasPacker.setPadding(
             config.ImageType == msdf_atlas::ImageType::MSDF ||
                     config.ImageType == msdf_atlas::ImageType::MTSDF
@@ -1168,165 +1163,153 @@ bool Editor::asset_import_font(ui::FontImportSpecification& fontInput,
         config.PxRange = atlasPacker.getPixelRange();
         if (!fixedScale)
             debug("Glyph size: {} pixels/EM", config.EmSize);
-        if (!fixedDimensions)
-            debug("Atlas dimensions: {} x {}", config.Width, config.Height);
+
+        debug("Atlas dimensions: {} x {}", config.Width, config.Height);
     }
 
     // Generate atlas bitmap
-    if (!layoutOnly) {
-        // Edge coloring
-        if (config.ImageType == msdf_atlas::ImageType::MSDF ||
-            config.ImageType == msdf_atlas::ImageType::MTSDF) {
-            if (config.ExpensiveColoring) {
-                msdf_atlas::Workload(
-                    [&glyphs, &config](int i, int threadNo) -> bool {
-                        unsigned long long glyphSeed =
-                            (LCG_MULTIPLIER * (config.ColoringSeed ^ i) +
-                             LCG_INCREMENT) *
-                            !!config.ColoringSeed;
-                        glyphs[i].edgeColoring(config.EdgeColoring,
-                                               config.AngleThreshold,
-                                               glyphSeed);
-                        return true;
-                    },
-                    glyphs.size())
-                    .finish(config.ThreadCount);
-            } else {
-                unsigned long long glyphSeed = config.ColoringSeed;
-                for (msdf_atlas::GlyphGeometry& glyph : glyphs) {
-                    glyphSeed *= LCG_MULTIPLIER;
-                    glyph.edgeColoring(config.EdgeColoring,
-                                       config.AngleThreshold, glyphSeed);
-                }
+    // Edge coloring
+    if (config.ImageType == msdf_atlas::ImageType::MSDF ||
+        config.ImageType == msdf_atlas::ImageType::MTSDF) {
+        if (config.ExpensiveColoring) {
+            msdf_atlas::Workload(
+                [&glyphs, &config](int i, int threadNo) -> bool {
+                    unsigned long long glyphSeed =
+                        (LCG_MULTIPLIER * (config.ColoringSeed ^ i) +
+                         LCG_INCREMENT) *
+                        !!config.ColoringSeed;
+                    glyphs[i].edgeColoring(config.EdgeColoring,
+                                           config.AngleThreshold, glyphSeed);
+                    return true;
+                },
+                glyphs.size())
+                .finish(config.ThreadCount);
+        } else {
+            unsigned long long glyphSeed = config.ColoringSeed;
+            for (msdf_atlas::GlyphGeometry& glyph : glyphs) {
+                glyphSeed *= LCG_MULTIPLIER;
+                glyph.edgeColoring(config.EdgeColoring, config.AngleThreshold,
+                                   glyphSeed);
             }
         }
+    }
 
         bool success = false;
         switch (config.ImageType) {
             case msdf_atlas::ImageType::HARD_MASK:
                 if (floatingPointFormat)
                     success = makeAtlas<float, float, 1,
-                                        msdf_atlas::scanlineGenerator>(
-                        glyphs, fonts, config);
+                                        msdf_atlas::scanlineGenerator>(glyphs,
+                                                                       config);
                 else
                     success = makeAtlas<msdf_atlas::byte, float, 1,
-                                        msdf_atlas::scanlineGenerator>(
-                        glyphs, fonts, config);
+                                        msdf_atlas::scanlineGenerator>(glyphs,
+                                                                       config);
                 break;
             case msdf_atlas::ImageType::SOFT_MASK:
             case msdf_atlas::ImageType::SDF:
                 if (floatingPointFormat)
                     success =
                         makeAtlas<float, float, 1, msdf_atlas::sdfGenerator>(
-                            glyphs, fonts, config);
+                            glyphs, config);
                 else
-                    success = makeAtlas<msdf_atlas::byte, float, 1,
-                                        msdf_atlas::sdfGenerator>(glyphs, fonts,
-                                                                  config);
+                    success =
+                        makeAtlas<msdf_atlas::byte, float, 1,
+                                  msdf_atlas::sdfGenerator>(glyphs, config);
                 break;
             case msdf_atlas::ImageType::PSDF:
                 if (floatingPointFormat)
                     success =
                         makeAtlas<float, float, 1, msdf_atlas::psdfGenerator>(
-                            glyphs, fonts, config);
+                            glyphs, config);
                 else
-                    success = makeAtlas<msdf_atlas::byte, float, 1,
-                                        msdf_atlas::psdfGenerator>(
-                        glyphs, fonts, config);
+                    success =
+                        makeAtlas<msdf_atlas::byte, float, 1,
+                                  msdf_atlas::psdfGenerator>(glyphs, config);
                 break;
             case msdf_atlas::ImageType::MSDF:
                 if (floatingPointFormat)
                     success =
                         makeAtlas<float, float, 3, msdf_atlas::msdfGenerator>(
-                            glyphs, fonts, config);
+                            glyphs, config);
                 else
-                    success = makeAtlas<msdf_atlas::byte, float, 3,
-                                        msdf_atlas::msdfGenerator>(
-                        glyphs, fonts, config);
+                    success =
+                        makeAtlas<msdf_atlas::byte, float, 3,
+                                  msdf_atlas::msdfGenerator>(glyphs, config);
                 break;
             case msdf_atlas::ImageType::MTSDF:
                 if (floatingPointFormat)
                     success =
                         makeAtlas<float, float, 4, msdf_atlas::mtsdfGenerator>(
-                            glyphs, fonts, config);
+                            glyphs, config);
                 else
-                    success = makeAtlas<msdf_atlas::byte, float, 4,
-                                        msdf_atlas::mtsdfGenerator>(
-                        glyphs, fonts, config);
+                    success =
+                        makeAtlas<msdf_atlas::byte, float, 4,
+                                  msdf_atlas::mtsdfGenerator>(glyphs, config);
                 break;
         }
         if (!success)
             // result = 1;
             return false;
-    }
 
-    // TODO export json
-    // if (config.jsonFilename) {
-    //     if (exportJSON(fonts.data(), fonts.size(), config.emSize,
-    //     config.pxRange, config.width, config.height, config.imageType,
-    //     config.yDirection, config.jsonFilename, config.kerning))
-    //         fputs("Glyph layout and metadata written into JSON file.\n",
-    //         stderr);
-    //     else {
-    //         result = 1;
-    //         fputs("Failed to write JSON output file.\n", stderr);
-    //     }
-    // }
+        graphics::FontSpecification spec;
+        spec.Id.generate();
+        spec.Name = fontInput.FontName;
+        // spec.Name = fontInput.FontName;
+        // specFilepath = config.ImageFilepath;
 
-    core::FontSpecification spec;
-    spec.Id.generate();
-    spec.Name = fontInput.FontName;
-    spec.Filepath = config.ImageFilepath;
+        for (auto& font : fonts) {
+            const msdfgen::FontMetrics& metrics = font.getMetrics();
+            // TODO pack.Style = ...
+            spec.FontMetrics.emSize = metrics.emSize;
+            spec.FontMetrics.lineHeight = metrics.lineHeight;
+            spec.FontMetrics.ascender = metrics.ascenderY;
+            spec.FontMetrics.descender = metrics.descenderY;
+            spec.FontMetrics.underlineY = metrics.underlineY;
+            spec.FontMetrics.underlineThickness = metrics.underlineThickness;
 
-    const msdfgen::FontMetrics& metrics = fonts.front().getMetrics();
-    spec.FontMetrics.emSize = metrics.emSize;
-    spec.FontMetrics.lineHeight = metrics.lineHeight;
-    spec.FontMetrics.ascender = metrics.ascenderY;
-    spec.FontMetrics.descender = metrics.descenderY;
-    spec.FontMetrics.underlineY = metrics.underlineY;
-    spec.FontMetrics.underlineThickness = metrics.underlineThickness;
+            for (const msdf_atlas::GlyphGeometry& glyph : font.getGlyphs()) {
+                graphics::GlyphMetrics metrics;
+                metrics.codepoint = glyph.getCodepoint();
+                metrics.advance = glyph.getAdvance();
 
-    graphics::FontAtlasType type;
-    std::string msdfTypeString =
-        std::string(magic_enum::enum_name(config.ImageType));
-    type = magic_enum::enum_cast<graphics::FontAtlasType>(
-               msdfTypeString, magic_enum::case_insensitive)
-               .value();
-    spec.AtlasMetrics.type = type;
-    spec.AtlasMetrics.size = config.EmSize;
-    spec.AtlasMetrics.width = config.Width;
-    spec.AtlasMetrics.height = config.Height;
-    if (config.YDirection == msdf_atlas::YDirection::BOTTOM_UP) {
-        spec.AtlasMetrics.yOrigin = graphics::YOrigin::Bottom;
-    } else if (config.YDirection == msdf_atlas::YDirection::TOP_DOWN) {
-        spec.AtlasMetrics.yOrigin = graphics::YOrigin::Top;
-    }
+                // TODO this is bottom up. top bottom switch is missing
+                double l, b, r, t;
+                glyph.getQuadAtlasBounds(l, b, r, t);
+                metrics.atlasBounds.left = l;
+                metrics.atlasBounds.bottom = b;
+                metrics.atlasBounds.right = r;
+                metrics.atlasBounds.top = t;
+                glyph.getQuadPlaneBounds(l, b, r, t);
+                metrics.planeBounds.left = l;
+                metrics.planeBounds.bottom = b;
+                metrics.planeBounds.right = r;
+                metrics.planeBounds.top = t;
 
-    for (const msdf_atlas::GlyphGeometry& glyph : fonts.front().getGlyphs()) {
-        graphics::GlyphMetrics metrics;
-        metrics.codepoint = glyph.getCodepoint();
-        metrics.advance = glyph.getAdvance();
+                spec.GlyphMetrics[glyph.getCodepoint()] = metrics;
+            }
+        }
 
-        // TODO this is bottom up. top bottom switch is missing
-        double l, b, r, t;
-        glyph.getQuadAtlasBounds(l, b, r, t);
-        metrics.atlasBounds.left = l;
-        metrics.atlasBounds.bottom = b;
-        metrics.atlasBounds.right = r;
-        metrics.atlasBounds.top = t;
-        glyph.getQuadPlaneBounds(l, b, r, t);
-        metrics.planeBounds.left = l;
-        metrics.planeBounds.bottom = b;
-        metrics.planeBounds.right = r;
-        metrics.planeBounds.top = t;
+        graphics::TextureDistanceFieldType type;
+        std::string msdfTypeString =
+            std::string(magic_enum::enum_name(config.ImageType));
+        type = magic_enum::enum_cast<graphics::TextureDistanceFieldType>(
+                   msdfTypeString, magic_enum::case_insensitive)
+                   .value();
+        spec.AtlasMetrics.type = type;
+        spec.AtlasMetrics.size = config.EmSize;
+        spec.AtlasMetrics.width = config.Width;
+        spec.AtlasMetrics.height = config.Height;
+        if (config.YDirection == msdf_atlas::YDirection::BOTTOM_UP) {
+            spec.AtlasMetrics.yOrigin = graphics::YOrigin::Bottom;
+        } else if (config.YDirection == msdf_atlas::YDirection::TOP_DOWN) {
+            spec.AtlasMetrics.yOrigin = graphics::YOrigin::Top;
+        }
 
-        spec.GlyphMetrics[glyph.getCodepoint()] = metrics;
-    }
+        m_AssetManager->get_font_database()[spec.Id] = spec;
+        m_AssetManager->write_asset_configuration();
 
-    m_AssetManager->get_font_registry()[spec.Id] = spec;
-    m_AssetManager->write_asset_configuration();
-
-    return true;
+        return true;
 }
 
 void Editor::exit_application() {

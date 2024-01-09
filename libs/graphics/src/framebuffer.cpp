@@ -133,7 +133,7 @@ BufferLayout quadLayout = {{ShaderDataType::Float2, "a_Position"},
                            {ShaderDataType::Float2, "a_TexCoords"}};
 
 Framebuffer::Framebuffer(const FramebufferSpecification& spec)
-    : Texture(this), m_Specification(spec) {
+    : Texture(this, spec.Name, spec.Id), m_Specification(spec) {
     for (auto spec : m_Specification.attachements.Attachements) {
         if (!is_depth_format(spec.TextureFormat))
             m_ColorAttachementSpecifications.emplace_back(spec.TextureFormat);
@@ -149,10 +149,11 @@ Framebuffer::Framebuffer(const FramebufferSpecification& spec)
 
 Framebuffer::~Framebuffer() {
     cleanup();
+    m_RendererId = 0;
 }
 
 void Framebuffer::cleanup() {
-    glDeleteFramebuffers(1, &m_RendererID);
+    glDeleteFramebuffers(1, &m_RendererId);
     glDeleteTextures(m_ColorAttachements.size(), m_ColorAttachements.data());
     glDeleteTextures(1, &m_DepthAttachement);
 
@@ -161,12 +162,12 @@ void Framebuffer::cleanup() {
 }
 
 void Framebuffer::invalidate() {
-    if (m_RendererID)
+    if (m_RendererId)
         cleanup();
 
     auto size = m_Specification.size;
-    glGenFramebuffers(1, &m_RendererID);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+    glGenFramebuffers(1, &m_RendererId);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 
     bool multisample = m_Specification.samples > 1;
 
@@ -234,7 +235,7 @@ void Framebuffer::invalidate() {
 }
 
 void Framebuffer::bind() {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
     glViewport(0, 0, m_Specification.size.x, m_Specification.size.y);
 }
 
@@ -251,39 +252,6 @@ void Framebuffer::resize(const math::ivec2& size) {
     m_Specification.size = size;
     invalidate();
 }
-//
-// template <>
-// int32_t Framebuffer::read_pixel_data<int32_t>(uint32_t attachementIndex,
-//                                               const math::ivec2& position) {
-//     require(attachementIndex < m_ColorAttachements.size(), "");
-//
-//     auto& spec = m_ColorAttachementSpecifications[attachementIndex];
-//     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
-//     int32_t pixelData;
-//     glReadPixels(position.x, position.y, 1, 1,
-//                     rurouni_fb_texture_format_to_gl_format(spec.TextureFormat),
-//                     rurouni_fb_texture_format_to_gl_type(spec.TextureFormat),
-//                  &pixelData);
-//
-//     return pixelData;
-// }
-//
-// template <>
-// uint32_t Framebuffer::read_pixel_data<uint32_t>(uint32_t attachementIndex,
-//                                                 const math::ivec2& position)
-//                                                 {
-//     require(attachementIndex < m_ColorAttachements.size(), "");
-//
-//     auto& spec = m_ColorAttachementSpecifications[attachementIndex];
-//     glReadBuffer(GL_COLOR_ATTACHMENT0 + attachementIndex);
-//     uint32_t pixelData;
-//     glReadPixels(position.x, position.y, 1, 1,
-//             rurouni_fb_texture_format_to_gl_format(spec.TextureFormat),
-//             rurouni_fb_texture_format_to_gl_type(spec.TextureFormat),
-//                  &pixelData);
-//
-//     return pixelData;
-// }
 
 PixelData Framebuffer::read_pixel_data(uint32_t attachementIndex,
                                        const math::ivec2& position) {

@@ -13,6 +13,7 @@
 #include "rurouni/event/event_system.hpp"
 #include "rurouni/event/window_event.hpp"
 #include "rurouni/graphics/batch_renderer.hpp"
+#include "rurouni/graphics/spritesheet.hpp"
 #include "rurouni/graphics/window.hpp"
 #include "rurouni/system/filesystem.hpp"
 
@@ -57,10 +58,11 @@ class Editor : public event::Subscriber {
     bool save_scene(const system::Path& path);
     void draw_scene();
 
-    bool asset_import_texture(core::TextureSpecification& spec);
+    bool asset_import_texture(graphics::ImageTextureSpecification& spec);
+    bool asset_import_spritesheet(graphics::SpritesheetSpecification& spec);
     bool asset_import_sprites(
-        std::unordered_map<int, core::SpriteSpecification>& specs);
-    bool asset_import_shader(core::ShaderSpecification& spec);
+        std::unordered_map<int, graphics::SpriteSpecification>& specs);
+    bool asset_import_shader(graphics::ShaderSpecification& spec);
     bool asset_import_font(ui::FontImportSpecification& fontInput,
                            ui::FontImportConfiguration& config);
 

@@ -51,35 +51,33 @@ BatchRenderer::BatchRenderer(std::shared_ptr<Shader> quadShader)
 
     // init white texture
     DataTextureSpecification whiteSpec;
-    whiteSpec.id.generate();
-    whiteSpec.size = math::ivec2{1, 1};
-    whiteSpec.dataFormat = TextureDataFormat::RGBA;
-    whiteSpec.pixelFormat = TexturePixelFormat::RGBA8;
-    m_WhiteTexture = std::make_shared<Texture>(whiteSpec);
+    whiteSpec.Id.generate();
+    whiteSpec.Size = math::ivec2{1, 1};
+    whiteSpec.DataFormat = TextureDataFormat::RGBA;
+    whiteSpec.PixelFormat = TexturePixelFormat::RGBA8;
     uint32_t whiteTextureData = 0xFFFFFFFF;
-    m_WhiteTexture->set_data(&whiteTextureData, sizeof(uint32_t));
+    whiteSpec.set_data(&whiteTextureData, sizeof(whiteTextureData));
+    m_WhiteTexture = std::make_shared<Texture>(whiteSpec);
 
     // init rect texture
     graphics::DataTextureSpecification rectSpec;
-    rectSpec.id.generate();
-    rectSpec.dataFormat = graphics::TextureDataFormat::RGBA;
-    rectSpec.pixelFormat = graphics::TexturePixelFormat::RGBA8;
-    rectSpec.size = math::ivec2{32};
-    m_RectTexture = std::make_unique<graphics::Texture>(rectSpec);
-
+    rectSpec.Id.generate();
+    rectSpec.DataFormat = graphics::TextureDataFormat::RGBA;
+    rectSpec.PixelFormat = graphics::TexturePixelFormat::RGBA8;
+    rectSpec.Size = math::ivec2{32};
     std::vector<uint32_t> rectData;
-    for (int y = 0; y < rectSpec.size.y; y++) {
-        for (int x = 0; x < rectSpec.size.x; x++) {
-            if (y == 0 || y == rectSpec.size.y - 1 || x == 0 ||
-                x == rectSpec.size.x - 1) {
+    for (int y = 0; y < rectSpec.Size.y; y++) {
+        for (int x = 0; x < rectSpec.Size.x; x++) {
+            if (y == 0 || y == rectSpec.Size.y - 1 || x == 0 ||
+                x == rectSpec.Size.x - 1) {
                 rectData.push_back(0xFFFFFFFF);
             } else {
                 rectData.push_back(0x00000000);
             }
         }
     }
-    m_RectTexture->set_data(rectData.data(),
-                            rectData.size() * sizeof(uint32_t));
+    rectSpec.set_data(rectData.data(), rectData.size() * sizeof(uint32_t));
+    m_RectTexture = std::make_unique<graphics::Texture>(rectSpec);
 }
 
 BatchRenderer::~BatchRenderer() {}
@@ -135,13 +133,13 @@ void BatchRenderer::flush_quads() {
             continue;
         }
 
-        if (!texturePtr->get_renderer_id().has_value()) {
-            error(
-                "encountered a texture without renderer id. maybe its atlas "
-                "handle is invalid.");
-            m_WhiteTexture->bind(i);
-            continue;
-        }
+        // if (!texturePtr->get_renderer_id().has_value()) {
+        //     error(
+        //         "encountered a texture without renderer id. maybe its atlas "
+        //         "handle is invalid.");
+        //     m_WhiteTexture->bind(i);
+        //     continue;
+        // }
 
         texturePtr->bind(i);
     }
@@ -203,7 +201,7 @@ void BatchRenderer::draw_texture(const math::mat4& transform,
 
     for (size_t i = 0; i < 4; i++) {
         QuadVertex qv = {transform * m_QuadVertexPositions[i], color,
-                         texture.lock()->get_uv_coords()[i], textureIndex,
+                         texture.lock()->get_texture_coords()[i], textureIndex,
                          entityId};
 
         m_QuadVertexArrayData.push_back(qv);
@@ -236,7 +234,7 @@ float BatchRenderer::get_texture_index(std::weak_ptr<Texture> texture) {
                 "encountered invalid weak_ptr to texture! asset manager "
                 "seems to unload textures before they get drawn");
 
-        if (slot->get_uuid() == texture.lock()->get_uuid()) {
+        if (slot->get_id() == texture.lock()->get_id()) {
             textureIndex = (float)i;
             break;
         }
